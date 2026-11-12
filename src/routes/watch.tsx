@@ -6,15 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SiteFooter } from ".";
 import genesisArt from "@/assets/genesis_pharaoh_prophet.png.asset.json";
 
+const defaultEpisode = { value: "genesis", title: "Genesis · Chapter 1", videoId: "z5abtVIszH8", start: 2280, runtime: "Live broadcast" };
 const episodeOptions = [
-  { value: "genesis", title: "Genesis · Chapter 1", videoId: "z5abtVIszH8", start: 2280, runtime: "Live broadcast" },
+  defaultEpisode,
   { value: "teaser", title: "In the Beginning · Series teaser", videoId: "PD9gqRc8VTU", start: 0, runtime: "Official teaser" },
 ];
 const languageOptions = ["English", "Hindi", "Tamil", "Malayalam", "Persian", "Tagalog", "Chinese", "Malay"];
 
 export const Route = createFileRoute("/watch")({
   validateSearch: (search: Record<string, unknown>) => ({
-    episode: typeof search.episode === "string" ? search.episode : "genesis",
+    episode: typeof search["episode"] === "string" ? search["episode"] : "genesis",
   }),
   component: WatchPage,
   head: () => ({
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/watch")({
 function WatchPage() {
   const { episode } = Route.useSearch();
   const [language, setLanguage] = useState("English");
-  const selectedEpisode = episodeOptions.find((item) => item.value === episode) ?? episodeOptions[0];
+  const selectedEpisode = episodeOptions.find((item) => item.value === episode) ?? defaultEpisode;
   const captionLanguage = ({ English: "en", Hindi: "hi", Tamil: "ta", Malayalam: "ml", Persian: "fa", Tagalog: "tl", Chinese: "zh", Malay: "ms" } as Record<string, string>)[language] ?? "en";
 
   return (
