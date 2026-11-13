@@ -43,10 +43,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { uploadCmsMedia } from "@/lib/cms.functions";
 
+function AdminRouteError({ error }: { error: unknown }) {
+  return (
+    <div className="min-h-screen bg-[#07070a] text-white flex flex-col items-center justify-center p-8 space-y-4">
+      <div className="p-6 bg-red-950/40 border border-red-500/50 rounded-xl max-w-lg text-center space-y-3 shadow-2xl">
+        <h2 className="text-lg font-bold text-red-300">Visual Bible Studio Error</h2>
+        <p className="text-xs text-white/70">An error occurred while loading the studio interface.</p>
+        <pre className="text-[11px] font-mono text-red-200 bg-black/60 p-3 rounded text-left overflow-x-auto whitespace-pre-wrap">
+          {error instanceof Error ? error.message : String(error)}
+        </pre>
+        <div className="pt-2 flex justify-center gap-3">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-[#A11C28] text-white rounded text-xs font-bold hover:bg-[#851620]"
+          >
+            Reload Studio
+          </button>
+          <a
+            href="/"
+            className="px-4 py-2 bg-white/10 text-white rounded text-xs font-bold hover:bg-white/20"
+          >
+            Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/admin")({
   validateSearch: (search: Record<string, unknown>) => ({
     tab: typeof search["tab"] === "string" ? search["tab"] : "episodes",
   }),
+  component: AdminDashboardPage,
+  errorComponent: AdminRouteError,
   head: () => ({
     meta: [
       { title: "Visual Bible TV Studio CMS · Content & YouTube Episodes" },
@@ -67,6 +97,7 @@ interface CloudImageFieldProps {
 function CloudImageField({ label, value, onChange, description }: CloudImageFieldProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const safeVal = typeof value === "string" ? value : "";
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -120,7 +151,7 @@ function CloudImageField({ label, value, onChange, description }: CloudImageFiel
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Input
-            value={value}
+            value={safeVal}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste URL or upload image"
             className="h-9 text-xs bg-black/40 border-white/15 font-mono text-white/90 pl-7"
@@ -152,16 +183,16 @@ function CloudImageField({ label, value, onChange, description }: CloudImageFiel
 
       {uploadError && <p className="text-[11px] text-red-400">{uploadError}</p>}
 
-      {value && (
+      {safeVal ? (
         <div className="flex items-center gap-2.5 pt-1">
           <div className="w-12 h-8 rounded border border-white/20 overflow-hidden bg-black shrink-0">
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <img src={safeVal} alt="Preview" className="w-full h-full object-cover" />
           </div>
           <span className="text-[10px] text-emerald-400 font-mono truncate">
-            Active: {value.length > 55 ? `${value.slice(0, 52)}...` : value}
+            Active: {safeVal.length > 55 ? `${safeVal.slice(0, 52)}...` : safeVal}
           </span>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -215,18 +246,26 @@ function AdminDashboardPage() {
   }, [search.tab]);
 
   // Working state forms
-  const [heroForm, setHeroForm] = useState<HeroContent>({ ...cmsData.hero });
-  const [vaultForm, setVaultForm] = useState<ProductionCard[]>([...cmsData.vaultProductions]);
+  const [heroForm, setHeroForm] = useState<HeroContent>({
+    ...(cmsData?.hero || DEFAULT_CMS_DATA.hero),
+  });
+  const [vaultForm, setVaultForm] = useState<ProductionCard[]>([
+    ...(cmsData?.vaultProductions && cmsData.vaultProductions.length
+      ? cmsData.vaultProductions
+      : DEFAULT_CMS_DATA.vaultProductions),
+  ]);
   const [projectsForm, setProjectsForm] = useState<ProjectSlateItem[]>([
-    ...cmsData.upcomingProjects,
+    ...(cmsData?.upcomingProjects && cmsData.upcomingProjects.length
+      ? cmsData.upcomingProjects
+      : DEFAULT_CMS_DATA.upcomingProjects),
   ]);
   const [episodesForm, setEpisodesForm] = useState<BroadcastEpisodeItem[]>([
-    ...(cmsData.broadcastEpisodes && cmsData.broadcastEpisodes.length
+    ...(cmsData?.broadcastEpisodes && cmsData.broadcastEpisodes.length
       ? cmsData.broadcastEpisodes
       : DEFAULT_BROADCAST_EPISODES),
   ]);
   const [archiveForm, setArchiveForm] = useState<ArchiveGridItem[]>([
-    ...(cmsData.archiveItems && cmsData.archiveItems.length
+    ...(cmsData?.archiveItems && cmsData.archiveItems.length
       ? cmsData.archiveItems
       : DEFAULT_CMS_DATA.archiveItems),
   ]);
@@ -237,9 +276,18 @@ function AdminDashboardPage() {
 
   // Keep form data synchronized when cmsData updates
   useEffect(() => {
-    setHeroForm({ ...cmsData.hero });
-    setVaultForm([...cmsData.vaultProductions]);
-    setProjectsForm([...cmsData.upcomingProjects]);
+    if (!cmsData) return;
+    setHeroForm({ ...(cmsData.hero || DEFAULT_CMS_DATA.hero) });
+    setVaultForm([
+      ...(cmsData.vaultProductions && cmsData.vaultProductions.length
+        ? cmsData.vaultProductions
+        : DEFAULT_CMS_DATA.vaultProductions),
+    ]);
+    setProjectsForm([
+      ...(cmsData.upcomingProjects && cmsData.upcomingProjects.length
+        ? cmsData.upcomingProjects
+        : DEFAULT_CMS_DATA.upcomingProjects),
+    ]);
     setEpisodesForm([
       ...(cmsData.broadcastEpisodes && cmsData.broadcastEpisodes.length
         ? cmsData.broadcastEpisodes
@@ -573,13 +621,15 @@ function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-7 h-7 rounded-full bg-[#A11C28] flex items-center justify-center font-bold text-xs uppercase text-white shrink-0">
-                {adminUser.email[0]}
+                {adminUser?.email?.[0] || "A"}
               </div>
               <div className="min-w-0">
                 <span className="text-xs font-bold text-white block truncate">
-                  {adminUser.name}
+                  {adminUser?.name || "Admin"}
                 </span>
-                <span className="text-[10px] text-white/50 block truncate">{adminUser.email}</span>
+                <span className="text-[10px] text-white/50 block truncate">
+                  {adminUser?.email || ""}
+                </span>
               </div>
             </div>
             <button
@@ -1054,7 +1104,7 @@ function AdminDashboardPage() {
                         >
                           {episodesForm.map((ep) => (
                             <option key={ep.id} value={ep.id} className="bg-[#101018] text-white">
-                              {ep.title} ({ep.chapter})
+                              {ep.title || "Episode"} ({ep.chapter || "Ch."})
                             </option>
                           ))}
                         </select>
@@ -1220,7 +1270,7 @@ function AdminDashboardPage() {
                         >
                           {episodesForm.map((ep) => (
                             <option key={ep.id} value={ep.id} className="bg-[#101018] text-white">
-                              {ep.title} ({ep.chapter})
+                              {ep.title || "Episode"} ({ep.chapter || "Ch."})
                             </option>
                           ))}
                         </select>
