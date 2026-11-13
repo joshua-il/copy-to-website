@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type FormEvent } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Play,
   Plus,
@@ -26,6 +26,7 @@ import { useGlobalLanguage } from "@/lib/language";
 import { joinWaitlist } from "@/lib/waitlist.functions";
 import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
 import Globe from "@/components/originkit/ui/globe-custom-style";
+import InfiniteGrid from "@/components/originkit/ui/infinite-grid";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -137,6 +138,114 @@ const PITCH_TUNNEL_IMAGES = [
   "/assets/judas-chosen-by-god-persian.jpg",
 ];
 
+// ─── Data: The Living Infinite Archive (Originkit Infinite Canvas) ────────────
+
+interface ArchiveGridItem {
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  episode: string;
+}
+
+const INFINITE_ARCHIVE_ITEMS: ArchiveGridItem[] = [
+  {
+    title: "In the Beginning",
+    subtitle: "Genesis · 50 Chapters Complete",
+    imageUrl: "/assets/genesis-shepherds-poster.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "The Purpose of God",
+    subtitle: "The Story of Joseph in Egypt",
+    imageUrl: "/assets/purpose-of-god-joseph-poster.jpg",
+    episode: "joseph",
+  },
+  {
+    title: "Genesis · उत्पत्ति",
+    subtitle: "Hindi Edition · Campfire Council",
+    imageUrl: "/assets/genesis-hindi-campfire-poster.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "Genesis · ஆதியாகமம்",
+    subtitle: "Tamil Edition · Complete Season",
+    imageUrl: "/assets/genesis-tamil-poster.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "Genesis · ഉദ്ഭവം",
+    subtitle: "Malayalam Edition · Complete",
+    imageUrl: "/assets/genesis-malayalam-poster.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "Genesis · 创世记",
+    subtitle: "Mandarin Chinese Edition",
+    imageUrl: "/assets/genesis-chinese-poster.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "یهودا، برگزیده خدا",
+    subtitle: "Persian Edition · Judah Chosen",
+    imageUrl: "/assets/genesis-persian-judah-poster.jpg",
+    episode: "judas",
+  },
+  {
+    title: "Genesis · Tagalog",
+    subtitle: "Philippines & Southeast Asia",
+    imageUrl: "/assets/genesis-tagalog-poster.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "YAHWEH · Mount Sinai",
+    subtitle: "The Tablets of the Law (Exodus)",
+    imageUrl: "/assets/yahweh-tablets-poster.jpg",
+    episode: "yahweh",
+  },
+  {
+    title: "The Waters Divide",
+    subtitle: "Exodus Chapter 14 · Feature",
+    imageUrl: "/assets/moses-parting-sea.jpg",
+    episode: "yahweh",
+  },
+  {
+    title: "YAHWEH · The Deliverer",
+    subtitle: "The Red Sea Staff Poster",
+    imageUrl: "/assets/yahweh-exodus-staff-poster.jpg",
+    episode: "yahweh",
+  },
+  {
+    title: "Joseph Before Pharaoh",
+    subtitle: "Genesis 41 Historical Study",
+    imageUrl: "/assets/genesis-pharaoh-prophet-sunset.jpg",
+    episode: "joseph",
+  },
+  {
+    title: "Covenant in the Night",
+    subtitle: "Genesis 15 Patriarch Council",
+    imageUrl: "/assets/genesis-warriors-fire.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "The Promise Fulfilled",
+    subtitle: "The Patriarchs of Genesis",
+    imageUrl: "/assets/genesis-poster.jpg",
+    episode: "genesis",
+  },
+  {
+    title: "The Mountain of God",
+    subtitle: "Exodus Archaeological Study",
+    imageUrl: "/assets/yahweh-monument.jpg",
+    episode: "yahweh",
+  },
+  {
+    title: "Creation to Abraham",
+    subtitle: "Genesis Key Studio Art",
+    imageUrl: "/assets/in-the-beginning-banner.png",
+    episode: "genesis",
+  },
+];
+
 // ─── Data: Languages & Regions Reached (3D Globe Markers) ────────────────────
 
 interface ReachedLanguage {
@@ -245,6 +354,7 @@ const GLOBE_MARKERS = [
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function LandingPage() {
+  const navigate = useNavigate();
   const [language, setLanguage] = useGlobalLanguage();
   const [activeNav, setActiveNav] = useState("home");
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -342,7 +452,8 @@ function LandingPage() {
               { id: "home", label: "Home Showcase", icon: Home, href: "#hero" },
               { id: "vault", label: "Existing Projects", icon: Tv, href: "#vault" },
               { id: "pitch", label: "The Pitch", icon: Compass, href: "#pitch" },
-              { id: "workflow", label: "Technical Workflow", icon: Cpu, href: "#workflow" },
+              { id: "workflow", label: "Production Method", icon: Cpu, href: "#workflow" },
+              { id: "archive", label: "Universe Archive", icon: Bookmark, href: "#archive" },
               { id: "upcoming", label: "Upcoming (YAHWEH)", icon: Film, href: "#upcoming-yahweh" },
               { id: "languages", label: "Languages Reached", icon: GlobeIcon, href: "#languages" },
               { id: "waitlist", label: "Join Waitlist", icon: Plus, href: "#waitlist" },
@@ -780,104 +891,225 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 4. TECHNICAL WORKFLOW & METHOD SECTION ────────────────────── */}
+        {/* ── 4. TECHNICAL WORKFLOW & PRODUCTION METHOD SECTION ───────── */}
         <section
           id="workflow"
-          className="py-20 px-6 md:px-12 bg-[#050505] border-t border-white/[0.08]"
+          className="py-24 px-6 md:px-12 bg-[#060608] border-t border-white/[0.08] relative overflow-hidden"
         >
-          <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div className="max-w-6xl mx-auto">
+            {/* Editorial Studio Header */}
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-6">
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
-                  <span className="text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
-                    Our Production Method
+                  <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
+                  <span className="text-[11px] font-bold tracking-[0.25em] text-white/60 uppercase">
+                    Studio Production Pipeline · Director's Disclosure
                   </span>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-2">
+                <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.08] tracking-tight mb-3">
                   The Message is the Same.
                   <br />
                   <span className="text-white/40">The Medium is Different.</span>
                 </h2>
-                <p className="text-white/70 text-sm max-w-xl">
-                  How we combine real human emotion with state-of-the-art AI to create an
-                  authoritative, cinematic biblical catalog.
+                <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl">
+                  A theological and technical disclosure of how NRIM transforms living scripture
+                  into an authoritative, visual epic — without staging Hollywood melodrama or
+                  generating synthetic caricatures.
                 </p>
               </div>
 
-              <a
-                href="https://www.youtube.com/watch?v=3DULIG3sDS8"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-white text-black text-xs font-bold px-5 py-3 rounded hover:bg-white/90 transition-colors uppercase tracking-wider shrink-0"
+              <div className="flex items-center gap-3 shrink-0">
+                <a
+                  href="https://www.youtube.com/watch?v=3DULIG3sDS8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-white text-black text-xs font-bold px-5 py-3 rounded hover:bg-white/90 transition-all uppercase tracking-wider shadow-lg hover:scale-[1.02]"
+                >
+                  <Play className="w-4 h-4 fill-black" />
+                  Watch Workflow Video
+                  <ExternalLink className="w-3.5 h-3.5 text-black/50 ml-0.5" />
+                </a>
+              </div>
+            </div>
+
+            {/* The 3 Production Tenets: Unified Studio Architecture (Not Amateur Cards) */}
+            <div className="grid lg:grid-cols-3 gap-0 border border-white/[0.1] rounded-2xl bg-[#0a0a0e] overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] shadow-2xl mb-12">
+              {/* Tenet 01: Human Avatars */}
+              <div className="p-7 md:p-9 flex flex-col justify-between hover:bg-white/[0.02] transition-colors">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-[#A11C28] uppercase px-2.5 py-1 rounded bg-[#A11C28]/10 border border-[#A11C28]/25">
+                      TENET 01 · AVATAR EMBODIMENT
+                    </span>
+                    <span className="text-xs font-mono text-white/30">01 / 03</span>
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3">
+                    We do not direct real humans — we use actual people as a biblical avatar.
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/65 leading-relaxed">
+                    We do not cast actors to mimic Hollywood melodrama or recite script lines on a
+                    soundstage. Instead, we capture the authentic emotional gravity, genuine grief,
+                    joy, and spiritual presence of actual people — channeling their real human
+                    likeness into living biblical avatars for the patriarchs, prophets, and
+                    witnesses of scripture.
+                  </p>
+                </div>
+                <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/40 font-mono uppercase tracking-wider">
+                  <span>Raw Performance Likeness</span>
+                  <span className="text-[#A11C28] font-bold">Biblical Avatars</span>
+                </div>
+              </div>
+
+              {/* Tenet 02: World-Building */}
+              <div className="p-7 md:p-9 flex flex-col justify-between hover:bg-white/[0.02] transition-colors">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-emerald-400 uppercase px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/25">
+                      TENET 02 · SACRED GEOGRAPHY
+                    </span>
+                    <span className="text-xs font-mono text-white/30">02 / 03</span>
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3">
+                    We build the world of Genesis and Exodus — the ancient world of the Bible.
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/65 leading-relaxed">
+                    From the primordial expanse of Eden and Abraham's encampments across Mesopotamia
+                    to the colossal courts of Pharaoh, the parted waters of the Red Sea, and the
+                    thunderous crags of Mount Sinai. We procedurally and historically reconstruct
+                    the sacred geography, architecture, textiles, and atmospheric lighting of
+                    antiquity with rigorous archaeological fidelity.
+                  </p>
+                </div>
+                <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/40 font-mono uppercase tracking-wider">
+                  <span>Mesopotamia, Egypt & Sinai</span>
+                  <span className="text-emerald-400 font-bold">World of the Bible</span>
+                </div>
+              </div>
+
+              {/* Tenet 03: 100 Languages & Regional Unreached */}
+              <div className="p-7 md:p-9 flex flex-col justify-between hover:bg-white/[0.02] transition-colors">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/25">
+                      TENET 03 · UNREACHED LANGUAGES
+                    </span>
+                    <span className="text-xs font-mono text-white/30">03 / 03</span>
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3">
+                    Focusing on and targeting 100 languages — reaching regional mother tongues
+                    without written scripture.
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/65 leading-relaxed">
+                    Our localization pipeline is engineered specifically for people who normally
+                    would not have access to Scripture or have a translation of the Bible in their
+                    language. Many of these are regional oral dialects. By synchronizing neural
+                    voice translation with native oral delivery, we break the literacy barrier so
+                    every nation hears the Word in their heart tongue.
+                  </p>
+                </div>
+                <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/40 font-mono uppercase tracking-wider">
+                  <span>Oral Dialects & Unreached</span>
+                  <span className="text-amber-400 font-bold">100 Languages Target</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Studio Monitoring Video Showcase Player */}
+            <div className="rounded-2xl overflow-hidden border border-white/[0.1] bg-[#0c0c12] shadow-2xl">
+              <div className="px-5 py-3 border-b border-white/[0.08] flex items-center justify-between bg-black/50">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#A11C28]" />
+                  <span className="text-xs font-mono font-semibold text-white/90">
+                    NRIM ARCHIVE · AI FILMMAKING WORKFLOW FOR EXODUS (AFA)
+                  </span>
+                </div>
+                <span className="hidden sm:inline-flex text-[11px] font-mono text-white/40 uppercase">
+                  Production Featurette · 4K Master
+                </span>
+              </div>
+              <div className="relative aspect-video w-full bg-black">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/3DULIG3sDS8?rel=0&modestbranding=1"
+                  title="Visual Bible AI Technical Workflow"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 5. THE INFINITE SCRIPTURE ARCHIVE (ORIGINKIT INFINITE GRID) ────── */}
+        <section
+          id="archive"
+          className="py-24 px-6 md:px-12 bg-black border-t border-white/[0.08] relative overflow-hidden"
+        >
+          <div className="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row md:items-end justify-between gap-5">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
+                <span className="text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
+                  The Living Universe · Infinite Canvas
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-2">
+                Explore the Universe of the Visual Bible
+              </h2>
+              <p className="text-white/65 text-xs md:text-sm max-w-xl">
+                An unbounded canvas of scripture. Drag in any direction to explore completed Genesis
+                chapters, patriarch character studies, and upcoming releases across all languages.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-white/50 bg-white/[0.04] border border-white/[0.08] px-3.5 py-2 rounded-full">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Drag canvas in any direction · Click to stream</span>
+              </div>
+              <Link
+                to="/watch"
+                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 rounded transition-colors uppercase tracking-wider"
               >
-                <Play className="w-4 h-4 fill-black" />
-                Watch Workflow Video
-              </a>
+                <Play className="w-3.5 h-3.5 fill-white" />
+                Watch Full Catalog
+              </Link>
             </div>
+          </div>
 
-            {/* 3 Pillars of the Technical Pipeline */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-[#101014] border border-white/[0.08] rounded-xl p-6 flex flex-col justify-between">
-                <div>
-                  <div className="w-10 h-10 rounded-lg bg-[#A11C28]/20 border border-[#A11C28]/40 flex items-center justify-center text-[#A11C28] font-black text-sm mb-4">
-                    01
-                  </div>
-                  <h3 className="text-base font-bold text-white mb-2">Real Human Performances</h3>
-                  <p className="text-xs text-white/60 leading-relaxed">
-                    AI alone lacks heart. We direct real actors on camera to capture genuine tears,
-                    grief, joy, and spiritual weight that algorithmically generated faces cannot
-                    fabricate.
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t border-white/[0.06] text-[11px] font-semibold text-white/40 uppercase tracking-wider">
-                  Raw Performance Capture
-                </div>
-              </div>
-
-              <div className="bg-[#101014] border border-white/[0.08] rounded-xl p-6 flex flex-col justify-between">
-                <div>
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black text-sm mb-4">
-                    02
-                  </div>
-                  <h3 className="text-base font-bold text-white mb-2">Generative World-Building</h3>
-                  <p className="text-xs text-white/60 leading-relaxed">
-                    Our proprietary neural workflows reconstruct ancient Egypt, the Red Sea, and
-                    Sinai with museum-grade historical fidelity, lighting, and cinematic scale.
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t border-white/[0.06] text-[11px] font-semibold text-white/40 uppercase tracking-wider">
-                  Neural VFX & Lighting
-                </div>
-              </div>
-
-              <div className="bg-[#101014] border border-white/[0.08] rounded-xl p-6 flex flex-col justify-between">
-                <div>
-                  <div className="w-10 h-10 rounded-lg bg-[#A98B5A]/20 border border-[#A98B5A]/40 flex items-center justify-center text-[#A98B5A] font-black text-sm mb-4">
-                    03
-                  </div>
-                  <h3 className="text-base font-bold text-white mb-2">100-Language Localization</h3>
-                  <p className="text-xs text-white/60 leading-relaxed">
-                    Neural voice dubbing and AI-driven lip synchronization allow actors to speak
-                    fluently in Hindi, Tamil, Malayalam, Chinese, Persian, and dozens of regional
-                    dialects.
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t border-white/[0.06] text-[11px] font-semibold text-white/40 uppercase tracking-wider">
-                  Multilingual Lip-Sync
-                </div>
-              </div>
-            </div>
-
-            {/* Video Showcase Card */}
-            <div className="relative rounded-2xl overflow-hidden border border-white/[0.1] bg-black aspect-video max-w-4xl mx-auto shadow-2xl">
-              <iframe
-                src="https://www.youtube-nocookie.com/embed/3DULIG3sDS8?rel=0&modestbranding=1"
-                title="Visual Bible AI Technical Workflow"
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+          {/* Infinite Canvas Frame */}
+          <div className="relative w-full h-[620px] md:h-[680px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#070709] shadow-2xl select-none">
+            {mounted && (
+              <InfiniteGrid
+                items={INFINITE_ARCHIVE_ITEMS}
+                columns={5}
+                cardWidth={200}
+                radius={8}
+                gap={28}
+                background="#070709"
+                textColor="#ffffff"
+                mutedColor="#888894"
+                aspectRatio="2 / 3"
+                blobs={false}
+                onItemClick={(item) => {
+                  const archiveItem = item as unknown as ArchiveGridItem;
+                  const ep = archiveItem.episode || "genesis";
+                  navigate({ to: "/watch", search: { episode: ep } });
+                }}
+                style={{ width: "100%", height: "100%" }}
               />
+            )}
+
+            {/* Edge Vignette Overlays for seamless blending */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#070709] to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#070709] to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#070709] to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#070709] to-transparent z-10" />
+
+            {/* Bottom Floating Pill */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex items-center gap-2 bg-black/80 backdrop-blur-md border border-white/15 px-4 py-1.5 rounded-full text-[11px] text-white/70 shadow-lg">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#A11C28]" />
+              <span>16 Productions & Regional Editions Loaded · Click any poster to watch</span>
             </div>
           </div>
         </section>
