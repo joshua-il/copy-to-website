@@ -234,8 +234,6 @@ const GLOBE_MARKERS = [
   { lat: 39.9, lng: 116.4 },
 ];
 
-
-
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function LandingPage() {
@@ -561,8 +559,8 @@ function LandingPage() {
             {/* Synopsis */}
             <p className="text-white/75 text-sm md:text-base leading-relaxed mb-6 max-w-xl">
               From Creation and the fall of man to Abraham's covenant, Jacob's wrestling, and
-              Joseph's rise in Egypt. Experience the complete 50 chapters of Genesis brought to
-              life through cinematic AI and real-actor performances.
+              Joseph's rise in Egypt. Experience the complete 50 chapters of Genesis brought to life
+              through cinematic AI and real-actor performances.
             </p>
 
             {/* Action Buttons & Unmute Controls */}
@@ -636,11 +634,7 @@ function LandingPage() {
                     className="w-full overflow-hidden rounded bg-[#141419] border border-white/[0.08] relative shadow-lg"
                     style={{ aspectRatio: "2/3" }}
                   >
-                    <img
-                      src={card.image}
-                      alt={card.title}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
 
                     {/* Corner Brand Badge */}
                     <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px] shadow">
@@ -666,7 +660,9 @@ function LandingPage() {
                     </div>
                   </div>
 
-                  <p className="mt-1.5 text-xs font-semibold text-white/90 truncate">{card.title}</p>
+                  <p className="mt-1.5 text-xs font-semibold text-white/90 truncate">
+                    {card.title}
+                  </p>
                   <p className="text-[10px] text-white/50 truncate">{card.language}</p>
                 </Link>
               ))}
@@ -842,9 +838,7 @@ function LandingPage() {
                   <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black text-sm mb-4">
                     02
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">
-                    Generative World-Building
-                  </h3>
+                  <h3 className="text-base font-bold text-white mb-2">Generative World-Building</h3>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Our proprietary neural workflows reconstruct ancient Egypt, the Red Sea, and
                     Sinai with museum-grade historical fidelity, lighting, and cinematic scale.
@@ -860,9 +854,7 @@ function LandingPage() {
                   <div className="w-10 h-10 rounded-lg bg-[#A98B5A]/20 border border-[#A98B5A]/40 flex items-center justify-center text-[#A98B5A] font-black text-sm mb-4">
                     03
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">
-                    100-Language Localization
-                  </h3>
+                  <h3 className="text-base font-bold text-white mb-2">100-Language Localization</h3>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Neural voice dubbing and AI-driven lip synchronization allow actors to speak
                     fluently in Hindi, Tamil, Malayalam, Chinese, Persian, and dozens of regional
@@ -1140,7 +1132,9 @@ function LandingPage() {
                         <span className="text-base font-bold text-white group-hover:text-[#E50914] transition-colors truncate">
                           {lang.name}
                         </span>
-                        <span className="text-xs text-white/40 font-normal">({lang.nativeName})</span>
+                        <span className="text-xs text-white/40 font-normal">
+                          ({lang.nativeName})
+                        </span>
                       </div>
                       <span className="text-[11px] text-white/50 truncate mt-0.5">
                         {lang.regions}
@@ -1168,7 +1162,8 @@ function LandingPage() {
                       Target: Reaching 100 Languages
                     </div>
                     <div className="text-[11px] text-white/70 mt-0.5">
-                      Expanding across Africa, Latin America, Southeast Asia, and indigenous dialects.
+                      Expanding across Africa, Latin America, Southeast Asia, and indigenous
+                      dialects.
                     </div>
                   </div>
                   <Link
@@ -1276,7 +1271,9 @@ function LandingPage() {
                 </ul>
               </div>
               <div>
-                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">Organization</h4>
+                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">
+                  Organization
+                </h4>
                 <ul className="space-y-2">
                   <li>
                     <a
@@ -1330,7 +1327,9 @@ function LandingPage() {
             </div>
 
             <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between items-center gap-3">
-              <p>© {new Date().getFullYear()} Visual Bible TV · Nations Reach International Missions</p>
+              <p>
+                © {new Date().getFullYear()} Visual Bible TV · Nations Reach International Missions
+              </p>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px]">
                   VB
