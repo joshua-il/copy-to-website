@@ -35,9 +35,10 @@ export function getStoredAdminSession(): AdminUser | null {
 }
 
 export function useAdminAuth() {
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(getStoredAdminSession);
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
 
   useEffect(() => {
+    setAdminUser(getStoredAdminSession());
     const sync = () => {
       setAdminUser(getStoredAdminSession());
     };

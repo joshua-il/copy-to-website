@@ -31,56 +31,76 @@ function matchEpisode(
   query: string | undefined | null,
   list: BroadcastEpisodeItem[],
 ): BroadcastEpisodeItem {
-  if (!list.length) return DEFAULT_BROADCAST_EPISODES[0];
-  if (!query) return list[0];
+  const fallbackList = list && list.length ? list : DEFAULT_BROADCAST_EPISODES;
+  if (!fallbackList.length) return DEFAULT_BROADCAST_EPISODES[0];
+  if (!query) return fallbackList[0];
 
   const q = query.toLowerCase().trim();
 
   // 1. Exact ID match
-  const exact = list.find((ep) => ep.id.toLowerCase() === q);
+  const exact = fallbackList.find((ep) => ep.id.toLowerCase() === q);
   if (exact) return exact;
 
   // 2. Video ID match (e.g. z5abtVIszH8)
-  const byVideo = list.find((ep) => ep.videoId.toLowerCase() === q);
+  const byVideo = fallbackList.find((ep) => ep.videoId.toLowerCase() === q);
   if (byVideo) return byVideo;
 
   // 3. Aliases and slug matches
-  if (q === "genesis" || q.includes("46-50") || q.includes("journey")) {
-    const match = list.find((ep) => ep.id.includes("46-50") || ep.id === "genesis-46-50");
+  if (q.includes("46-50") || q.includes("journey") || q === "genesis" || q === "genesis-hindi") {
+    const match = fallbackList.find((ep) => ep.id.includes("46-50") || ep.id === "genesis-46-50");
     if (match) return match;
   }
-  if (q === "joseph" || q.includes("37-44") || q.includes("betrayal") || q.includes("pit")) {
-    const match = list.find((ep) => ep.id.includes("37-44") || ep.id.includes("joseph"));
+  if (
+    q.includes("37-44") ||
+    q.includes("joseph") ||
+    q.includes("betrayal") ||
+    q.includes("judah") ||
+    q.includes("persian")
+  ) {
+    const match = fallbackList.find((ep) => ep.id.includes("37-44") || ep.id.includes("joseph"));
     if (match) return match;
   }
-  if (q.includes("dreamer") || q.includes("30-32")) {
-    const match = list.find((ep) => ep.id.includes("30-32") || ep.id.includes("dreamer"));
+  if (q.includes("30-32") || q.includes("dreamer") || q.includes("malayalam")) {
+    const match = fallbackList.find((ep) => ep.id.includes("30-32") || ep.id.includes("dreamer"));
     if (match) return match;
   }
-  if (q.includes("reconciliation") || q.includes("45") || q.includes("brother")) {
-    const match = list.find((ep) => ep.id.includes("45") || ep.id.includes("reconciliation"));
+  if (
+    q.includes("45") ||
+    q.includes("reconciliation") ||
+    q.includes("brother") ||
+    q.includes("tamil")
+  ) {
+    const match = fallbackList.find(
+      (ep) => ep.id.includes("45") || ep.id.includes("reconciliation"),
+    );
     if (match) return match;
   }
-  if (q.includes("fire") || q.includes("42") || q.includes("faith")) {
-    const match = list.find((ep) => ep.id.includes("42") || ep.id.includes("fire"));
+  if (q.includes("42") || q.includes("fire") || q.includes("faith")) {
+    const match = fallbackList.find((ep) => ep.id.includes("42") || ep.id.includes("fire"));
     if (match) return match;
   }
-  if (q === "yahweh" || q.includes("exodus") || q.includes("passover")) {
-    const match = list.find((ep) => ep.id.includes("yahweh") || ep.id.includes("exodus"));
+  if (
+    q.includes("yahweh") ||
+    q.includes("exodus") ||
+    q.includes("passover") ||
+    q.includes("easter") ||
+    q.includes("christ")
+  ) {
+    const match = fallbackList.find((ep) => ep.id.includes("yahweh") || ep.id.includes("exodus"));
     if (match) return match;
   }
   if (q.includes("trailer")) {
-    const match = list.find((ep) => ep.id.includes("trailer"));
+    const match = fallbackList.find((ep) => ep.id.includes("trailer"));
     if (match) return match;
   }
 
   // 4. Substring in ID or Title
-  const partial = list.find(
+  const partial = fallbackList.find(
     (ep) => ep.id.toLowerCase().includes(q) || ep.title.toLowerCase().includes(q),
   );
   if (partial) return partial;
 
-  return list[0];
+  return fallbackList[0];
 }
 
 // ─── Multi-Language TV Channels Roster ──────────────────────────────────────
@@ -289,83 +309,54 @@ function LiveTvPage() {
     };
   }, [currentTimeSec, episodesList, totalCycleSeconds]);
 
-  // STABLE PLAYBACK STATE: ONLY updates on episode transition or user action.
-  // CRITICAL: Never updates on 1-second ticks so the iframe plays continuously without blinking or reloading.
+  // STABLE PLAYBACK STATE: Only updates when switching episode or explicitly syncing
   const [activePlayback, setActivePlayback] = useState<{
     episodeId: string;
     videoId: string;
-    startSeconds: number;
     isLive: boolean;
-    playToken: number;
+    startSeconds: number;
   }>(() => {
-    if (searchedEpisodeId) {
-      const matched = matchEpisode(searchedEpisodeId, DEFAULT_BROADCAST_EPISODES);
-      return {
-        episodeId: matched.id,
-        videoId: matched.videoId,
-        startSeconds: 0,
-        isLive: initialMode === "live",
-        playToken: 1,
-      };
-    }
-
-    const nowSec = Math.floor(Date.now() / 1000);
-    const cycleOffset = nowSec % 3600;
-    let accumulated = 0;
-    let initialEp = DEFAULT_BROADCAST_EPISODES[0];
-    let initialOffset = 0;
-
-    for (const ep of DEFAULT_BROADCAST_EPISODES) {
-      const duration = ep.durationSeconds || 600;
-      if (accumulated + duration > cycleOffset) {
-        initialEp = ep;
-        initialOffset = cycleOffset - accumulated;
-        break;
-      }
-      accumulated += duration;
-    }
-
+    const ep = matchEpisode(searchedEpisodeId, episodesList);
     return {
-      episodeId: initialEp.id,
-      videoId: initialEp.videoId,
-      startSeconds: initialOffset,
-      isLive: initialMode !== "vod",
-      playToken: 1,
+      episodeId: ep.id,
+      videoId: ep.videoId,
+      isLive: !searchedEpisodeId && initialMode === "live",
+      startSeconds: 0,
     };
   });
 
   // Reactive Route Synchronization: When user clicks any homepage poster or changes URL params,
-  // immediately update playback to the requested episode!
+  // immediately update playback to the requested episode from beginning (00:00)!
   useEffect(() => {
     if (searchedEpisodeId) {
       const matched = matchEpisode(searchedEpisodeId, episodesList);
       setActivePlayback({
         episodeId: matched.id,
         videoId: matched.videoId,
+        isLive: false,
         startSeconds: 0,
-        isLive: initialMode === "live",
-        playToken: Date.now(),
       });
     }
-  }, [searchedEpisodeId, initialMode, episodesList]);
+  }, [searchedEpisodeId, episodesList]);
 
-  // When in Live mode, advance to next episode ONLY when the on-air episode ID changes naturally
+  // When explicitly in Live 24/7 mode (and not on-demand), advance when on-air program naturally loops
   useEffect(() => {
     if (
       activePlayback.isLive &&
+      !searchedEpisodeId &&
       liveBroadcastState.currentLiveEpisode.id !== activePlayback.episodeId
     ) {
       setActivePlayback({
         episodeId: liveBroadcastState.currentLiveEpisode.id,
         videoId: liveBroadcastState.currentLiveEpisode.videoId,
-        startSeconds: 0,
         isLive: true,
-        playToken: Date.now(),
+        startSeconds: 0,
       });
     }
   }, [
     activePlayback.isLive,
     activePlayback.episodeId,
+    searchedEpisodeId,
     liveBroadcastState.currentLiveEpisode.id,
     liveBroadcastState.currentLiveEpisode.videoId,
   ]);
@@ -393,7 +384,6 @@ function LiveTvPage() {
       videoId: currentLive.videoId,
       startSeconds: Math.floor(liveBroadcastState.elapsedInEpisode),
       isLive: true,
-      playToken: Date.now(),
     });
   };
 
@@ -404,7 +394,6 @@ function LiveTvPage() {
       videoId: found.videoId,
       startSeconds: 0,
       isLive: false,
-      playToken: Date.now(),
     });
   };
 
@@ -581,12 +570,13 @@ function LiveTvPage() {
 
               {/* YouTube Embed Player — Smooth & Continuous (Never resets or reloads on second ticks) */}
               <iframe
-                key={`${activePlayback.episodeId}-${activePlayback.playToken}`}
+                key={activePlayback.videoId}
                 className="absolute inset-0 h-full w-full border-0 z-10"
-                src={`https://www.youtube.com/embed/${activePlayback.videoId}?start=${activePlayback.startSeconds}&autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1`}
+                src={`https://www.youtube.com/embed/${activePlayback.videoId}?autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1${
+                  activePlayback.startSeconds > 0 ? `&start=${activePlayback.startSeconds}` : ""
+                }`}
                 title={displayedEpisode.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
 

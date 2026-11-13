@@ -344,19 +344,25 @@ function AdminDashboardPage() {
           {/* Quick Select for Authorized Team Members */}
           <div className="mt-8 pt-6 border-t border-white/[0.08]">
             <span className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">
-              Select Authorized Team Account (1-Click Fill)
+              Select Authorized Team Account (1-Click Sign In)
             </span>
             <div className="flex flex-wrap gap-1.5">
               {Object.keys(AUTHORIZED_ADMINS).map((item) => (
                 <button
                   key={item}
+                  type="button"
                   onClick={() => {
                     setEmail(item);
                     setPassword(DEFAULT_ADMIN_PASSWORD);
+                    const res = login(item, DEFAULT_ADMIN_PASSWORD);
+                    if (!res.success) {
+                      setLoginError(res.error || "Login failed");
+                    }
                   }}
-                  className="text-[11px] px-2.5 py-1 rounded bg-white/[0.06] hover:bg-white/[0.12] text-white/80 border border-white/10 transition-colors"
+                  className="text-[11px] px-2.5 py-1 rounded bg-white/[0.06] hover:bg-[#A11C28] hover:text-white text-white/80 border border-white/10 transition-colors flex items-center gap-1.5"
                 >
-                  {item}
+                  <span>{item}</span>
+                  <span className="text-[9px] opacity-60">({AUTHORIZED_ADMINS[item]})</span>
                 </button>
               ))}
             </div>

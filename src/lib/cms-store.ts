@@ -423,7 +423,7 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
   archiveItems: DEFAULT_ARCHIVE_ITEMS,
 };
 
-const CMS_STORAGE_KEY = "vb_cms_data";
+const CMS_STORAGE_KEY = "vb_cms_data_v4";
 
 export function getStoredCmsData(): SiteCmsData {
   if (typeof window === "undefined") return DEFAULT_CMS_DATA;
@@ -431,11 +431,20 @@ export function getStoredCmsData(): SiteCmsData {
     const raw = localStorage.getItem(CMS_STORAGE_KEY);
     if (!raw) return DEFAULT_CMS_DATA;
     const parsed = JSON.parse(raw);
+    const episodes =
+      Array.isArray(parsed.broadcastEpisodes) &&
+      parsed.broadcastEpisodes.length >= DEFAULT_BROADCAST_EPISODES.length
+        ? parsed.broadcastEpisodes
+        : DEFAULT_BROADCAST_EPISODES;
+    const vault =
+      Array.isArray(parsed.vaultProductions) && parsed.vaultProductions.length
+        ? parsed.vaultProductions
+        : DEFAULT_CMS_DATA.vaultProductions;
     return {
       hero: { ...DEFAULT_CMS_DATA.hero, ...(parsed.hero || {}) },
-      vaultProductions: parsed.vaultProductions || DEFAULT_CMS_DATA.vaultProductions,
+      vaultProductions: vault,
       upcomingProjects: parsed.upcomingProjects || DEFAULT_CMS_DATA.upcomingProjects,
-      broadcastEpisodes: parsed.broadcastEpisodes || DEFAULT_CMS_DATA.broadcastEpisodes,
+      broadcastEpisodes: episodes,
       archiveItems: parsed.archiveItems || DEFAULT_CMS_DATA.archiveItems,
     };
   } catch {
