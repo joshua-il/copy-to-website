@@ -247,69 +247,53 @@ const INFINITE_ARCHIVE_ITEMS: ArchiveGridItem[] = [
   },
 ];
 
-// ─── Data: Hanging Film Strips (Darkroom 35mm Celluloid Workflow) ───────────
+// ─── Data: Workflow Steps (35mm Film Strip Layout) ──────────────────────────
 
-interface FilmStripItem {
+interface WorkflowStep {
   id: string;
-  label: string;
+  stepNumber: string;
   code: string;
-  filmCode: string;
+  frameCode: string;
   title: string;
-  subtitle: string;
-  coreStatement: string;
-  description: string;
-  frames: string[];
+  shortDesc: string;
+  extendedDesc: string;
+  image: string;
 }
 
-const WORKFLOW_FILM_STRIPS: FilmStripItem[] = [
+const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     id: "avatars",
-    label: "AVATAR EMBODIMENT",
-    code: "TENET 01",
-    filmCode: "APRICOT 5219",
-    title: "Biblical Avatars",
-    subtitle: "Real People as Living Scripture Avatars",
-    coreStatement: "We do not direct real humans — we use actual people as a biblical avatar.",
-    description:
-      "We do not cast actors to mimic Hollywood melodrama or recite script lines on a soundstage. Instead, we capture the authentic emotional gravity, genuine grief, joy, and spiritual presence of actual people — channeling their real human likeness into living biblical avatars for the patriarchs, prophets, and witnesses of scripture.",
-    frames: [
-      "/assets/genesis-shepherds-poster.jpg",
-      "/assets/genesis-warriors-fire.jpg",
-      "/assets/purpose-of-god-joseph-poster.jpg",
-    ],
+    stepNumber: "01",
+    code: "APRICOT 5219 ▸ 01",
+    frameCode: "01A",
+    title: "Real Humans as Biblical Avatars",
+    shortDesc: "We do not direct real humans — we use actual people as a biblical avatar.",
+    extendedDesc:
+      "We do not cast actors to mimic Hollywood melodrama or recite script lines on a soundstage. Instead, we capture the authentic emotional gravity, genuine grief, joy, and spiritual presence of actual people, channeling their living human likeness into biblical avatars for the patriarchs, prophets, and witnesses of scripture.",
+    image: "/assets/genesis-shepherds-poster.jpg",
   },
   {
     id: "worldbuilding",
-    label: "SACRED GEOGRAPHY",
-    code: "TENET 02",
-    filmCode: "APRICOT 5219",
-    title: "World of the Bible",
-    subtitle: "Genesis & Exodus World-Building",
-    coreStatement: "We build the world of Genesis and Exodus — the ancient world of the Bible.",
-    description:
+    stepNumber: "02",
+    code: "APRICOT 5219 ▸ 02",
+    frameCode: "02A",
+    title: "Building the World of the Bible",
+    shortDesc: "We build the world of Genesis and Exodus — the ancient world of the Bible.",
+    extendedDesc:
       "From the primordial expanse of Eden and Abraham's encampments across Mesopotamia to the colossal courts of Pharaoh, the parted waters of the Red Sea, and the thunderous crags of Mount Sinai. We procedurally and historically reconstruct the sacred geography, architecture, textiles, and atmospheric lighting of antiquity with rigorous archaeological fidelity.",
-    frames: [
-      "/assets/yahweh-hero-parted-sea.jpg",
-      "/assets/genesis-pharaoh-prophet-sunset.jpg",
-      "/assets/yahweh-tablets-poster.jpg",
-    ],
+    image: "/assets/yahweh-hero-mount-sinai.jpg",
   },
   {
     id: "languages",
-    label: "UNREACHED FRONTIER",
-    code: "TENET 03",
-    filmCode: "APRICOT 5219",
-    title: "100 Languages",
-    subtitle: "Oral Scripture in Regional Tongues",
-    coreStatement:
+    stepNumber: "03",
+    code: "APRICOT 5219 ▸ 03",
+    frameCode: "03A",
+    title: "100 Languages for the Unreached",
+    shortDesc:
       "Focusing on and targeting 100 languages — reaching regional mother tongues without written scripture.",
-    description:
+    extendedDesc:
       "Our localization pipeline is engineered specifically for people who normally would not have access to Scripture or have a translation of the Bible in their language. Many of these are regional oral dialects. By synchronizing neural voice translation with native oral delivery, we break the literacy barrier so every nation hears the Word in their heart tongue.",
-    frames: [
-      "/assets/genesis-hindi-campfire-poster.jpg",
-      "/assets/genesis-tamil-poster.jpg",
-      "/assets/genesis-chinese-poster.jpg",
-    ],
+    image: "/assets/genesis-hindi-campfire-poster.jpg",
   },
 ];
 
@@ -730,45 +714,32 @@ function LandingPage() {
         {/* ── 1. HERO SECTION: YAHWEH THE GOD WHO REVEALS HIS POWER ────────── */}
         <section
           id="hero"
-          className="relative w-full overflow-hidden bg-black flex flex-col justify-between"
-          style={{ minHeight: "100svh" }}
+          className="relative w-full overflow-hidden bg-black flex flex-col justify-center min-h-[85vh] lg:min-h-screen pt-24 pb-16 px-6 md:px-12"
         >
-          {/* Hero Media: Starts with High-Resolution Poster, then streams video after a few seconds */}
+          {/* Hero Media: Image 2 Full-Resolution High-Quality Banner */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Initial Hero Image (Moses with Tablets at the Parted Red Sea) */}
             <img
-              src="/assets/yahweh-hero-parted-sea.jpg"
+              src="/assets/yahweh-hero-mount-sinai.jpg"
               alt="YAHWEH · The God Who Reveals His Power"
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                videoReady ? "opacity-30" : "opacity-100"
-              }`}
+              className="absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-[65%_center] lg:object-center select-none"
+              loading="eager"
+              decoding="async"
             />
 
-            {/* YouTube Stream (Loads as requested after a few seconds) */}
-            {videoReady && (
-              <iframe
-                ref={iframeRef}
-                src="https://www.youtube-nocookie.com/embed/z5abtVIszH8?start=265&autoplay=1&mute=1&controls=0&loop=1&playlist=z5abtVIszH8&playsinline=1&rel=0&modestbranding=1&enablejsapi=1"
-                title="Visual Bible Background Stream"
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160vw] h-[160vh] md:w-[130vw] md:h-[130vh] object-cover pointer-events-none select-none opacity-100 transition-opacity duration-1000"
-                allow="autoplay; encrypted-media"
-              />
-            )}
-
-            {/* Cinematic Left Vignette: Middle third & right portions stay 100% crisp & HQ */}
+            {/* Directional Gradient: Darker on left behind text, completely transparent on right so Moses & Tablets are 100% crisp & full resolution */}
             <div
               className="absolute inset-0"
               style={{
                 background: `
-                  linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 28%, rgba(0,0,0,0.15) 50%, transparent 66%),
-                  linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 18%, transparent 65%, rgba(0,0,0,0.85) 88%, #000000 100%)
+                  linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.15) 55%, transparent 70%),
+                  linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 20%, transparent 70%, rgba(0,0,0,0.9) 95%, #000000 100%)
                 `,
               }}
             />
           </div>
 
           {/* Hero Metadata & Show Info (Refined, 25% smaller, premium OTT placement) */}
-          <div className="relative z-10 pt-20 md:pt-28 px-6 md:px-12 max-w-lg md:max-w-xl">
+          <div className="relative z-10 max-w-lg md:max-w-xl">
             {/* Brand Pill */}
             <div className="flex items-center gap-2 mb-2.5">
               <div className="w-4 h-4 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[9px] leading-none shadow">
@@ -787,7 +758,7 @@ function LandingPage() {
             {/* Title */}
             <h1
               className="font-black tracking-tight text-white leading-[1.08] mb-2"
-              style={{ fontSize: "clamp(28px, 4.5vw, 54px)" }}
+              style={{ fontSize: "clamp(32px, 5vw, 60px)" }}
             >
               YAHWEH
             </h1>
@@ -843,94 +814,75 @@ function LandingPage() {
                 <Play className="w-3.5 h-3.5 fill-white" />
                 Watch Genesis First
               </Link>
-              <button
-                type="button"
-                onClick={toggleSound}
-                className="flex items-center gap-2 border border-white/30 text-white/90 text-xs font-semibold px-3.5 py-2.5 rounded hover:bg-white/10 transition-colors"
-                title={isMuted ? "Unmute Broadcast Audio" : "Mute Broadcast Audio"}
-              >
-                {isMuted ? (
-                  <>
-                    <VolumeX className="w-4 h-4 text-white/60" />
-                    <span>Unmute Broadcast</span>
-                  </>
-                ) : (
-                  <>
-                    <Volume2 className="w-4 h-4 text-emerald-400" />
-                    <span>Mute Audio</span>
-                  </>
-                )}
-              </button>
             </div>
           </div>
+        </section>
 
-          {/* ── 2. CAROUSEL: EXISTING PROJECTS (GENESIS, JOSEPH, & LANGUAGES) ── */}
-          <div id="vault" className="relative z-10 px-6 md:px-12 pt-10 pb-8 mt-auto">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
-                <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
-                  Existing Productions · The Genesis Vault & Languages
-                </h2>
-              </div>
-              <Link
-                to="/watch"
-                className="flex items-center gap-1 text-xs text-white/50 hover:text-white transition-colors"
-              >
-                View all releases <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
+        {/* ── 2. CAROUSEL: EXISTING PROJECTS (GENESIS, JOSEPH, & LANGUAGES) ── */}
+        <section
+          id="vault"
+          className="relative z-10 px-6 md:px-12 py-10 bg-[#09090d] border-t border-white/[0.08]"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
+              <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
+                Existing Productions · The Genesis Vault & Languages
+              </h2>
             </div>
-
-            {/* Vertical Poster Carousel */}
-            <div
-              className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+            <Link
+              to="/watch"
+              className="flex items-center gap-1 text-xs text-white/50 hover:text-white transition-colors"
             >
-              {EXISTING_PRODUCTIONS.map((card) => (
-                <Link
-                  key={card.id}
-                  to="/watch"
-                  search={{ episode: card.episode }}
-                  className="relative shrink-0 group cursor-pointer transition-transform duration-300 hover:scale-105"
-                  style={{ width: "clamp(155px, 16vw, 215px)" }}
+              View all releases <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Vertical Poster Carousel */}
+          <div
+            className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+          >
+            {EXISTING_PRODUCTIONS.map((card) => (
+              <Link
+                key={card.id}
+                to="/watch"
+                search={{ episode: card.episode }}
+                className="relative shrink-0 group cursor-pointer transition-transform duration-300 hover:scale-105"
+                style={{ width: "clamp(155px, 16vw, 215px)" }}
+              >
+                <div
+                  className="w-full overflow-hidden rounded bg-[#141419] border border-white/[0.08] relative shadow-lg"
+                  style={{ aspectRatio: "2/3" }}
                 >
-                  <div
-                    className="w-full overflow-hidden rounded bg-[#141419] border border-white/[0.08] relative shadow-lg"
-                    style={{ aspectRatio: "2/3" }}
-                  >
-                    <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                  <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
 
-                    {/* Corner Brand Badge */}
-                    <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[10px] shadow">
-                      VB
-                    </div>
-
-                    {/* Bottom Banner */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-[#A11C28] text-white text-center py-1 font-bold text-[10px] tracking-wider uppercase shadow-md truncate px-1">
-                      {card.badge}
-                    </div>
-
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-3 text-center">
-                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow">
-                        <Play className="w-4 h-4 fill-black text-black ml-0.5" />
-                      </div>
-                      <span className="text-xs font-bold text-white leading-tight">
-                        Watch Stream
-                      </span>
-                      <span className="text-[10px] text-white/70 mt-1 line-clamp-2">
-                        {card.subtitle}
-                      </span>
-                    </div>
+                  {/* Corner Brand Badge */}
+                  <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[10px] shadow">
+                    VB
                   </div>
 
-                  <p className="mt-1.5 text-xs font-semibold text-white/90 truncate">
-                    {card.title}
-                  </p>
-                  <p className="text-[10px] text-white/50 truncate">{card.language}</p>
-                </Link>
-              ))}
-            </div>
+                  {/* Bottom Banner */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-[#A11C28] text-white text-center py-1 font-bold text-[10px] tracking-wider uppercase shadow-md truncate px-1">
+                    {card.badge}
+                  </div>
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-3 text-center">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow">
+                      <Play className="w-4 h-4 fill-black text-black ml-0.5" />
+                    </div>
+                    <span className="text-xs font-bold text-white leading-tight">Watch Stream</span>
+                    <span className="text-[10px] text-white/70 mt-1 line-clamp-2">
+                      {card.subtitle}
+                    </span>
+                  </div>
+                </div>
+
+                <p className="mt-1.5 text-xs font-semibold text-white/90 truncate">{card.title}</p>
+                <p className="text-[10px] text-white/50 truncate">{card.language}</p>
+              </Link>
+            ))}
           </div>
         </section>
 
@@ -1036,216 +988,131 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 4. TECHNICAL WORKFLOW: 35MM FILM STRIP DARKROOM PIPELINE ── */}
+        {/* ── 4. TECHNICAL WORKFLOW: HORIZONTAL 35MM FILM STRIP ───────── */}
         <section
           id="workflow"
-          className="py-24 px-6 md:px-12 bg-[#060608] border-t border-white/[0.08] relative overflow-hidden"
+          className="py-20 px-6 md:px-12 bg-[#08080c] border-t border-white/[0.08] relative overflow-hidden"
         >
           <div className="max-w-6xl mx-auto">
-            {/* Editorial Studio Header */}
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-6">
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-                  <span className="text-[11px] font-bold tracking-[0.25em] text-white/60 uppercase">
-                    Darkroom Production Pipeline · 35mm Celluloid Archive
-                  </span>
-                </div>
-                <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.08] tracking-tight mb-3">
-                  The Message is the Same.
-                  <br />
-                  <span className="text-white/40">The Medium is Different.</span>
-                </h2>
-                <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl">
-                  A theological and technical disclosure of how NRIM transforms sacred scripture
-                  into an authoritative, visual epic. Hover over any developing negative strip to
-                  inspect our production methodology.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 shrink-0">
-                <a
-                  href="https://www.youtube.com/watch?v=3DULIG3sDS8"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-white text-black text-xs font-bold px-5 py-3 rounded hover:bg-white/90 transition-all uppercase tracking-wider shadow-lg hover:scale-[1.02]"
-                >
-                  <Play className="w-4 h-4 fill-black" />
-                  Watch Workflow Video
-                  <ExternalLink className="w-3.5 h-3.5 text-black/50 ml-0.5" />
-                </a>
-              </div>
-            </div>
-
-            {/* ── HANGING 35MM FILM STRIPS GALLERY (DARKROOM WIRE & CLIPS) ── */}
-            <div className="relative py-8 px-4 md:px-8 mb-16 rounded-2xl bg-[#09090d] border border-white/[0.08] shadow-2xl overflow-hidden">
-              {/* Horizontal Hanging Wire */}
-              <div className="w-full h-[2px] bg-gradient-to-r from-zinc-700 via-zinc-400 to-zinc-700 relative z-20 shadow-md mb-8" />
-
-              {/* Film Strips Row */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 pt-2">
-                {WORKFLOW_FILM_STRIPS.map((strip, idx) => {
-                  const isHovered = hoveredStrip === strip.id;
-                  return (
-                    <div
-                      key={strip.id}
-                      className="group flex flex-col items-center cursor-pointer transition-transform duration-300 hover:-translate-y-2"
-                      onMouseEnter={() => setHoveredStrip(strip.id)}
-                      onMouseLeave={() => setHoveredStrip(null)}
-                      onClick={() => setHoveredStrip(isHovered ? null : strip.id)}
-                    >
-                      {/* Top Metallic Binder Clip Clamping Onto The Wire */}
-                      <div className="relative z-30 flex flex-col items-center mb-[-4px]">
-                        {/* Silver Wire Loop Handle */}
-                        <div className="w-5 h-6 border-2 border-zinc-300 rounded-t-sm bg-transparent shadow-sm" />
-                        {/* Black Clip Clamp Body */}
-                        <div className="w-10 h-4 bg-zinc-950 border border-zinc-700 rounded-sm shadow-md mt-[-2px] flex items-center justify-center">
-                          <div className="w-6 h-[1.5px] bg-zinc-600" />
-                        </div>
-                      </div>
-
-                      {/* 35mm Celluloid Negative Film Strip */}
-                      <div
-                        className="w-full max-w-[290px] rounded-sm p-3 relative shadow-2xl border border-black/40 transition-shadow duration-300 group-hover:shadow-[0_20px_40px_rgba(184,93,25,0.25)]"
-                        style={{
-                          backgroundColor: "#b85d19",
-                          backgroundImage:
-                            "linear-gradient(180deg, #c86518 0%, #b85d19 50%, #9e4712 100%)",
-                        }}
-                      >
-                        {/* Top Film Stamp Imprint */}
-                        <div className="flex items-center justify-between text-[9px] font-mono font-black text-black/80 tracking-widest px-2 pb-2 border-b border-black/30 select-none">
-                          <span>{strip.filmCode}</span>
-                          <span>{strip.code}</span>
-                          <span>FRAME 24A</span>
-                        </div>
-
-                        {/* Film Body: Sprockets on Left & Right + 3 Image Stills in Middle */}
-                        <div className="flex items-stretch gap-2 py-2">
-                          {/* Left Sprocket Column */}
-                          <div className="flex flex-col justify-between py-1 select-none">
-                            {Array.from({ length: 9 }).map((_, sIdx) => (
-                              <div
-                                key={sIdx}
-                                className="w-2 h-3.5 rounded-[1.5px] bg-black/90 my-1 shadow-inner"
-                              />
-                            ))}
-                          </div>
-
-                          {/* Center Stills Column (3 Production Frames) */}
-                          <div className="flex-1 flex flex-col gap-2">
-                            {strip.frames.map((frameImg, fIdx) => (
-                              <div
-                                key={fIdx}
-                                className="relative rounded-[2px] overflow-hidden bg-black/80 border border-black/60 shadow-md group-hover:brightness-105 transition-all"
-                                style={{ aspectRatio: "16/10" }}
-                              >
-                                <img
-                                  src={frameImg}
-                                  alt={`${strip.title} still ${fIdx + 1}`}
-                                  className="w-full h-full object-cover filter contrast-125 sepia-[0.35]"
-                                />
-                                <div className="absolute inset-0 bg-amber-900/10 pointer-events-none" />
-                                <div className="absolute bottom-1 right-1 text-[8px] font-mono text-white/50 px-1 bg-black/60 rounded">
-                                  {fIdx + 1}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Right Sprocket Column */}
-                          <div className="flex flex-col justify-between py-1 select-none">
-                            {Array.from({ length: 9 }).map((_, sIdx) => (
-                              <div
-                                key={sIdx}
-                                className="w-2 h-3.5 rounded-[1.5px] bg-black/90 my-1 shadow-inner"
-                              />
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Bottom Film Code */}
-                        <div className="flex items-center justify-between text-[8px] font-mono text-black/70 px-2 pt-1 border-t border-black/30 select-none">
-                          <span>KODAK MOTION FILM</span>
-                          <span>SAFETY FILM</span>
-                        </div>
-                      </div>
-
-                      {/* Wire Hook Dropping Down to White Index Card */}
-                      <div className="w-[1.5px] h-6 bg-zinc-400 z-10" />
-
-                      {/* Suspended White Index Card (Expands on Hover with Process Description) */}
-                      <div
-                        className={`w-full max-w-[290px] rounded-lg p-5 shadow-2xl border text-left transition-all duration-500 relative ${
-                          isHovered
-                            ? "bg-white text-zinc-950 border-[#A11C28]/40 shadow-2xl scale-[1.02]"
-                            : "bg-[#FAF9F6] text-zinc-900 border-zinc-200"
-                        }`}
-                      >
-                        {/* Top Label */}
-                        <div className="text-[10px] font-mono font-bold tracking-widest text-[#A11C28] uppercase mb-1">
-                          {strip.code} · {strip.label}
-                        </div>
-
-                        {/* Title in Script / Editorial Style */}
-                        <h3 className="font-serif italic text-xl font-bold text-zinc-900 leading-snug">
-                          {strip.title}
-                        </h3>
-
-                        {/* Subtitle */}
-                        <p className="text-xs text-zinc-500 font-sans mt-0.5 mb-2">
-                          {strip.subtitle}
-                        </p>
-
-                        {/* Expandable Process Description Panel */}
-                        <div
-                          className={`overflow-hidden transition-all duration-500 ${
-                            isHovered
-                              ? "max-h-96 opacity-100 pt-3 border-t border-zinc-200"
-                              : "max-h-0 opacity-0 group-hover:max-h-96 group-hover:opacity-100 group-hover:pt-3 group-hover:border-t group-hover:border-zinc-200"
-                          }`}
-                        >
-                          <p className="text-xs font-bold text-zinc-900 leading-snug mb-2 font-sans">
-                            "{strip.coreStatement}"
-                          </p>
-                          <p className="text-[11px] text-zinc-650 leading-relaxed font-sans text-zinc-700">
-                            {strip.description}
-                          </p>
-                        </div>
-
-                        {/* Hover indicator cue */}
-                        <div className="mt-2 text-[10px] font-mono text-zinc-400 group-hover:hidden flex items-center gap-1">
-                          <span>Hover to inspect process ↓</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Studio Monitoring Video Showcase Player */}
-            <div className="rounded-2xl overflow-hidden border border-white/[0.1] bg-[#0c0c12] shadow-2xl">
-              <div className="px-5 py-3 border-b border-white/[0.08] flex items-center justify-between bg-black/50">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#A11C28]" />
-                  <span className="text-xs font-mono font-semibold text-white/90">
-                    NRIM ARCHIVE · AI FILMMAKING WORKFLOW FOR EXODUS (AFA)
-                  </span>
-                </div>
-                <span className="hidden sm:inline-flex text-[11px] font-mono text-white/40 uppercase">
-                  Production Featurette · 4K Master
+            {/* Section Header */}
+            <div className="mb-10 text-left">
+              <div className="flex items-center gap-2 mb-2.5">
+                <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
+                <span className="text-[11px] font-bold tracking-[0.25em] text-white/60 uppercase">
+                  Production Methodology · 35mm Film Archive
                 </span>
               </div>
-              <div className="relative aspect-video w-full bg-black">
-                <iframe
-                  src="https://www.youtube-nocookie.com/embed/3DULIG3sDS8?rel=0&modestbranding=1"
-                  title="Visual Bible AI Technical Workflow"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.08] tracking-tight mb-3">
+                The Message is the Same.
+                <br />
+                <span className="text-white/40">The Medium is Different.</span>
+              </h2>
+              <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl">
+                How we combine real human emotion with state-of-the-art AI to create an
+                authoritative, cinematic biblical catalog. Hover over any stage below to inspect our
+                production process.
+              </p>
+            </div>
+
+            {/* ── CONTINUOUS 35MM HORIZONTAL FILM STRIP CHASSIS ── */}
+            <div className="rounded-2xl overflow-hidden border border-white/[0.1] bg-[#101015] shadow-2xl mb-8">
+              {/* Top Film Sprocket Row */}
+              <div className="bg-[#06060a] border-b border-black/80 px-4 py-2 flex items-center justify-between overflow-hidden select-none">
+                <div className="flex items-center gap-2.5 w-full justify-between">
+                  {Array.from({ length: 28 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-3.5 h-2 rounded-[1.5px] bg-black border border-white/[0.12] shrink-0"
+                    />
+                  ))}
+                </div>
               </div>
+
+              {/* 3 Film Frames Side-by-Side Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 bg-[#0a0a0f]">
+                {WORKFLOW_STEPS.map((step) => (
+                  <div
+                    key={step.id}
+                    className="group flex flex-col rounded-lg overflow-hidden border border-white/[0.08] bg-black relative shadow-lg"
+                  >
+                    {/* Frame Header Stamp */}
+                    <div className="px-3 py-1.5 bg-[#0e0e14] flex items-center justify-between text-[10px] font-mono text-white/50 border-b border-white/[0.06] select-none">
+                      <span className="font-semibold text-white/70">{step.code}</span>
+                      <span className="text-[#A11C28] font-bold">{step.frameCode}</span>
+                    </div>
+
+                    {/* Frame Photo with smooth hover zoom */}
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
+                      <img
+                        src={step.image}
+                        alt={step.title}
+                        className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+                      <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-sm text-[10px] font-mono font-bold text-white/90">
+                        {step.stepNumber} // {step.id.toUpperCase()}
+                      </div>
+                    </div>
+
+                    {/* Frame Footer Stamp */}
+                    <div className="px-3 py-1 bg-[#0e0e14] flex items-center justify-between text-[9px] font-mono text-white/40 border-t border-white/[0.06] select-none">
+                      <span>24 FPS · RAW EMBODIMENT</span>
+                      <span>NRIM 5219</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Film Sprocket Row */}
+              <div className="bg-[#06060a] border-t border-black/80 px-4 py-2 flex items-center justify-between overflow-hidden select-none">
+                <div className="flex items-center gap-2.5 w-full justify-between">
+                  {Array.from({ length: 28 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-3.5 h-2 rounded-[1.5px] bg-black border border-white/[0.12] shrink-0"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── 3 HORIZONTAL COLUMNS WITH SMOOTH HOVER EXPANSION ── */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+              {WORKFLOW_STEPS.map((step) => (
+                <div
+                  key={step.id}
+                  className="group/col p-5 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-[#A11C28]/40 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-baseline gap-2.5 mb-2">
+                      <span className="text-base font-mono font-black text-[#A11C28]">
+                        {step.stepNumber}
+                      </span>
+                      <h3 className="text-base md:text-lg font-bold text-white group-hover/col:text-[#ff4d5e] transition-colors leading-snug">
+                        {step.title}
+                      </h3>
+                    </div>
+
+                    {/* Short Description (Always Visible) */}
+                    <p className="text-xs md:text-sm text-white/70 leading-relaxed font-sans font-medium mb-2">
+                      {step.shortDesc}
+                    </p>
+
+                    {/* Extended Description (Smooth Pure CSS Expand on Hover) */}
+                    <div className="overflow-hidden transition-all duration-300 ease-out max-h-0 opacity-0 group-hover/col:max-h-72 group-hover/col:opacity-100 group-hover/col:pt-3 group-hover/col:border-t group-hover/col:border-white/10">
+                      <p className="text-xs text-white/55 leading-relaxed font-sans">
+                        {step.extendedDesc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 text-[10px] font-mono text-white/35 flex items-center gap-1 group-hover/col:text-[#A11C28] transition-colors">
+                    <span>Hover to reveal process details</span>
+                    <span className="group-hover/col:translate-x-1 transition-transform">→</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -1496,38 +1363,41 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 7. WAITLIST FUNNEL (WITH STREAMING CATALOG MOSAIC BACKDROP) ── */}
+        {/* ── 7. WAITLIST FUNNEL (STREAMING CATALOG MOSAIC SHOWCASE) ── */}
         <section
           id="waitlist"
-          className="relative py-28 px-6 md:px-12 overflow-hidden border-t border-white/[0.08] text-center"
+          className="relative min-h-[640px] md:min-h-[720px] py-24 px-6 md:px-12 overflow-hidden border-t border-white/[0.1] flex items-center justify-center bg-black"
         >
-          {/* Background Catalog Mosaic (User's Uploaded Streaming Catalog Grid) */}
-          <div className="absolute inset-0 z-0 pointer-events-none">
+          {/* Background Catalog Mosaic - User's Uploaded Streaming Catalog Grid (Image 3) */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
             <img
               src="/assets/waitlist-catalog-mosaic.jpg"
-              alt="Visual Bible Global Streaming Catalog"
-              className="w-full h-full object-cover object-center opacity-30 scale-105 filter blur-[0.5px]"
+              alt="Visual Bible Global Streaming Catalog Mosaic"
+              className="w-full h-full object-cover object-center select-none opacity-85 scale-100"
+              loading="lazy"
             />
-            {/* Deep Dark Vignette Overlay for Crisp Form Legibility */}
+            {/* Subtle Vignette Gradient: keeps catalog bright & clear, softly darkens edges for seamless page flow */}
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 pointer-events-none"
               style={{
                 background: `
-                  radial-gradient(ellipse at center, rgba(10,10,14,0.85) 0%, rgba(0,0,0,0.95) 70%, #000000 100%),
-                  linear-gradient(180deg, #000000 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.85) 80%, #000000 100%)
+                  linear-gradient(180deg, #000000 0%, rgba(0,0,0,0.15) 15%, rgba(0,0,0,0.15) 85%, #000000 100%),
+                  radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.55) 100%)
                 `,
               }}
             />
           </div>
 
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#A11C28]/20 border border-[#A11C28]/40 text-[#A11C28] text-[11px] font-bold tracking-widest uppercase mb-4">
+          {/* Centered Frosted Glass Waitlist Card */}
+          <div className="relative z-10 max-w-xl w-full mx-auto bg-black/85 backdrop-blur-xl border border-white/20 p-8 md:p-12 rounded-3xl shadow-2xl shadow-black text-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#A11C28]/25 border border-[#A11C28]/50 text-white text-[11px] font-bold tracking-widest uppercase mb-4 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
               Be First to Watch
             </div>
-            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
               Join the Exclusive Premiere Waitlist
             </h2>
-            <p className="text-white/65 text-sm leading-relaxed mb-8 max-w-md mx-auto">
+            <p className="text-white/80 text-sm leading-relaxed mb-8 max-w-md mx-auto">
               Get direct premiere links, behind-the-scenes production footage, and screening dates
               before anyone else.
             </p>
@@ -1552,7 +1422,7 @@ function LandingPage() {
                   required
                   disabled={status === "loading"}
                   aria-label="Email for waitlist"
-                  className="flex-1 bg-black/75 backdrop-blur-md border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#A11C28] transition-colors shadow-inner"
+                  className="flex-1 bg-black/80 backdrop-blur-md border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#A11C28] transition-colors shadow-inner"
                 />
                 <button
                   type="submit"
