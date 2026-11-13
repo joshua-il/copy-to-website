@@ -12,6 +12,10 @@ import {
   Check,
   Video,
   Image as ImageIcon,
+  Upload,
+  Link2,
+  Loader2,
+  Grid,
 } from "lucide-react";
 import {
   useCmsContent,
@@ -19,15 +23,126 @@ import {
   type ProductionCard,
   type ProjectSlateItem,
   type BroadcastEpisodeItem,
+  type ArchiveGridItem,
 } from "@/lib/cms-store";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { uploadCmsMedia } from "@/lib/cms.functions";
 
 interface AdminCmsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultTab?: "hero" | "vault" | "projects" | "episodes";
+  defaultTab?: "hero" | "vault" | "projects" | "episodes" | "archive";
+}
+
+interface CloudImageFieldProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  description?: string;
+}
+
+function CloudImageField({ label, value, onChange, description }: CloudImageFieldProps) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please select an image file (PNG, JPG, WebP).");
+      return;
+    }
+
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result as string;
+        const res = await uploadCmsMedia({
+          data: {
+            filename: file.name,
+            base64Data,
+            mimeType: file.type,
+          },
+        });
+
+        if (res && res.ok && res.publicUrl) {
+          onChange(res.publicUrl);
+        } else {
+          setUploadError((res && res.error) || "Failed to upload image.");
+        }
+        setUploading(false);
+      };
+      reader.onerror = () => {
+        setUploadError("Failed to read file.");
+        setUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setUploadError(String(err));
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-semibold text-white/80">{label}</label>
+        {description && <span className="text-[10px] text-white/40">{description}</span>}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Input
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Paste URL or upload image"
+            className="h-8 text-xs bg-black/40 border-white/15 font-mono text-white/90 pl-7"
+          />
+          <Link2 className="w-3.5 h-3.5 text-white/30 absolute left-2 top-2.5" />
+        </div>
+
+        <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20 border border-white/15 text-[11px] font-medium text-white transition-colors shrink-0">
+          {uploading ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#A11C28]" />
+              <span>Uploading...</span>
+            </>
+          ) : (
+            <>
+              <Upload className="w-3.5 h-3.5" />
+              <span>Upload Image</span>
+            </>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            disabled={uploading}
+            className="hidden"
+          />
+        </label>
+      </div>
+
+      {uploadError && <p className="text-[11px] text-red-400">{uploadError}</p>}
+
+      {value && (
+        <div className="flex items-center gap-2 pt-1">
+          <div className="w-10 h-7 rounded border border-white/20 overflow-hidden bg-black shrink-0">
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          </div>
+          <span className="text-[10px] text-emerald-400 font-mono truncate">
+            Active: {value.length > 50 ? `${value.slice(0, 47)}...` : value}
+          </span>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCmsModalProps) {
@@ -38,12 +153,13 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
     updateVaultProductions,
     updateUpcomingProjects,
     updateBroadcastEpisodes,
+    updateArchiveItems,
     resetToDefaults,
   } = useCmsContent();
 
-  const [activeTab, setActiveTab] = useState<"hero" | "vault" | "projects" | "episodes">(
-    defaultTab,
-  );
+  const [activeTab, setActiveTab] = useState<
+    "hero" | "vault" | "projects" | "episodes" | "archive"
+  >(defaultTab);
   const [heroForm, setHeroForm] = useState<HeroContent>({ ...cmsData.hero });
   const [vaultForm, setVaultForm] = useState<ProductionCard[]>([...cmsData.vaultProductions]);
   const [projectsForm, setProjectsForm] = useState<ProjectSlateItem[]>([
@@ -51,6 +167,9 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
   ]);
   const [episodesForm, setEpisodesForm] = useState<BroadcastEpisodeItem[]>([
     ...cmsData.broadcastEpisodes,
+  ]);
+  const [archiveForm, setArchiveForm] = useState<ArchiveGridItem[]>([
+    ...(cmsData.archiveItems || []),
   ]);
   const [saveNotice, setSaveNotice] = useState(false);
 
@@ -61,6 +180,7 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
     updateVaultProductions(vaultForm);
     updateUpcomingProjects(projectsForm);
     updateBroadcastEpisodes(episodesForm);
+    updateArchiveItems(archiveForm);
     setSaveNotice(true);
     setTimeout(() => setSaveNotice(false), 2500);
   };
@@ -103,22 +223,60 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
     setProjectsForm(copy);
   };
 
-  // Broadcast Episodes Helpers
+  const addProjectItem = () => {
+    const newItem: ProjectSlateItem = {
+      title: "New Project Slate",
+      badge: "COMING SOON",
+      claim: "Description of the upcoming production and scriptural focus.",
+      image: "/assets/yahweh-hero-mount-sinai.jpg",
+      alt: "New Project",
+    };
+    setProjectsForm([...projectsForm, newItem]);
+  };
+
+  const removeProjectItem = (index: number) => {
+    setProjectsForm(projectsForm.filter((_, i) => i !== index));
+  };
+
+  // Archive Canvas Grid Helpers
+  const updateArchiveItem = (index: number, field: keyof ArchiveGridItem, value: string) => {
+    const copy = [...archiveForm];
+    copy[index] = { ...copy[index], [field]: value };
+    setArchiveForm(copy);
+  };
+
+  const addArchiveItem = () => {
+    const newItem: ArchiveGridItem = {
+      id: `archive-${Date.now()}`,
+      title: "New Poster Feature",
+      subtitle: "Special Edition · Chapter Study",
+      imageUrl: "/assets/yahweh-hero-parted-sea.jpg",
+      episode: "genesis",
+      linkUrl: "/watch?episode=genesis",
+    };
+    setArchiveForm([...archiveForm, newItem]);
+  };
+
+  const removeArchiveItem = (index: number) => {
+    setArchiveForm(archiveForm.filter((_, i) => i !== index));
+  };
+
+  // YouTube Broadcast Episode Helpers
   const addEpisodeItem = () => {
-    const newEp: BroadcastEpisodeItem = {
+    const newItem: BroadcastEpisodeItem = {
       id: `ep-${Date.now()}`,
-      title: "New Broadcast Episode",
-      subtitle: "Scripture Revelation",
+      title: "Genesis Chapter Special",
+      subtitle: "Scripture Study & Narration",
       book: "Book of Genesis",
       chapter: "Chapter 1",
       durationSeconds: 600,
       durationFormatted: "10m 00s",
       videoId: "z5abtVIszH8",
-      synopsis: "Episode description for broadcast streaming.",
+      synopsis: "Episode description...",
       poster: "/assets/genesis-shepherds-poster.jpg",
       tag: "NEW EPISODE",
     };
-    setEpisodesForm([newEp, ...episodesForm]);
+    setEpisodesForm([...episodesForm, newItem]);
   };
 
   const removeEpisodeItem = (index: number) => {
@@ -136,164 +294,161 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
-      <div className="relative w-full max-w-5xl max-h-[92vh] flex flex-col bg-[#0d0d14] border border-white/20 rounded-2xl shadow-2xl overflow-hidden text-white">
-        {/* Top Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-[#08080c]">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-[#0c0c12] border border-white/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-[#0a0a0f]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#A11C28] flex items-center justify-center font-black text-white text-xs">
-              CMS
+            <div className="w-8 h-8 rounded-lg bg-[#A11C28]/20 border border-[#A11C28]/40 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-[#A11C28]" />
             </div>
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
-                NRIM Content & Media Manager
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-white/70">
+                <span>Visual Bible Admin CMS</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-white/60">
                   {adminUser?.email}
                 </span>
               </h2>
-              <p className="text-xs text-white/50">Edit photos, copy, posters & YouTube videos</p>
+              <p className="text-xs text-white/50">
+                Update showrunner banners, poster artworks, video streams, and infinite canvas links
+              </p>
             </div>
           </div>
-
           <div className="flex items-center gap-2">
             {saveNotice && (
-              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold px-3 py-1 bg-emerald-500/10 rounded border border-emerald-500/20">
-                <Check className="w-3.5 h-3.5" /> Saved & Live!
+              <span className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full animate-fade-in">
+                <Check className="w-3.5 h-3.5" /> Saved & Persisted
               </span>
             )}
-            <Button
-              onClick={handleSave}
-              className="bg-[#A11C28] hover:bg-[#7F151F] text-white font-bold text-xs h-9 px-4 rounded-lg flex items-center gap-1.5 shadow-md uppercase tracking-wider"
-            >
-              <Save className="w-3.5 h-3.5" /> Save Changes
-            </Button>
             <button
               onClick={onClose}
-              className="p-2 text-white/50 hover:text-white rounded-lg transition-colors ml-2"
-              title="Close"
+              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white flex items-center justify-center transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-white/[0.08] bg-black/40 px-6 gap-2 overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-1 px-6 pt-3 border-b border-white/[0.08] bg-[#09090e] overflow-x-auto select-none">
           <button
             onClick={() => setActiveTab("hero")}
-            className={`py-3 px-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 ${
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === "hero"
-                ? "border-[#A11C28] text-white"
-                : "border-transparent text-white/50 hover:text-white"
+                ? "text-white border-[#A11C28] bg-white/[0.04]"
+                : "text-white/50 border-transparent hover:text-white hover:bg-white/[0.02]"
             }`}
           >
-            <Video className="w-4 h-4" /> Hero & Trailer
+            <Film className="w-3.5 h-3.5" /> Hero Showcase
           </button>
           <button
             onClick={() => setActiveTab("vault")}
-            className={`py-3 px-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 ${
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === "vault"
-                ? "border-[#A11C28] text-white"
-                : "border-transparent text-white/50 hover:text-white"
+                ? "text-white border-[#A11C28] bg-white/[0.04]"
+                : "text-white/50 border-transparent hover:text-white hover:bg-white/[0.02]"
             }`}
           >
-            <Film className="w-4 h-4" /> Vault Posters ({vaultForm.length})
+            <Layers className="w-3.5 h-3.5" /> Vault Posters ({vaultForm.length})
           </button>
           <button
             onClick={() => setActiveTab("projects")}
-            className={`py-3 px-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 ${
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === "projects"
-                ? "border-[#A11C28] text-white"
-                : "border-transparent text-white/50 hover:text-white"
+                ? "text-white border-[#A11C28] bg-white/[0.04]"
+                : "text-white/50 border-transparent hover:text-white hover:bg-white/[0.02]"
             }`}
           >
-            <Layers className="w-4 h-4" /> Upcoming Projects Slate
+            <Sparkles className="w-3.5 h-3.5" /> Upcoming Slate ({projectsForm.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("archive")}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
+              activeTab === "archive"
+                ? "text-white border-[#A11C28] bg-white/[0.04]"
+                : "text-white/50 border-transparent hover:text-white hover:bg-white/[0.02]"
+            }`}
+          >
+            <Grid className="w-3.5 h-3.5" /> Archive Canvas ({archiveForm.length})
           </button>
           <button
             onClick={() => setActiveTab("episodes")}
-            className={`py-3 px-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 ${
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === "episodes"
-                ? "border-[#A11C28] text-white"
-                : "border-transparent text-white/50 hover:text-white"
+                ? "text-white border-[#A11C28] bg-white/[0.04]"
+                : "text-white/50 border-transparent hover:text-white hover:bg-white/[0.02]"
             }`}
           >
-            <Tv className="w-4 h-4" /> Live TV Episodes & YouTube ({episodesForm.length})
+            <Tv className="w-3.5 h-3.5" /> 24/7 TV Episodes ({episodesForm.length})
           </button>
         </div>
 
-        {/* Tab Body (Scrollable) */}
+        {/* Tab Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* TAB 1: HERO & TEASER */}
+          {/* TAB 1: HERO */}
           {activeTab === "hero" && (
-            <div className="space-y-5 max-w-3xl">
-              <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
-                  Hero Showcase Details
-                </h3>
-                <p className="text-xs text-white/50">
-                  Update the main theatrical headline, synopsis, background photo, and YouTube
-                  trailer loop.
-                </p>
-              </div>
-
+            <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-white/70 mb-1">Title</label>
+                  <label className="block text-xs font-semibold text-white/80 mb-1">
+                    Showcase Title
+                  </label>
                   <Input
                     value={heroForm.title}
                     onChange={(e) => setHeroForm({ ...heroForm, title: e.target.value })}
-                    className="bg-white/[0.05] border-white/15 text-white"
+                    className="bg-black/40 border-white/15 text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-white/70 mb-1">Tagline</label>
+                  <label className="block text-xs font-semibold text-white/80 mb-1">
+                    Tagline (Top Pill)
+                  </label>
                   <Input
                     value={heroForm.tagline}
                     onChange={(e) => setHeroForm({ ...heroForm, tagline: e.target.value })}
-                    className="bg-white/[0.05] border-white/15 text-white"
+                    className="bg-black/40 border-white/15 text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">Subtitle</label>
+                <label className="block text-xs font-semibold text-white/80 mb-1">Subtitle</label>
                 <Input
                   value={heroForm.subtitle}
                   onChange={(e) => setHeroForm({ ...heroForm, subtitle: e.target.value })}
-                  className="bg-white/[0.05] border-white/15 text-white"
+                  className="bg-black/40 border-white/15 text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">
-                  Synopsis / Narrative Summary
+                <label className="block text-xs font-semibold text-white/80 mb-1">
+                  Synopsis Description
                 </label>
                 <textarea
                   rows={3}
                   value={heroForm.synopsis}
                   onChange={(e) => setHeroForm({ ...heroForm, synopsis: e.target.value })}
-                  className="w-full bg-white/[0.05] border border-white/15 rounded-md p-2.5 text-white text-xs leading-relaxed focus:border-[#A11C28] outline-none"
+                  className="w-full bg-black/40 border border-white/15 rounded-md p-3 text-xs text-white leading-relaxed focus:outline-none focus:border-[#A11C28]"
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-white/70 mb-1">
-                    Hero Still Photo URL
-                  </label>
-                  <Input
-                    value={heroForm.heroImage}
-                    onChange={(e) => setHeroForm({ ...heroForm, heroImage: e.target.value })}
-                    className="bg-white/[0.05] border-white/15 text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-white/70 mb-1">
-                    Video Start Delay (seconds)
+              <div className="grid md:grid-cols-2 gap-4 pt-2">
+                <CloudImageField
+                  label="Hero Poster Image"
+                  value={heroForm.heroImage}
+                  onChange={(val) => setHeroForm({ ...heroForm, heroImage: val })}
+                  description="Initial still displayed before video loads"
+                />
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-white/80">
+                    Video Delay (Seconds)
                   </label>
                   <Input
                     type="number"
                     step="0.5"
+                    min="0"
+                    max="15"
                     value={heroForm.videoDelaySeconds}
                     onChange={(e) =>
                       setHeroForm({
@@ -301,19 +456,22 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
                         videoDelaySeconds: parseFloat(e.target.value) || 2.5,
                       })
                     }
-                    className="bg-white/[0.05] border-white/15 text-white"
+                    className="h-8 bg-black/40 border-white/15 text-white font-mono text-xs"
                   />
+                  <p className="text-[10px] text-white/40">
+                    Seconds to hold the still hero image before transitioning to video playback.
+                  </p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">
-                  Hero YouTube Embed URL (with autoplay, loop, & start time)
+                <label className="block text-xs font-semibold text-white/80 mb-1">
+                  Embed Video URL (YouTube / Direct Stream)
                 </label>
                 <Input
                   value={heroForm.videoUrl}
                   onChange={(e) => setHeroForm({ ...heroForm, videoUrl: e.target.value })}
-                  className="bg-white/[0.05] border-white/15 text-white text-xs font-mono"
+                  className="bg-black/40 border-white/15 text-white font-mono text-xs"
                 />
               </div>
             </div>
@@ -321,75 +479,82 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
 
           {/* TAB 2: VAULT POSTERS */}
           {activeTab === "vault" && (
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
-                    Genesis Vault Productions & Posters
-                  </h3>
-                  <p className="text-xs text-white/50">
-                    Add or update production posters, titles, and localized language cards.
-                  </p>
-                </div>
+                <p className="text-xs text-white/60">
+                  Manage production cards visible in the Catalog Vault showcase strip.
+                </p>
                 <Button
                   onClick={addVaultItem}
-                  className="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold h-8 flex items-center gap-1.5"
+                  className="h-8 text-xs bg-[#A11C28] hover:bg-[#7F151F] text-white gap-1 rounded-md"
                 >
-                  <Plus className="w-3.5 h-3.5" /> Add Production Poster
+                  <Plus className="w-3.5 h-3.5" /> Add Poster
                 </Button>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-3">
                 {vaultForm.map((item, idx) => (
                   <div
                     key={item.id}
-                    className="p-4 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col justify-between gap-3"
+                    className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-3"
                   >
-                    <div className="flex gap-3">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-16 h-24 object-cover rounded border border-white/15 shrink-0 bg-black"
-                      />
-                      <div className="flex-1 space-y-2 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-[#A11C28]">
+                        Card #{idx + 1} · {item.title}
+                      </span>
+                      <button
+                        onClick={() => removeVaultItem(idx)}
+                        className="text-white/40 hover:text-red-400 text-xs flex items-center gap-1 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </button>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Title</label>
                         <Input
-                          placeholder="Title"
                           value={item.title}
                           onChange={(e) => updateVaultItem(idx, "title", e.target.value)}
-                          className="h-8 text-xs bg-black/40 border-white/15"
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
                         />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Subtitle</label>
                         <Input
-                          placeholder="Subtitle"
                           value={item.subtitle}
                           onChange={(e) => updateVaultItem(idx, "subtitle", e.target.value)}
-                          className="h-8 text-xs bg-black/40 border-white/15"
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
                         />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Badge Tag</label>
                         <Input
-                          placeholder="Badge (e.g. Complete Series)"
                           value={item.badge}
                           onChange={(e) => updateVaultItem(idx, "badge", e.target.value)}
-                          className="h-8 text-xs bg-black/40 border-white/15"
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
                         />
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-[10px] text-white/50 mb-1">Image URL</label>
-                      <Input
-                        value={item.image}
-                        onChange={(e) => updateVaultItem(idx, "image", e.target.value)}
-                        className="h-7 text-[11px] bg-black/40 border-white/15 font-mono"
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
-                      <span className="text-[10px] font-mono text-white/40">{item.language}</span>
-                      <button
-                        onClick={() => removeVaultItem(idx)}
-                        className="text-red-400 hover:text-red-300 text-xs flex items-center gap-1 transition-colors"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> Remove
-                      </button>
+                    <div className="grid md:grid-cols-12 gap-3">
+                      <div className="md:col-span-8">
+                        <CloudImageField
+                          label="Poster Image"
+                          value={item.image}
+                          onChange={(val) => updateVaultItem(idx, "image", val)}
+                        />
+                      </div>
+                      <div className="md:col-span-4">
+                        <label className="block text-[10px] text-white/50 mb-1">
+                          Watch Episode ID
+                        </label>
+                        <Input
+                          value={item.episode}
+                          onChange={(e) => updateVaultItem(idx, "episode", e.target.value)}
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white font-mono"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -399,56 +564,73 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
 
           {/* TAB 3: UPCOMING PROJECTS SLATE */}
           {activeTab === "projects" && (
-            <div className="space-y-5">
-              <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
-                  Upcoming Projects Accordion Slate
-                </h3>
-                <p className="text-xs text-white/50">
-                  Manage the cards shown in the upcoming projects accordion on the landing page.
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-white/60">
+                  Update projects in the interactive AccordionOS upcoming production slate.
                 </p>
+                <Button
+                  onClick={addProjectItem}
+                  className="h-8 text-xs bg-[#A11C28] hover:bg-[#7F151F] text-white gap-1 rounded-md"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Slate Project
+                </Button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {projectsForm.map((proj, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-white/[0.04] border border-white/10 grid md:grid-cols-12 gap-4 items-center"
+                    className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-3"
                   >
-                    <div className="md:col-span-2">
-                      <img
-                        src={proj.image}
-                        alt={proj.title}
-                        className="w-full h-24 object-cover rounded border border-white/15"
-                      />
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-[#A11C28]">
+                        Project #{idx + 1} · {proj.title}
+                      </span>
+                      <button
+                        onClick={() => removeProjectItem(idx)}
+                        className="text-white/40 hover:text-red-400 text-xs flex items-center gap-1 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </button>
                     </div>
-                    <div className="md:col-span-10 space-y-2">
-                      <div className="grid md:grid-cols-2 gap-3">
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Title</label>
                         <Input
-                          placeholder="Project Title"
                           value={proj.title}
                           onChange={(e) => updateProjectItem(idx, "title", e.target.value)}
-                          className="h-9 text-xs bg-black/40 border-white/15"
-                        />
-                        <Input
-                          placeholder="Badge (e.g. 01 · EXODUS)"
-                          value={proj.badge}
-                          onChange={(e) => updateProjectItem(idx, "badge", e.target.value)}
-                          className="h-9 text-xs bg-black/40 border-white/15"
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
                         />
                       </div>
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Badge</label>
+                        <Input
+                          value={proj.badge}
+                          onChange={(e) => updateProjectItem(idx, "badge", e.target.value)}
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-white/50 mb-1">
+                        Synopsis / Claim
+                      </label>
                       <textarea
                         rows={2}
-                        placeholder="Description / Claim"
                         value={proj.claim}
                         onChange={(e) => updateProjectItem(idx, "claim", e.target.value)}
-                        className="w-full bg-black/40 border border-white/15 rounded p-2 text-xs text-white/90"
+                        className="w-full bg-black/40 border border-white/15 rounded p-2 text-xs text-white"
                       />
-                      <Input
-                        placeholder="Backdrop Image URL"
+                    </div>
+
+                    <div>
+                      <CloudImageField
+                        label="Teaser Background Image"
                         value={proj.image}
-                        onChange={(e) => updateProjectItem(idx, "image", e.target.value)}
-                        className="h-7 text-[11px] bg-black/40 border-white/15 font-mono"
+                        onChange={(val) => updateProjectItem(idx, "image", val)}
                       />
                     </div>
                   </div>
@@ -457,24 +639,116 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
             </div>
           )}
 
-          {/* TAB 4: BROADCAST EPISODES (YOUTUBE MANAGER) */}
-          {activeTab === "episodes" && (
-            <div className="space-y-5">
+          {/* TAB 4: ARCHIVE CANVAS GRID */}
+          {activeTab === "archive" && (
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
-                    24/7 Linear Live TV Broadcast Schedule & On-Demand Episodes
-                  </h3>
-                  <p className="text-xs text-white/50">
-                    Add or update YouTube video links, chapters, and descriptions for the live
-                    broadcast channel.
+                  <h3 className="text-xs font-bold text-white">Infinite Archive Canvas Posters</h3>
+                  <p className="text-[11px] text-white/50">
+                    Posters rendered on the infinite 3D draggable canvas. Set custom click link or
+                    episode!
+                  </p>
+                </div>
+                <Button
+                  onClick={addArchiveItem}
+                  className="h-8 text-xs bg-[#A11C28] hover:bg-[#7F151F] text-white gap-1 rounded-md"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Canvas Poster
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                {archiveForm.map((item, idx) => (
+                  <div
+                    key={item.id || idx}
+                    className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-[#A11C28]">
+                        Poster #{idx + 1} · {item.title}
+                      </span>
+                      <button
+                        onClick={() => removeArchiveItem(idx)}
+                        className="text-white/40 hover:text-red-400 text-xs flex items-center gap-1 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </button>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Poster Title</label>
+                        <Input
+                          value={item.title}
+                          onChange={(e) => updateArchiveItem(idx, "title", e.target.value)}
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Subtitle</label>
+                        <Input
+                          value={item.subtitle}
+                          onChange={(e) => updateArchiveItem(idx, "subtitle", e.target.value)}
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">
+                          Click Target Link (URL or Path)
+                        </label>
+                        <Input
+                          value={item.linkUrl || ""}
+                          placeholder="/watch?episode=genesis or https://..."
+                          onChange={(e) => updateArchiveItem(idx, "linkUrl", e.target.value)}
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">
+                          Episode ID Fallback
+                        </label>
+                        <Input
+                          value={item.episode || "genesis"}
+                          placeholder="genesis, yahweh, joseph..."
+                          onChange={(e) => updateArchiveItem(idx, "episode", e.target.value)}
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white font-mono"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <CloudImageField
+                        label="Poster Artwork"
+                        value={item.imageUrl}
+                        onChange={(val) => updateArchiveItem(idx, "imageUrl", val)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: 24/7 TV EPISODES */}
+          {activeTab === "episodes" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-bold text-white">24/7 TV Broadcast Rotation</h3>
+                  <p className="text-[11px] text-white/50">
+                    Episodes cycle continuously in universal sync. Update YouTube IDs, titles, and
+                    runtimes.
                   </p>
                 </div>
                 <Button
                   onClick={addEpisodeItem}
-                  className="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold h-8 flex items-center gap-1.5"
+                  className="h-8 text-xs bg-[#A11C28] hover:bg-[#7F151F] text-white gap-1 rounded-md"
                 >
-                  <Plus className="w-3.5 h-3.5" /> Add YouTube Episode
+                  <Plus className="w-3.5 h-3.5" /> Add Episode
                 </Button>
               </div>
 
@@ -482,32 +756,63 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
                 {episodesForm.map((ep, idx) => (
                   <div
                     key={ep.id}
-                    className="p-4 rounded-xl bg-white/[0.04] border border-white/10 space-y-3"
+                    className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-3"
                   >
-                    <div className="grid md:grid-cols-12 gap-3 items-center">
-                      <div className="md:col-span-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-[#A11C28]/20 text-[#A11C28] text-xs font-bold flex items-center justify-center">
+                          {idx + 1}
+                        </span>
+                        <span className="text-xs font-bold text-white">{ep.title}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                        YouTube: {ep.videoId}
+                      </span>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div>
                         <label className="block text-[10px] text-white/50 mb-1">
                           Episode Title
                         </label>
                         <Input
                           value={ep.title}
                           onChange={(e) => updateEpisodeItem(idx, "title", e.target.value)}
-                          className="h-8 text-xs bg-black/40 border-white/15"
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
                         />
                       </div>
-                      <div className="md:col-span-3">
+                      <div>
+                        <label className="block text-[10px] text-white/50 mb-1">Subtitle</label>
+                        <Input
+                          value={ep.subtitle}
+                          onChange={(e) => updateEpisodeItem(idx, "subtitle", e.target.value)}
+                          className="h-8 text-xs bg-black/40 border-white/15 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-12 gap-3">
+                      <div className="md:col-span-5">
                         <label className="block text-[10px] text-white/50 mb-1">
-                          YouTube Video ID (e.g. z5abtVIszH8)
+                          YouTube Video ID or Link (e.g. z5abtVIszH8)
                         </label>
                         <Input
                           value={ep.videoId}
-                          onChange={(e) => updateEpisodeItem(idx, "videoId", e.target.value)}
+                          onChange={(e) => {
+                            let val = e.target.value.trim();
+                            // If full YouTube URL is pasted, extract the ID
+                            const match = val.match(
+                              /(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+                            );
+                            if (match) val = match[1];
+                            updateEpisodeItem(idx, "videoId", val);
+                          }}
                           className="h-8 text-xs bg-black/40 border-white/15 font-mono text-red-400 font-bold"
                         />
                       </div>
-                      <div className="md:col-span-3">
+                      <div className="md:col-span-4">
                         <label className="block text-[10px] text-white/50 mb-1">
-                          Duration (Formatted)
+                          Duration (Formatted, e.g. 19m 03s)
                         </label>
                         <Input
                           value={ep.durationFormatted}
@@ -517,10 +822,27 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
                           className="h-8 text-xs bg-black/40 border-white/15"
                         />
                       </div>
+                      <div className="md:col-span-3">
+                        <label className="block text-[10px] text-white/50 mb-1">
+                          Total Seconds
+                        </label>
+                        <Input
+                          type="number"
+                          value={ep.durationSeconds}
+                          onChange={(e) =>
+                            updateEpisodeItem(
+                              idx,
+                              "durationSeconds",
+                              parseInt(e.target.value, 10) || 600,
+                            )
+                          }
+                          className="h-8 text-xs bg-black/40 border-white/15 font-mono"
+                        />
+                      </div>
                     </div>
 
                     <div className="grid md:grid-cols-12 gap-3">
-                      <div className="md:col-span-8">
+                      <div className="md:col-span-7">
                         <label className="block text-[10px] text-white/50 mb-1">Synopsis</label>
                         <textarea
                           rows={2}
@@ -529,17 +851,12 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
                           className="w-full bg-black/40 border border-white/15 rounded p-2 text-xs text-white"
                         />
                       </div>
-                      <div className="md:col-span-4 space-y-2">
-                        <div>
-                          <label className="block text-[10px] text-white/50 mb-1">
-                            Poster Image
-                          </label>
-                          <Input
-                            value={ep.poster}
-                            onChange={(e) => updateEpisodeItem(idx, "poster", e.target.value)}
-                            className="h-8 text-xs bg-black/40 border-white/15 font-mono text-[11px]"
-                          />
-                        </div>
+                      <div className="md:col-span-5 space-y-2">
+                        <CloudImageField
+                          label="Poster Thumbnail"
+                          value={ep.poster}
+                          onChange={(val) => updateEpisodeItem(idx, "poster", val)}
+                        />
                         <div className="flex justify-end pt-2">
                           <button
                             onClick={() => removeEpisodeItem(idx)}
@@ -563,7 +880,7 @@ export function AdminCmsModal({ isOpen, onClose, defaultTab = "hero" }: AdminCms
             onClick={handleReset}
             className="text-white/40 hover:text-red-400 text-xs flex items-center gap-1.5 transition-colors"
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset to Original Defaults
+            <RotateCcw className="w-3.5 h-3.5" /> Reset to Factory Defaults
           </button>
           <div className="flex items-center gap-3">
             <Button

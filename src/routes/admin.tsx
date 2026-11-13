@@ -23,6 +23,7 @@ import {
   type ProductionCard,
   type ProjectSlateItem,
   type BroadcastEpisodeItem,
+  type ArchiveGridItem,
 } from "@/lib/cms-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,7 @@ function AdminDashboardPage() {
     updateVaultProductions,
     updateUpcomingProjects,
     updateBroadcastEpisodes,
+    updateArchiveItems,
     resetToDefaults,
   } = useCmsContent();
 
@@ -54,7 +56,9 @@ function AdminDashboardPage() {
   const [loginError, setLoginError] = useState("");
 
   // Editor states
-  const [activeTab, setActiveTab] = useState<"hero" | "vault" | "projects" | "episodes">("hero");
+  const [activeTab, setActiveTab] = useState<
+    "hero" | "vault" | "projects" | "episodes" | "archive"
+  >("hero");
   const [heroForm, setHeroForm] = useState<HeroContent>({ ...cmsData.hero });
   const [vaultForm, setVaultForm] = useState<ProductionCard[]>([...cmsData.vaultProductions]);
   const [projectsForm, setProjectsForm] = useState<ProjectSlateItem[]>([
@@ -62,6 +66,9 @@ function AdminDashboardPage() {
   ]);
   const [episodesForm, setEpisodesForm] = useState<BroadcastEpisodeItem[]>([
     ...cmsData.broadcastEpisodes,
+  ]);
+  const [archiveForm, setArchiveForm] = useState<ArchiveGridItem[]>([
+    ...(cmsData.archiveItems || []),
   ]);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -79,6 +86,7 @@ function AdminDashboardPage() {
     updateVaultProductions(vaultForm);
     updateUpcomingProjects(projectsForm);
     updateBroadcastEpisodes(episodesForm);
+    updateArchiveItems(archiveForm);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2500);
   };
@@ -90,6 +98,7 @@ function AdminDashboardPage() {
       setVaultForm([...cmsData.vaultProductions]);
       setProjectsForm([...cmsData.upcomingProjects]);
       setEpisodesForm([...cmsData.broadcastEpisodes]);
+      setArchiveForm([...(cmsData.archiveItems || [])]);
     }
   };
 
@@ -279,6 +288,16 @@ function AdminDashboardPage() {
             }`}
           >
             <Layers className="w-4 h-4" /> Upcoming Projects Slate
+          </button>
+          <button
+            onClick={() => setActiveTab("archive")}
+            className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 ${
+              activeTab === "archive"
+                ? "border-[#A11C28] text-white"
+                : "border-transparent text-white/50 hover:text-white"
+            }`}
+          >
+            <Film className="w-4 h-4" /> Infinite Archive Canvas ({archiveForm.length})
           </button>
           <button
             onClick={() => setActiveTab("episodes")}
@@ -555,6 +574,134 @@ function AdminDashboardPage() {
                         setProjectsForm(copy);
                       }}
                       className="h-7 text-[11px] font-mono bg-black/50 border-white/15"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab: INFINITE ARCHIVE CANVAS */}
+        {activeTab === "archive" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-white uppercase tracking-wider">
+                  Infinite Scripture Archive Posters & Links
+                </h2>
+                <p className="text-xs text-white/50">
+                  Configure poster graphics and click links for each tile in the 3D infinite canvas.
+                </p>
+              </div>
+              <Button
+                onClick={() =>
+                  setArchiveForm([
+                    {
+                      id: `archive-${Date.now()}`,
+                      title: "New Scripture Tile",
+                      subtitle: "Exodus · Study Feature",
+                      imageUrl: "/assets/yahweh-hero-parted-sea.jpg",
+                      episode: "genesis",
+                      linkUrl: "/watch?episode=genesis",
+                    },
+                    ...archiveForm,
+                  ])
+                }
+                className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
+              >
+                <Plus className="w-4 h-4 mr-1.5" /> Add Canvas Tile
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {archiveForm.map((item, idx) => (
+                <div
+                  key={item.id || idx}
+                  className="bg-[#0e0e15] border border-white/10 rounded-xl p-5 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-[#A11C28]">
+                      Tile #{idx + 1} · {item.title}
+                    </span>
+                    <button
+                      onClick={() => setArchiveForm(archiveForm.filter((_, i) => i !== idx))}
+                      className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Remove
+                    </button>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] text-white/50 mb-1">Title</label>
+                      <Input
+                        value={item.title}
+                        onChange={(e) => {
+                          const copy = [...archiveForm];
+                          copy[idx].title = e.target.value;
+                          setArchiveForm(copy);
+                        }}
+                        className="h-8 text-xs bg-black/50 border-white/15"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-white/50 mb-1">Subtitle</label>
+                      <Input
+                        value={item.subtitle}
+                        onChange={(e) => {
+                          const copy = [...archiveForm];
+                          copy[idx].subtitle = e.target.value;
+                          setArchiveForm(copy);
+                        }}
+                        className="h-8 text-xs bg-black/50 border-white/15"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] text-white/50 mb-1">
+                        Click Link (URL or Path)
+                      </label>
+                      <Input
+                        value={item.linkUrl || ""}
+                        placeholder="/watch?episode=genesis or https://..."
+                        onChange={(e) => {
+                          const copy = [...archiveForm];
+                          copy[idx].linkUrl = e.target.value;
+                          setArchiveForm(copy);
+                        }}
+                        className="h-8 text-xs bg-black/50 border-white/15 font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-white/50 mb-1">
+                        Episode ID Fallback
+                      </label>
+                      <Input
+                        value={item.episode || "genesis"}
+                        placeholder="genesis, yahweh, joseph..."
+                        onChange={(e) => {
+                          const copy = [...archiveForm];
+                          copy[idx].episode = e.target.value;
+                          setArchiveForm(copy);
+                        }}
+                        className="h-8 text-xs bg-black/50 border-white/15 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] text-white/50 mb-1">Image URL</label>
+                    <Input
+                      value={item.imageUrl}
+                      onChange={(e) => {
+                        const copy = [...archiveForm];
+                        copy[idx].imageUrl = e.target.value;
+                        setArchiveForm(copy);
+                      }}
+                      className="h-8 text-xs bg-black/50 border-white/15 font-mono"
                     />
                   </div>
                 </div>

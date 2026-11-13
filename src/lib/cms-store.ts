@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { saveCmsContent, fetchCmsContent } from "./cms.functions";
 
 export interface HeroContent {
   title: string;
@@ -42,12 +43,153 @@ export interface BroadcastEpisodeItem {
   tag: string;
 }
 
+export interface ArchiveGridItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  episode: string;
+  linkUrl?: string;
+}
+
 export interface SiteCmsData {
   hero: HeroContent;
   vaultProductions: ProductionCard[];
   upcomingProjects: ProjectSlateItem[];
   broadcastEpisodes: BroadcastEpisodeItem[];
+  archiveItems: ArchiveGridItem[];
 }
+
+export const DEFAULT_ARCHIVE_ITEMS: ArchiveGridItem[] = [
+  {
+    id: "genesis-in-the-beginning",
+    title: "In the Beginning",
+    subtitle: "Genesis · 50 Chapters Complete",
+    imageUrl: "/assets/genesis-shepherds-poster.jpg",
+    episode: "genesis",
+    linkUrl: "/watch?episode=genesis",
+  },
+  {
+    id: "the-purpose-of-god",
+    title: "The Purpose of God",
+    subtitle: "The Story of Joseph in Egypt",
+    imageUrl: "/assets/purpose-of-god-joseph-poster.jpg",
+    episode: "joseph",
+    linkUrl: "/watch?episode=joseph",
+  },
+  {
+    id: "genesis-hindi",
+    title: "Genesis · उत्पत्ति",
+    subtitle: "Hindi Edition · Campfire Council",
+    imageUrl: "/assets/genesis-hindi-campfire-poster.jpg",
+    episode: "genesis",
+    linkUrl: "/watch?episode=genesis",
+  },
+  {
+    id: "genesis-tamil",
+    title: "Genesis · ஆதியாகமம்",
+    subtitle: "Tamil Edition · Complete Season",
+    imageUrl: "/assets/genesis-tamil-poster.jpg",
+    episode: "genesis",
+    linkUrl: "/watch?episode=genesis",
+  },
+  {
+    id: "genesis-malayalam",
+    title: "Genesis · ഉദ്ഭവം",
+    subtitle: "Malayalam Edition · Complete",
+    imageUrl: "/assets/genesis-malayalam-poster.jpg",
+    episode: "genesis",
+    linkUrl: "/watch?episode=genesis",
+  },
+  {
+    id: "genesis-chinese",
+    title: "Genesis · 创世记",
+    subtitle: "Mandarin Chinese Edition",
+    imageUrl: "/assets/genesis-chinese-poster.jpg",
+    episode: "genesis",
+    linkUrl: "/watch?episode=genesis",
+  },
+  {
+    id: "genesis-persian",
+    title: "یهودا، برگزیده خدا",
+    subtitle: "Persian Edition · Judah Chosen",
+    imageUrl: "/assets/genesis-persian-judah-poster.jpg",
+    episode: "judah",
+    linkUrl: "/watch?episode=judah",
+  },
+  {
+    id: "genesis-tagalog",
+    title: "Genesis · Tagalog",
+    subtitle: "Philippines & Southeast Asia",
+    imageUrl: "/assets/genesis-tagalog-poster.jpg",
+    episode: "genesis",
+    linkUrl: "/watch?episode=genesis",
+  },
+  {
+    id: "yahweh-mount-sinai",
+    title: "YAHWEH · Mount Sinai",
+    subtitle: "The Tablets of the Law (Exodus)",
+    imageUrl: "/assets/yahweh-tablets-poster.jpg",
+    episode: "yahweh",
+    linkUrl: "/watch?episode=yahweh",
+  },
+  {
+    id: "the-waters-divide",
+    title: "The Waters Divide",
+    subtitle: "Exodus Chapter 14 · Feature",
+    imageUrl: "/assets/moses-parting-sea.jpg",
+    episode: "yahweh",
+    linkUrl: "/watch?episode=yahweh",
+  },
+  {
+    id: "yahweh-the-deliverer",
+    title: "YAHWEH · The Deliverer",
+    subtitle: "The Red Sea Staff Poster",
+    imageUrl: "/assets/yahweh-exodus-staff-poster.jpg",
+    episode: "yahweh",
+    linkUrl: "/watch?episode=yahweh",
+  },
+  {
+    id: "joseph-before-pharaoh",
+    title: "Joseph Before Pharaoh",
+    subtitle: "Genesis 41 Historical Study",
+    imageUrl: "/assets/genesis-pharaoh-prophet-sunset.jpg",
+    episode: "joseph",
+    linkUrl: "/watch?episode=joseph",
+  },
+  {
+    id: "covenant-night",
+    title: "Covenant in the Night",
+    subtitle: "Abraham Under the Stars",
+    imageUrl: "/assets/covenant-stars-poster.jpg",
+    episode: "genesis",
+    linkUrl: "/watch?episode=genesis",
+  },
+  {
+    id: "judah-the-intercessor",
+    title: "Judah · The Intercessor",
+    subtitle: "Pledge of Life for Benjamin",
+    imageUrl: "/assets/judas-chosen-by-god-persian.jpg",
+    episode: "judah",
+    linkUrl: "/watch?episode=judah",
+  },
+  {
+    id: "pharaohs-decree",
+    title: "Pharaoh's Decree",
+    subtitle: "The Golden Chariots of Egypt",
+    imageUrl: "/assets/genesis-pharaoh-prophet-sunset.jpg",
+    episode: "yahweh",
+    linkUrl: "/watch?episode=yahweh",
+  },
+  {
+    id: "the-plagues-of-egypt",
+    title: "The Ten Plagues",
+    subtitle: "Exodus Chapters 7-12",
+    imageUrl: "/assets/yahweh-monument.webp",
+    episode: "yahweh",
+    linkUrl: "/watch?episode=yahweh",
+  },
+];
 
 export const DEFAULT_CMS_DATA: SiteCmsData = {
   hero: {
@@ -163,7 +305,7 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
       title: "100 Languages Global Initiative",
       badge: "05 · GLOBAL",
       claim:
-        "Reaching unreached regional dialects and oral mother tongues without written scripture. Overcoming illiteracy so every nation hears the Word in their heart tongue.",
+        "Reaching unreached regional spoken languages and oral cultures without written Scripture. Overcoming the literacy barrier so every community hears the Word in their native spoken tongue.",
       image: "/assets/genesis-hindi-campfire-poster.jpg",
       alt: "100 Languages Global Initiative",
     },
@@ -226,6 +368,7 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
       tag: "THEATRICAL SPECIAL",
     },
   ],
+  archiveItems: DEFAULT_ARCHIVE_ITEMS,
 };
 
 const CMS_STORAGE_KEY = "vb_cms_data";
@@ -241,6 +384,7 @@ export function getStoredCmsData(): SiteCmsData {
       vaultProductions: parsed.vaultProductions || DEFAULT_CMS_DATA.vaultProductions,
       upcomingProjects: parsed.upcomingProjects || DEFAULT_CMS_DATA.upcomingProjects,
       broadcastEpisodes: parsed.broadcastEpisodes || DEFAULT_CMS_DATA.broadcastEpisodes,
+      archiveItems: parsed.archiveItems || DEFAULT_CMS_DATA.archiveItems,
     };
   } catch {
     return DEFAULT_CMS_DATA;
@@ -249,6 +393,28 @@ export function getStoredCmsData(): SiteCmsData {
 
 export function useCmsContent() {
   const [data, setData] = useState<SiteCmsData>(getStoredCmsData);
+
+  // Sync from server on mount
+  useEffect(() => {
+    fetchCmsContent()
+      .then((res) => {
+        if (res && res.ok && res.data) {
+          const serverData = res.data as SiteCmsData;
+          const merged: SiteCmsData = {
+            hero: { ...DEFAULT_CMS_DATA.hero, ...(serverData.hero || {}) },
+            vaultProductions: serverData.vaultProductions || DEFAULT_CMS_DATA.vaultProductions,
+            upcomingProjects: serverData.upcomingProjects || DEFAULT_CMS_DATA.upcomingProjects,
+            broadcastEpisodes: serverData.broadcastEpisodes || DEFAULT_CMS_DATA.broadcastEpisodes,
+            archiveItems: serverData.archiveItems || DEFAULT_CMS_DATA.archiveItems,
+          };
+          setData(merged);
+          localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(merged));
+        }
+      })
+      .catch((e) => {
+        console.warn("Could not fetch server CMS content:", e);
+      });
+  }, []);
 
   useEffect(() => {
     const handleSync = () => {
@@ -266,6 +432,11 @@ export function useCmsContent() {
     localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(newData));
     setData(newData);
     window.dispatchEvent(new Event("vb_cms_data_change"));
+
+    // Also persist to server in the background so all visitors and admin teammates see it
+    saveCmsContent({ data: { cmsData: newData } }).catch((err) => {
+      console.warn("Server CMS sync failed (using local storage):", err);
+    });
   };
 
   const updateHero = (updates: Partial<HeroContent>) => {
@@ -288,10 +459,16 @@ export function useCmsContent() {
     saveCmsData(next);
   };
 
+  const updateArchiveItems = (items: ArchiveGridItem[]) => {
+    const next = { ...data, archiveItems: items };
+    saveCmsData(next);
+  };
+
   const resetToDefaults = () => {
     localStorage.removeItem(CMS_STORAGE_KEY);
     setData(DEFAULT_CMS_DATA);
     window.dispatchEvent(new Event("vb_cms_data_change"));
+    saveCmsContent({ data: { cmsData: DEFAULT_CMS_DATA } }).catch(() => {});
   };
 
   return {
@@ -300,6 +477,7 @@ export function useCmsContent() {
     updateVaultProductions,
     updateUpcomingProjects,
     updateBroadcastEpisodes,
+    updateArchiveItems,
     resetToDefaults,
   };
 }

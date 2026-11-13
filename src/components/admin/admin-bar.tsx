@@ -7,11 +7,13 @@ import { AdminLoginModal } from "./admin-login-modal";
 export function AdminBar() {
   const { adminUser, isAdmin, logout } = useAdminAuth();
   const [isCmsOpen, setIsCmsOpen] = useState(false);
-  const [cmsTab, setCmsTab] = useState<"hero" | "vault" | "projects" | "episodes">("hero");
+  const [cmsTab, setCmsTab] = useState<"hero" | "vault" | "projects" | "episodes" | "archive">(
+    "hero",
+  );
 
   if (!isAdmin || !adminUser) return null;
 
-  const openCms = (tab: "hero" | "vault" | "projects" | "episodes" = "hero") => {
+  const openCms = (tab: "hero" | "vault" | "projects" | "episodes" | "archive" = "hero") => {
     setCmsTab(tab);
     setIsCmsOpen(true);
   };

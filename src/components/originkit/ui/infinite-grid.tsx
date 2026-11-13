@@ -19,11 +19,13 @@ import { useEffect, useRef } from "react";
  */
 
 export interface GridItem {
+  id?: string;
   title: string;
   subtitle: string;
   imageUrl: any;
   episode?: string;
   badge?: string;
+  linkUrl?: string;
 }
 
 export interface InfiniteGridProps {
@@ -110,7 +112,7 @@ function loadFamily(doc: Document, family: unknown) {
 const FRICTION = 0.95;
 const DRAG_GAIN = 0.85;
 const WHEEL_GAIN = 0.45;
-const CLICK_SLOP = 6;
+const CLICK_SLOP = 14;
 const MAX_SKEW = 3;
 // Hover zoom on a card photo, and how fast it eases there and back (exponential time constant).
 const HOVER_SCALE = 1.05;
@@ -120,6 +122,8 @@ const css = `
 .ig-root { position: relative; width: 100%; height: 100%; overflow: hidden; }
 .ig-pane { position: relative; width: 100%; height: 100%; overflow: hidden; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; outline: none; }
 .ig-pane:active { cursor: grabbing; }
+.ig-card { cursor: pointer; transition: transform 0.2s ease, filter 0.2s ease; }
+.ig-card:hover { filter: brightness(1.15); }
 .ig-blob { position: absolute; border-radius: 50%; pointer-events: none; }
 .ig-b1 { animation: ig-f1 22s ease-in-out infinite alternate; }
 .ig-b2 { animation: ig-f2 26s ease-in-out infinite alternate; }
@@ -165,6 +169,7 @@ export default function InfiniteGrid(props: InfiniteGridProps) {
   const moved = useRef(0);
   const placed = useRef(false);
   const hoverImg = useRef<HTMLImageElement | null>(null);
+  const lastClickTime = useRef(0);
 
   // Load the faces picked in the Title / Subtitle font rows.
   useEffect(() => {
@@ -374,6 +379,26 @@ export default function InfiniteGrid(props: InfiniteGridProps) {
     dragging.current = false;
     const pane = paneRef.current;
     if (pane && pane.hasPointerCapture(e.pointerId)) pane.releasePointerCapture(e.pointerId);
+
+    // If pointer barely moved, treat this as an intentional click on the poster
+    if (moved.current < CLICK_SLOP) {
+      const now = performance.now();
+      if (now - lastClickTime.current > 250) {
+        lastClickTime.current = now;
+        const targetEl = document.elementFromPoint(e.clientX, e.clientY);
+        const card = targetEl?.closest?.(".ig-card");
+        if (card) {
+          const idxStr = card.getAttribute("data-card-index");
+          if (idxStr !== null) {
+            const idx = parseInt(idxStr, 10);
+            const item = list[idx];
+            if (item) {
+              onItemClick?.(item);
+            }
+          }
+        }
+      }
+    }
   };
 
   // Padding of half a gap per side makes the repeat period exactly content + gap.
@@ -472,8 +497,13 @@ export default function InfiniteGrid(props: InfiniteGridProps) {
                 <div
                   key={i}
                   className="ig-card"
+                  data-card-index={i}
                   onClick={() => {
-                    if (moved.current < CLICK_SLOP) onItemClick?.(item);
+                    const now = performance.now();
+                    if (moved.current < CLICK_SLOP && now - lastClickTime.current > 250) {
+                      lastClickTime.current = now;
+                      onItemClick?.(item);
+                    }
                   }}
                   style={{
                     width: cardWidth,

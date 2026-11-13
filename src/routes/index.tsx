@@ -269,21 +269,23 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     id: "avatars",
     stepNumber: "01",
-    code: "APRICOT 5219 ▸ 01",
+    code: "NRIM 5219 ▸ 01",
     frameCode: "01A",
     title: "Real Humans as Biblical Avatars",
-    shortDesc: "We do not direct real humans — we use actual people as a biblical avatar.",
+    shortDesc:
+      "We cast real people and translate their living human likeness, emotion, and presence directly into biblical characters.",
     extendedDesc:
-      "We do not cast actors to mimic Hollywood melodrama or recite script lines on a soundstage. Instead, we capture the authentic emotional gravity, genuine grief, joy, and spiritual presence of actual people, channeling their living human likeness into biblical avatars for the patriarchs, prophets, and witnesses of scripture.",
+      "Rather than artificial CGI mannequins or standard Hollywood dramatization, we capture the raw human emotion, facial nuances, and spiritual weight of living individuals. Through our proprietary AI performance pipeline, their physical likeness is transformed into living, historically grounded biblical avatars for the patriarchs, prophets, and witnesses of Scripture.",
     image: "/assets/genesis-shepherds-poster.jpg",
   },
   {
     id: "worldbuilding",
     stepNumber: "02",
-    code: "APRICOT 5219 ▸ 02",
+    code: "NRIM 5219 ▸ 02",
     frameCode: "02A",
-    title: "Building the World of the Bible",
-    shortDesc: "We build the world of Genesis and Exodus — the ancient world of the Bible.",
+    title: "Building the Ancient Biblical World",
+    shortDesc:
+      "We reconstruct the sacred geography, ancient architecture, and monumental world of Genesis and Exodus.",
     extendedDesc:
       "From the primordial expanse of Eden and Abraham's encampments across Mesopotamia to the colossal courts of Pharaoh, the parted waters of the Red Sea, and the thunderous crags of Mount Sinai. We procedurally and historically reconstruct the sacred geography, architecture, textiles, and atmospheric lighting of antiquity with rigorous archaeological fidelity.",
     image: "/assets/yahweh-hero-mount-sinai.jpg",
@@ -291,13 +293,13 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     id: "languages",
     stepNumber: "03",
-    code: "APRICOT 5219 ▸ 03",
+    code: "NRIM 5219 ▸ 03",
     frameCode: "03A",
-    title: "100 Languages for the Unreached",
+    title: "100 Languages for Every Tribe & Nation",
     shortDesc:
-      "Focusing on and targeting 100 languages — reaching regional mother tongues without written scripture.",
+      "A dedicated global pipeline to produce Visual Bible in 100 spoken languages — reaching oral cultures and unreached communities without written Scripture.",
     extendedDesc:
-      "Our localization pipeline is engineered specifically for people who normally would not have access to Scripture or have a translation of the Bible in their language. Many of these are regional oral dialects. By synchronizing neural voice translation with native oral delivery, we break the literacy barrier so every nation hears the Word in their heart tongue.",
+      "Over a billion people belong to oral traditions and regional dialects that lack accessible biblical translations. By pairing neural voice translation with authentic oral delivery, our localization pipeline overcomes the literacy barrier — delivering Scripture visually and acoustically so every people group hears God's Word in the dialect of their heart.",
     image: "/assets/genesis-hindi-campfire-poster.jpg",
   },
 ];
@@ -464,9 +466,9 @@ function LandingPage() {
   const [language, setLanguage] = useGlobalLanguage();
   const { isAdmin } = useAdminAuth();
   const { cmsData } = useCmsContent();
-  const [adminCmsTab, setAdminCmsTab] = useState<"hero" | "vault" | "projects" | "episodes" | null>(
-    null,
-  );
+  const [adminCmsTab, setAdminCmsTab] = useState<
+    "hero" | "vault" | "projects" | "episodes" | "archive" | null
+  >(null);
   const [mounted, setMounted] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoReady, setVideoReady] = useState(false);
@@ -770,19 +772,17 @@ function LandingPage() {
           {/* Frosted Glass Pitch Card: Tunnel is fully visible all around and through the section */}
           <div className="relative z-20 max-w-3xl mx-auto text-center flex flex-col items-center bg-black/50 backdrop-blur-md p-6 md:p-10 rounded-2xl border border-white/10 shadow-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[11px] font-bold tracking-[0.2em] uppercase mb-4 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-              The Pitch · Visual Bible Network
+              <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />A Production of
+              NRIM
             </div>
 
             <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.1] tracking-tight mb-4">
-              Scripture Brought to Life for Every Nation.
+              VISUAL BIBLE: Until All Hear: Every Language, Every Nation.
             </h2>
 
-            <p className="text-white/80 text-xs md:text-sm leading-relaxed max-w-xl mx-auto mb-8">
-              The message remains eternal and unchanging. The medium has evolved. By pairing real
-              dramatic actor performances with high-fidelity cinematic AI pipelines, NRIM is
-              building the world's first complete, visual translation of the Bible — designed to
-              cross language barriers, cultural borders, and technological divides.
+            <p className="text-white/80 text-xs md:text-sm leading-relaxed max-w-xl mx-auto mb-8 font-medium">
+              Bringing the Bible to life through an AI production pipeline using real people and
+              transforming them into characters from the Bible.
             </p>
 
             {/* Highlights Bar: 1M+ views, 88 countries, 8 live languages, 100 Target */}
@@ -799,21 +799,21 @@ function LandingPage() {
                   88
                 </span>
                 <span className="text-xs font-bold text-white/80">Countries</span>
-                <span className="text-[10px] text-white/40 mt-0.5">Nations Watching</span>
+                <span className="text-[10px] text-white/40 mt-0.5">Global Viewership</span>
               </div>
               <div className="flex flex-col items-center border-l border-white/10">
                 <span className="text-2xl md:text-3xl font-black text-white leading-none mb-1">
                   8
                 </span>
                 <span className="text-xs font-bold text-white/80">Live Languages</span>
-                <span className="text-[10px] text-white/40 mt-0.5">Genesis Released</span>
+                <span className="text-[10px] text-white/40 mt-0.5">Current Broadcast</span>
               </div>
               <div className="flex flex-col items-center border-l border-white/10">
                 <span className="text-2xl md:text-3xl font-black text-[#A11C28] leading-none mb-1">
                   100
                 </span>
-                <span className="text-xs font-bold text-white/90">Target Goal</span>
-                <span className="text-[10px] text-white/50 mt-0.5">Global Vision</span>
+                <span className="text-xs font-bold text-white/90">Target Languages</span>
+                <span className="text-[10px] text-white/50 mt-0.5">Production Goal</span>
               </div>
             </div>
 
@@ -872,30 +872,37 @@ function LandingPage() {
             </div>
 
             {/* ── CONTINUOUS 35MM HORIZONTAL FILM STRIP CHASSIS ── */}
-            <div className="rounded-2xl overflow-hidden border border-white/[0.1] bg-[#101015] shadow-2xl mb-8">
-              {/* Top Film Sprocket Row */}
-              <div className="bg-[#06060a] border-b border-black/80 px-4 py-2 flex items-center justify-between overflow-hidden select-none">
-                <div className="flex items-center gap-2.5 w-full justify-between">
-                  {Array.from({ length: 28 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-3.5 h-2 rounded-[1.5px] bg-black border border-white/[0.12] shrink-0"
-                    />
+            <div className="rounded-2xl overflow-hidden border border-white/20 bg-[#07070b] shadow-2xl mb-8">
+              {/* Top Film Sprocket Row: High-Contrast Cinema Celluloid */}
+              <div className="bg-[#050508] border-b border-white/10 px-4 py-2.5 flex items-center justify-between overflow-hidden select-none relative">
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                <div className="flex items-center gap-3 w-full justify-between">
+                  {Array.from({ length: 26 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-1.5 shrink-0">
+                      <div className="w-4 h-2.5 rounded-[2px] bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
+                      {i % 4 === 0 && (
+                        <span className="text-[7px] font-mono text-white/35 font-bold uppercase tracking-wider hidden sm:inline">
+                          NRIM 5219
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
 
-              {/* 3 Film Frames Side-by-Side Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 bg-[#0a0a0f]">
+              {/* 3 Film Frames Side-by-Side Grid with Authentic Celluloid Border */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 bg-[#0a0a0e]">
                 {WORKFLOW_STEPS.map((step) => (
                   <div
                     key={step.id}
-                    className="group flex flex-col rounded-lg overflow-hidden border border-white/[0.08] bg-black relative shadow-lg"
+                    className="group flex flex-col rounded-lg overflow-hidden border border-white/15 bg-black relative shadow-xl hover:border-white/35 transition-colors"
                   >
-                    {/* Frame Header Stamp */}
-                    <div className="px-3 py-1.5 bg-[#0e0e14] flex items-center justify-between text-[10px] font-mono text-white/50 border-b border-white/[0.06] select-none">
-                      <span className="font-semibold text-white/70">{step.code}</span>
-                      <span className="text-[#A11C28] font-bold">{step.frameCode}</span>
+                    {/* Frame Header Stamp: Cinema Slate Designation */}
+                    <div className="px-3.5 py-1.5 bg-[#09090f] flex items-center justify-between text-[10px] font-mono border-b border-white/10 select-none">
+                      <span className="font-bold text-white/80 tracking-wide">{step.code}</span>
+                      <span className="text-[#A11C28] font-black tracking-wider">
+                        {step.frameCode}
+                      </span>
                     </div>
 
                     {/* Frame Photo with smooth hover zoom */}
@@ -906,29 +913,34 @@ function LandingPage() {
                         className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                         loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
-                      <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-sm text-[10px] font-mono font-bold text-white/90">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60" />
+                      <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded bg-black/85 backdrop-blur-md text-[10px] font-mono font-bold text-white/95 border border-white/15 shadow">
                         {step.stepNumber} // {step.id.toUpperCase()}
                       </div>
                     </div>
 
-                    {/* Frame Footer Stamp */}
-                    <div className="px-3 py-1 bg-[#0e0e14] flex items-center justify-between text-[9px] font-mono text-white/40 border-t border-white/[0.06] select-none">
-                      <span>24 FPS · RAW EMBODIMENT</span>
-                      <span>NRIM 5219</span>
+                    {/* Frame Footer Stamp: Motion Picture Stock Markings */}
+                    <div className="px-3.5 py-1 bg-[#09090f] flex items-center justify-between text-[9px] font-mono text-white/50 border-t border-white/10 select-none">
+                      <span className="tracking-wider">24 FPS · RAW EMBODIMENT</span>
+                      <span className="font-bold text-white/60">NRIM CINEMA 5219</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Bottom Film Sprocket Row */}
-              <div className="bg-[#06060a] border-t border-black/80 px-4 py-2 flex items-center justify-between overflow-hidden select-none">
-                <div className="flex items-center gap-2.5 w-full justify-between">
-                  {Array.from({ length: 28 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-3.5 h-2 rounded-[1.5px] bg-black border border-white/[0.12] shrink-0"
-                    />
+              {/* Bottom Film Sprocket Row: High-Contrast Cinema Celluloid */}
+              <div className="bg-[#050508] border-t border-white/10 px-4 py-2.5 flex items-center justify-between overflow-hidden select-none relative">
+                <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                <div className="flex items-center gap-3 w-full justify-between">
+                  {Array.from({ length: 26 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-1.5 shrink-0">
+                      <div className="w-4 h-2.5 rounded-[2px] bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
+                      {i % 4 === 2 && (
+                        <span className="text-[7px] font-mono text-white/35 font-bold uppercase tracking-wider hidden sm:inline">
+                          SAFETY FILM
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -997,9 +1009,17 @@ function LandingPage() {
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
+              {isAdmin && (
+                <button
+                  onClick={() => setAdminCmsTab("archive")}
+                  className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
+                >
+                  <Edit3 className="w-3.5 h-3.5" /> Edit Archive Posters
+                </button>
+              )}
               <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-white/50 bg-white/[0.04] border border-white/[0.08] px-3.5 py-2 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Drag canvas in any direction · Click to stream</span>
+                <span>Drag canvas in any direction · Click poster to open</span>
               </div>
               <Link
                 to="/watch"
@@ -1015,7 +1035,11 @@ function LandingPage() {
           <div className="relative w-full h-[620px] md:h-[680px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#070709] shadow-2xl select-none">
             {mounted && (
               <InfiniteGrid
-                items={INFINITE_ARCHIVE_ITEMS}
+                items={
+                  (cmsData.archiveItems && cmsData.archiveItems.length
+                    ? cmsData.archiveItems
+                    : INFINITE_ARCHIVE_ITEMS) as unknown as GridItem[]
+                }
                 columns={5}
                 cardWidth={200}
                 radius={8}
@@ -1027,8 +1051,19 @@ function LandingPage() {
                 blobs={false}
                 onItemClick={(item) => {
                   const archiveItem = item as unknown as ArchiveGridItem;
-                  const ep = archiveItem.episode || "genesis";
-                  navigate({ to: "/watch", search: { episode: ep } });
+                  if (archiveItem.linkUrl) {
+                    if (
+                      archiveItem.linkUrl.startsWith("http://") ||
+                      archiveItem.linkUrl.startsWith("https://")
+                    ) {
+                      window.open(archiveItem.linkUrl, "_blank", "noopener,noreferrer");
+                    } else {
+                      navigate({ to: archiveItem.linkUrl });
+                    }
+                  } else {
+                    const ep = archiveItem.episode || "genesis";
+                    navigate({ to: "/watch", search: { episode: ep } });
+                  }
                 }}
                 style={{ width: "100%", height: "100%" }}
               />
