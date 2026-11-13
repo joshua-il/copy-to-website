@@ -169,6 +169,13 @@ interface DotsConfig {
     density: number;
     allDots: boolean;
 }
+
+export interface CoveredRegionConfig {
+    countries?: string[];
+    highlightColor?: string;
+    indiaColor?: string;
+}
+
 interface GlobeProps {
     speed?: number;
     smoothing?: number;
@@ -178,6 +185,7 @@ interface GlobeProps {
     scale?: number;
     stopOnHover?: boolean;
     markerConfig?: MarkerConfig;
+    coveredRegions?: CoveredRegionConfig;
     direction?: "left" | "right";
     initialLatitude?: number;
     initialLongitude?: number;
@@ -201,6 +209,22 @@ function __OriginkitBase_Globe({
     scale = 8,
     stopOnHover = true,
     markerConfig = { markers: [], color: "#00f7ff", size: 40 },
+    coveredRegions = {
+        countries: [
+            "India",
+            "Iran",
+            "Philippines",
+            "Egypt",
+            "China",
+            "United States of America",
+            "United Kingdom",
+            "Canada",
+            "Australia",
+            "Nigeria",
+        ],
+        highlightColor: "#FFFFFF",
+        indiaColor: "#FFFFFF",
+    },
     direction = "left",
     initialLatitude = 23,
     initialLongitude = -23,
@@ -444,13 +468,24 @@ function __OriginkitBase_Globe({
         const loadWorldData = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch("/originkit/ne_50m_land.json").catch(() =>
-                    fetch(
-                        "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/50m/physical/ne_50m_land.json"
-                    )
-                );
-                if (!response.ok) throw new Error("Failed to load land data");
-                const landFeatures = await response.json();
+                const [landRes, countriesRes] = await Promise.all([
+                    fetch("/originkit/ne_50m_land.json").catch(() =>
+                        fetch(
+                            "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/50m/physical/ne_50m_land.json"
+                        )
+                    ),
+                    fetch("/originkit/ne_110m_admin_0_countries.json").catch(() =>
+                        fetch(
+                            "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/cultural/ne_110m_admin_0_countries.json"
+                        )
+                    ),
+                ]);
+                if (!landRes.ok) throw new Error("Failed to load land data");
+                const landFeatures = await landRes.json();
+                const countryFeatures =
+                    countriesRes && countriesRes.ok
+                        ? await countriesRes.json()
+                        : null;
 
                 while (continentOutlineGroup.children.length > 0) {
                     continentOutlineGroup.remove(
@@ -581,14 +616,67 @@ function __OriginkitBase_Globe({
                 const pathGenerator = geoPath()
                     .projection(projection)
                     .context(ctx);
-                ctx.fillStyle = "#000";
+
+                // 1. Base Ocean (solid black)
+                ctx.fillStyle = "#000000";
                 ctx.fillRect(0, 0, bitmapWidth, bitmapHeight);
-                ctx.fillStyle = "#fff";
+
+                // 2. Base Land (subtle dark grey - coded as 80)
+                ctx.fillStyle = "#50505c";
                 ctx.beginPath();
                 landFeatures.features.forEach((feature: any) => {
                     pathGenerator(feature);
                 });
                 ctx.fill();
+
+                // 3. Highlight Covered Regional Nations (coded as 255 - pure bright white)
+                if (countryFeatures && countryFeatures.features) {
+                    const coveredNames = new Set(
+                        coveredRegions?.countries || [
+                            "India",
+                            "Iran",
+                            "Philippines",
+                            "Egypt",
+                            "China",
+                            "United States of America",
+                            "United Kingdom",
+                            "Canada",
+                            "Australia",
+                            "Nigeria",
+                        ]
+                    );
+
+                    // Reached nations in pure white
+                    ctx.fillStyle = "#FFFFFF";
+                    countryFeatures.features.forEach((feature: any) => {
+                        const name =
+                            feature.properties?.NAME ||
+                            feature.properties?.ADMIN ||
+                            "";
+                        if (coveredNames.has(name)) {
+                            ctx.beginPath();
+                            pathGenerator(feature);
+                            ctx.fill();
+                        }
+                    });
+
+                    // Explicitly draw INDIA with high-contrast boundary fill
+                    const indiaFeature = countryFeatures.features.find(
+                        (f: any) =>
+                            f.properties?.NAME === "India" ||
+                            f.properties?.ADMIN === "India"
+                    );
+                    if (indiaFeature) {
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.beginPath();
+                        pathGenerator(indiaFeature);
+                        ctx.fill();
+                        ctx.strokeStyle = "#FFFFFF";
+                        ctx.lineWidth = 2.5;
+                        ctx.stroke();
+                    }
+                }
+
                 const imageData = ctx.getImageData(
                     0,
                     0,
@@ -603,12 +691,12 @@ function __OriginkitBase_Globe({
                     const y = Math.round(((90 - lat) / 180) * bitmapHeight);
                     const clampedY = Math.max(0, Math.min(bitmapHeight - 1, y));
                     const idx = (clampedY * bitmapWidth + x) * 4;
-                    return pixels[idx] > 128;
+                    return pixels[idx] > 40;
                 };
 
                 if (fill === "solid") {
-                    const texW = 1024;
-                    const texH = 512;
+                    const texW = 2048;
+                    const texH = 1024;
                     const fillCanvas = document.createElement("canvas");
                     fillCanvas.width = texW;
                     fillCanvas.height = texH;
@@ -619,6 +707,7 @@ function __OriginkitBase_Globe({
                     const fg = Math.round(fillRgba.g * 255);
                     const fb = Math.round(fillRgba.b * 255);
                     const fa = Math.round((fillRgba.a || 1) * 255);
+
                     for (let ty = 0; ty < texH; ty++) {
                         for (let tx = 0; tx < texW; tx++) {
                             const u = tx / texW;
@@ -626,14 +715,31 @@ function __OriginkitBase_Globe({
                             let lng = (u - 0.25) * 360;
                             lng = ((((lng + 180) % 360) + 360) % 360) - 180;
                             const lat = (v - 0.5) * 180;
-                            const onLand = allDots || isOnLand(lng, lat);
+
+                            const x =
+                                Math.round(((lng + 180) / 360) * bitmapWidth) %
+                                bitmapWidth;
+                            const y = Math.round(((90 - lat) / 180) * bitmapHeight);
+                            const clampedY = Math.max(0, Math.min(bitmapHeight - 1, y));
+                            const srcIdx = (clampedY * bitmapWidth + x) * 4;
+
                             const idx = (ty * texW + tx) * 4;
-                            if (onLand) {
+                            const pixelVal = pixels[srcIdx];
+
+                            if (pixelVal > 220) {
+                                // COVERED COUNTRY (INDIA & REACHED NATIONS) -> SOLID PURE WHITE
+                                data[idx] = 255;
+                                data[idx + 1] = 255;
+                                data[idx + 2] = 255;
+                                data[idx + 3] = 255;
+                            } else if (pixelVal > 40 || allDots) {
+                                // GENERAL LAND -> BASE LAND COLOR (#22222a)
                                 data[idx] = fr;
                                 data[idx + 1] = fg;
                                 data[idx + 2] = fb;
                                 data[idx + 3] = fa;
                             } else {
+                                // OCEAN -> TRANSPARENT
                                 data[idx + 3] = 0;
                             }
                         }

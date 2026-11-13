@@ -1186,19 +1186,35 @@ function LandingPage() {
                     scale={9}
                     stopOnHover={true}
                     fill="solid"
-                    fillColor="#2a2a32"
+                    fillColor="#22222a"
                     oceanColor="#000000"
                     showOutline={true}
-                    outlineColor="#666675"
+                    outlineColor="#50505e"
                     showGrid={true}
-                    graticuleColor="#1c1c24"
-                    markerConfig={{
-                      markers: GLOBE_MARKERS,
-                      color: "#A11C28",
-                      size: 40,
+                    graticuleColor="#16161e"
+                    coveredRegions={{
+                      countries: [
+                        "India",
+                        "Iran",
+                        "Philippines",
+                        "Egypt",
+                        "China",
+                        "United States of America",
+                        "United Kingdom",
+                        "Canada",
+                        "Australia",
+                        "Nigeria",
+                      ],
+                      highlightColor: "#FFFFFF",
+                      indiaColor: "#FFFFFF",
                     }}
-                    initialLatitude={20}
-                    initialLongitude={55}
+                    markerConfig={{
+                      markers: [],
+                      color: "transparent",
+                      size: 0,
+                    }}
+                    initialLatitude={21}
+                    initialLongitude={78}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">
@@ -1207,12 +1223,12 @@ function LandingPage() {
                 )}
 
                 {/* Globe Caption / Control Tip */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/40 pointer-events-none px-2">
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/60 pointer-events-none px-2 bg-black/40 backdrop-blur-sm py-1 rounded-md border border-white/5">
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-                    Glowing Red Nodes = Active Regional Productions
+                    <span className="w-2.5 h-2.5 rounded-sm bg-white shadow" />
+                    Solid White = Reached Regional Territories (India & Global Productions)
                   </span>
-                  <span className="hidden sm:inline">Drag to rotate globe</span>
+                  <span className="hidden sm:inline text-white/40">Drag to rotate globe</span>
                 </div>
               </div>
 
