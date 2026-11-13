@@ -549,22 +549,29 @@ export default function InfiniteGrid(props: InfiniteGridProps) {
                         position: "absolute",
                         top: 8,
                         left: 8,
-                        width: 18,
-                        height: 18,
+                        height: 20,
+                        padding: "0 6px",
                         borderRadius: 3,
-                        backgroundColor: "#A11C28",
+                        backgroundColor: "rgba(0, 0, 0, 0.75)",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                        backdropFilter: "blur(4px)",
                         color: "#ffffff",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
+                        gap: 4,
                         fontSize: 8,
                         fontWeight: 900,
-                        letterSpacing: 0,
+                        letterSpacing: "0.1em",
                         boxShadow: "0 2px 6px rgba(0,0,0,0.6)",
                         pointerEvents: "none",
                       }}
                     >
-                      VB
+                      <img
+                        src="/assets/nrim-logo-white.png"
+                        alt="NRIM"
+                        style={{ height: 11, width: "auto" }}
+                      />
+                      <span>TV</span>
                     </div>
                   </div>
                   <div

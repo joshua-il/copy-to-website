@@ -33,6 +33,7 @@ import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
 import Globe from "@/components/originkit/ui/globe-custom-style";
 import InfiniteGrid from "@/components/originkit/ui/infinite-grid";
 import AccordionOS from "@/components/originkit/ui/accordion-os";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -580,11 +581,13 @@ function LandingPage() {
           <div className="relative z-10 max-w-lg md:max-w-xl">
             {/* Brand Pill */}
             <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-4 h-4 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[9px] leading-none shadow">
-                VB
-              </div>
+              <img
+                src="/assets/nrim-logo-white.png"
+                alt="NRIM"
+                className="h-4 w-auto object-contain"
+              />
               <span className="text-[10px] font-bold tracking-[0.25em] text-white/90 uppercase">
-                UPCOMING PREMIERE · VISUAL BIBLE
+                VISUAL BIBLE TV · UPCOMING PREMIERE
               </span>
             </div>
 
@@ -717,8 +720,15 @@ function LandingPage() {
                   <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
 
                   {/* Corner Brand Badge */}
-                  <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[10px] shadow">
-                    VB
+                  <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-sm bg-black/80 backdrop-blur-md border border-white/20 flex items-center gap-1 shadow">
+                    <img
+                      src="/assets/nrim-logo-white.png"
+                      alt="NRIM"
+                      className="h-3 w-auto object-contain"
+                    />
+                    <span className="text-[8px] font-black tracking-widest text-white uppercase">
+                      TV
+                    </span>
                   </div>
 
                   {/* Bottom Banner */}
@@ -1345,110 +1355,7 @@ function LandingPage() {
         </section>
 
         {/* ── 8. FOOTER ────────────────────────────────────────────────── */}
-        <footer className="border-t border-white/[0.08] bg-black py-12 px-6 md:px-12 text-xs text-white/40">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-              <div>
-                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">Ecosystem</h4>
-                <ul className="space-y-2">
-                  <li>
-                    <Link to="/watch" className="hover:text-white">
-                      Watch Stream
-                    </Link>
-                  </li>
-                  <li>
-                    <a href="#hero" className="hover:text-white">
-                      Genesis Broadcast
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#vault" className="hover:text-white">
-                      All Existing Projects
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#languages" className="hover:text-white">
-                      Languages & Globe
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#upcoming-yahweh" className="hover:text-white">
-                      YAHWEH (Exodus)
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">
-                  Organization
-                </h4>
-                <ul className="space-y-2">
-                  <li>
-                    <a
-                      href="https://nrim.org"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-white"
-                    >
-                      nrim.org (Parent Org)
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://visualbible.nrim.org"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-white"
-                    >
-                      visualbible.nrim.org
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.youtube.com/@NationsReach"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-white"
-                    >
-                      YouTube Network
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">
-                  Active Languages
-                </h4>
-                <p className="leading-relaxed">
-                  English · Hindi · Tamil · Malayalam · Persian · Tagalog · Chinese · Malay
-                </p>
-                <p className="text-white/20 mt-2">Target: Reaching 100 Languages</p>
-              </div>
-              <div>
-                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">
-                  Production House
-                </h4>
-                <p className="leading-relaxed">
-                  A Prossiga Media Film / Nations Reach International Missions production.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between items-center gap-3">
-              <p>
-                © {new Date().getFullYear()} Visual Bible TV · Nations Reach International Missions
-              </p>
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[10px]">
-                  VB
-                </div>
-                <span className="text-white/60 font-semibold tracking-wider uppercase">
-                  Visual Bible TV
-                </span>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </div>
 
       {/* Admin CMS In-Place Modal */}

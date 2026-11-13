@@ -1,0 +1,297 @@
+{
+  "hero": {
+    "title": "YAHWEH",
+    "tagline": "An NRIM Theatrical & Streaming Production",
+    "subtitle": "The God Who Reveals His Power — The Book of Exodus",
+    "synopsis": "Following the monumental completion of Genesis, the visual saga advances to Exodus. Witness the clash of gods, the ten plagues of Egypt, the roaring waters of the Red Sea divided, and the law delivered in fire atop Mount Sinai.",
+    "heroImage": "/assets/yahweh-hero-mount-sinai.jpg",
+    "videoUrl": "https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=1&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60",
+    "videoDelaySeconds": 2.5
+  },
+  "vaultProductions": [
+    {
+      "id": "genesis-main",
+      "title": "In the Beginning",
+      "subtitle": "The Book of Genesis · 50 Chapters",
+      "image": "/assets/genesis-shepherds-poster.jpg",
+      "badge": "Complete Series",
+      "language": "English",
+      "episode": "genesis"
+    },
+    {
+      "id": "joseph-feature",
+      "title": "The Purpose of God",
+      "subtitle": "The Story of Joseph · Betrayed by Brothers",
+      "image": "/assets/purpose-of-god-joseph-poster.jpg",
+      "badge": "Special Presentation",
+      "language": "English / Global",
+      "episode": "joseph"
+    },
+    {
+      "id": "genesis-hindi",
+      "title": "उत्पत्ति (Genesis)",
+      "subtitle": "Hindi Edition · Full Audio & Subtitles",
+      "image": "/assets/genesis-hindi-campfire-poster.jpg",
+      "badge": "Hindi Audio",
+      "language": "Hindi",
+      "episode": "genesis"
+    },
+    {
+      "id": "genesis-tamil",
+      "title": "ஆதியாகமம் (Genesis)",
+      "subtitle": "Tamil Edition · Complete Season",
+      "image": "/assets/genesis-tamil-poster.jpg",
+      "badge": "Tamil Audio",
+      "language": "Tamil",
+      "episode": "genesis"
+    },
+    {
+      "id": "genesis-malayalam",
+      "title": "ഉദ്ഭവം (Genesis)",
+      "subtitle": "Malayalam Edition · Complete Season",
+      "image": "/assets/genesis-malayalam-poster.jpg",
+      "badge": "Malayalam",
+      "language": "Malayalam",
+      "episode": "genesis"
+    },
+    {
+      "id": "genesis-persian",
+      "title": "پیدایش (Genesis)",
+      "subtitle": "Persian Edition · Judah & Joseph",
+      "image": "/assets/judas-chosen-by-god-persian.jpg",
+      "badge": "Farsi / Persian",
+      "language": "Persian",
+      "episode": "judah"
+    },
+    {
+      "id": "genesis-chinese",
+      "title": "创世记 (Genesis)",
+      "subtitle": "Mandarin Edition · Patriarch Chronicles",
+      "image": "/assets/genesis-pharaoh-prophet-sunset.jpg",
+      "badge": "Mandarin Audio",
+      "language": "Chinese",
+      "episode": "genesis"
+    }
+  ],
+  "upcomingProjects": [
+    {
+      "title": "YAHWEH — The Book of Exodus",
+      "badge": "01 · EXODUS",
+      "claim": "The God Who Reveals His Power. The ten plagues of Egypt, the roaring waters of the Red Sea divided, the pillar of cloud and fire, and the giving of the Law atop Mount Sinai.",
+      "image": "/assets/yahweh-hero-parted-sea.jpg",
+      "alt": "YAHWEH The Book of Exodus"
+    },
+    {
+      "title": "In the Beginning — The Book of Genesis",
+      "badge": "02 · GENESIS",
+      "claim": "The God Who Fulfills His Promise. The complete 50-chapter foundational saga from Creation and the Garden of Eden to Abraham, Isaac, Jacob, and the patriarchs.",
+      "image": "/assets/genesis-shepherds-poster.jpg",
+      "alt": "In the Beginning Genesis"
+    },
+    {
+      "title": "Visual Bible TV Series",
+      "badge": "03 · SERIES",
+      "claim": "An episodic television broadcast network delivering chapter-by-chapter dramatizations with 4K HDR cinematography, spatial audio, and cinematic scoring.",
+      "image": "/assets/in-the-beginning-banner.png",
+      "alt": "Visual Bible TV Series"
+    },
+    {
+      "title": "The Purpose of God — The Story of Joseph",
+      "badge": "04 · JOSEPH",
+      "claim": "Betrayed by his brothers, sold into Egyptian bondage, and exalted to the throne. A masterclass in divine sovereignty, forgiveness, and salvation.",
+      "image": "/assets/purpose-of-god-joseph-poster.jpg",
+      "alt": "The Purpose of God Joseph"
+    },
+    {
+      "title": "100 Languages Global Initiative",
+      "badge": "05 · GLOBAL",
+      "claim": "Reaching unreached regional spoken languages and oral cultures without written Scripture. Overcoming the literacy barrier so every community hears the Word in their native spoken tongue.",
+      "image": "/assets/genesis-hindi-campfire-poster.jpg",
+      "alt": "100 Languages Global Initiative"
+    }
+  ],
+  "broadcastEpisodes": [
+    {
+      "id": "genesis-37-joseph-betrayed-by-brothers",
+      "title": "Genesis 37 · Betrayed by Brothers, Destined for the Throne",
+      "subtitle": "The Coat of Many Colors & The Pit of Dothan",
+      "book": "Book of Genesis",
+      "chapter": "Chapter 37",
+      "durationSeconds": 1143,
+      "durationFormatted": "19m 03s",
+      "videoId": "z5abtVIszH8",
+      "synopsis": "Sold into slavery by his own brothers for twenty shekels of silver. Elevated through prison to ruler of Pharaoh's palace. Joseph tests his brothers' hearts when famine strikes Canaan to witness their true repentance.",
+      "poster": "/assets/genesis-shepherds-poster.jpg",
+      "tag": "SIGNATURE EPISODE"
+    },
+    {
+      "id": "genesis-45-sold-brother-only-hope",
+      "title": "Genesis 45 · The Brother They Sold Was Now Their Only Hope",
+      "subtitle": "Reconciliation, Brokenness & Divine Providence",
+      "book": "Book of Genesis",
+      "chapter": "Chapter 45",
+      "durationSeconds": 428,
+      "durationFormatted": "7m 08s",
+      "videoId": "oZXdI34N3Ik",
+      "synopsis": "Joseph weeps aloud so loudly that the house of Pharaoh hears: 'I am Joseph! Does my father still live?' The definitive revelation that what brothers plotted for evil, God sovereignly purposed to save many lives.",
+      "poster": "/assets/genesis-pharaoh-prophet-sunset.jpg",
+      "tag": "KEY REVELATION"
+    },
+    {
+      "id": "genesis-42-faith-through-the-fire",
+      "title": "Genesis 42 · Faith Through the Fire",
+      "subtitle": "Facing Adversity and the Testing of Conscience",
+      "book": "Book of Genesis",
+      "chapter": "Chapter 42",
+      "durationSeconds": 253,
+      "durationFormatted": "4m 13s",
+      "videoId": "xzdzeamlGjU",
+      "synopsis": "Famine tightens its grip across Canaan. Ten brothers travel down to Egypt to buy grain, unaware they are bowing before their long-lost sibling, awakening memories of guilt and the inexorable call of conscience.",
+      "poster": "/assets/genesis-warriors-fire.jpg",
+      "tag": "SCRIPTURE STUDY"
+    },
+    {
+      "id": "easter-special-crucified-christ",
+      "title": "Easter Theatrical Special · Who Crucified Christ?",
+      "subtitle": "The Prophetic Arc from the Passover Lamb to Calvary",
+      "book": "The Passion & Prophecy",
+      "chapter": "Special Theatrical Feature",
+      "durationSeconds": 279,
+      "durationFormatted": "4m 39s",
+      "videoId": "BZkNTze00VA",
+      "synopsis": "An exploration connecting the shadows of Exodus and the sacrifice of Isaac to the Cross. High-definition dramatic re-enactment of the judgment hall of Pilate and the road to Golgotha.",
+      "poster": "/assets/yahweh-tablets-poster.jpg",
+      "tag": "THEATRICAL SPECIAL"
+    }
+  ],
+  "archiveItems": [
+    {
+      "id": "genesis-in-the-beginning",
+      "title": "In the Beginning",
+      "subtitle": "Genesis · 50 Chapters Complete",
+      "imageUrl": "/assets/genesis-shepherds-poster.jpg",
+      "episode": "genesis",
+      "linkUrl": "/watch?episode=genesis"
+    },
+    {
+      "id": "the-purpose-of-god",
+      "title": "The Purpose of God",
+      "subtitle": "The Story of Joseph in Egypt",
+      "imageUrl": "/uploads/solemn_guardians_of_the_egyptian_temple__1_-1794573987851.png",
+      "episode": "joseph",
+      "linkUrl": "https://www.youtube.com/watch?v=5mckQJW-9Lc&t=94s"
+    },
+    {
+      "id": "genesis-hindi",
+      "title": "Genesis · उत्पत्ति",
+      "subtitle": "Hindi Edition · Campfire Council",
+      "imageUrl": "/assets/genesis-hindi-campfire-poster.jpg",
+      "episode": "genesis",
+      "linkUrl": "/watch?episode=genesis"
+    },
+    {
+      "id": "genesis-tamil",
+      "title": "Genesis · ஆதியாகமம்",
+      "subtitle": "Tamil Edition · Complete Season",
+      "imageUrl": "/assets/genesis-tamil-poster.jpg",
+      "episode": "genesis",
+      "linkUrl": "/watch?episode=genesis"
+    },
+    {
+      "id": "genesis-malayalam",
+      "title": "Genesis · ഉദ്ഭവം",
+      "subtitle": "Malayalam Edition · Complete",
+      "imageUrl": "/assets/genesis-malayalam-poster.jpg",
+      "episode": "genesis",
+      "linkUrl": "/watch?episode=genesis"
+    },
+    {
+      "id": "genesis-chinese",
+      "title": "Genesis · 创世记",
+      "subtitle": "Mandarin Chinese Edition",
+      "imageUrl": "/assets/genesis-chinese-poster.jpg",
+      "episode": "genesis",
+      "linkUrl": "/watch?episode=genesis"
+    },
+    {
+      "id": "genesis-persian",
+      "title": "یهودا، برگزیده خدا",
+      "subtitle": "Persian Edition · Judah Chosen",
+      "imageUrl": "/assets/genesis-persian-judah-poster.jpg",
+      "episode": "judah",
+      "linkUrl": "/watch?episode=judah"
+    },
+    {
+      "id": "genesis-tagalog",
+      "title": "Genesis · Tagalog",
+      "subtitle": "Philippines & Southeast Asia",
+      "imageUrl": "/assets/genesis-tagalog-poster.jpg",
+      "episode": "genesis",
+      "linkUrl": "/watch?episode=genesis"
+    },
+    {
+      "id": "yahweh-mount-sinai",
+      "title": "YAHWEH · Mount Sinai",
+      "subtitle": "The Tablets of the Law (Exodus)",
+      "imageUrl": "/assets/yahweh-tablets-poster.jpg",
+      "episode": "yahweh",
+      "linkUrl": "/watch?episode=yahweh"
+    },
+    {
+      "id": "the-waters-divide",
+      "title": "The Waters Divide",
+      "subtitle": "Exodus Chapter 14 · Feature",
+      "imageUrl": "/assets/moses-parting-sea.jpg",
+      "episode": "yahweh",
+      "linkUrl": "/watch?episode=yahweh"
+    },
+    {
+      "id": "yahweh-the-deliverer",
+      "title": "YAHWEH · The Deliverer",
+      "subtitle": "The Red Sea Staff Poster",
+      "imageUrl": "/assets/yahweh-exodus-staff-poster.jpg",
+      "episode": "yahweh",
+      "linkUrl": "/watch?episode=yahweh"
+    },
+    {
+      "id": "joseph-before-pharaoh",
+      "title": "Joseph Before Pharaoh",
+      "subtitle": "Genesis 41 Historical Study",
+      "imageUrl": "/assets/genesis-pharaoh-prophet-sunset.jpg",
+      "episode": "joseph",
+      "linkUrl": "/watch?episode=joseph"
+    },
+    {
+      "id": "covenant-night",
+      "title": "Covenant in the Night",
+      "subtitle": "Abraham Under the Stars",
+      "imageUrl": "/assets/covenant-stars-poster.jpg",
+      "episode": "genesis",
+      "linkUrl": "/watch?episode=genesis"
+    },
+    {
+      "id": "judah-the-intercessor",
+      "title": "Judah · The Intercessor",
+      "subtitle": "Pledge of Life for Benjamin",
+      "imageUrl": "/assets/judas-chosen-by-god-persian.jpg",
+      "episode": "judah",
+      "linkUrl": "/watch?episode=judah"
+    },
+    {
+      "id": "pharaohs-decree",
+      "title": "Pharaoh's Decree",
+      "subtitle": "The Golden Chariots of Egypt",
+      "imageUrl": "/assets/genesis-pharaoh-prophet-sunset.jpg",
+      "episode": "yahweh",
+      "linkUrl": "/watch?episode=yahweh"
+    },
+    {
+      "id": "the-plagues-of-egypt",
+      "title": "The Ten Plagues",
+      "subtitle": "Exodus Chapters 7-12",
+      "imageUrl": "/assets/yahweh-monument.webp",
+      "episode": "yahweh",
+      "linkUrl": "/watch?episode=yahweh"
+    }
+  ]
+}

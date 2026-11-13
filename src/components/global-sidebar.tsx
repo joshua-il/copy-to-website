@@ -86,24 +86,19 @@ export function GlobalSidebar() {
           <div className="flex items-center justify-between px-1">
             <Link
               to="/"
-              className="flex items-center gap-3 overflow-hidden group"
+              className={`flex flex-col items-center gap-1 overflow-hidden group py-1 ${
+                sidebarExpanded ? "items-start px-2" : "items-center"
+              }`}
               title="Visual Bible TV"
             >
-              <div className="w-9 h-9 shrink-0 rounded bg-[#A11C28] flex items-center justify-center font-black text-white text-xs tracking-tighter shadow-lg shadow-red-950/60 group-hover:scale-105 transition-transform">
-                VB
-              </div>
-              <div
-                className={`flex flex-col transition-opacity duration-200 ${
-                  sidebarExpanded ? "opacity-100" : "opacity-0 w-0 pointer-events-none"
-                }`}
-              >
-                <span className="text-xs font-black tracking-[0.2em] text-white uppercase whitespace-nowrap">
-                  Visual Bible
-                </span>
-                <span className="text-[9px] font-semibold text-white/50 tracking-widest uppercase">
-                  TV Network
-                </span>
-              </div>
+              <img
+                src="/assets/nrim-logo-white.png"
+                alt="NRIM Logo"
+                className="h-7 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform drop-shadow"
+              />
+              <span className="text-[8px] font-black tracking-[0.22em] text-white/90 uppercase whitespace-nowrap">
+                VISUAL BIBLE TV
+              </span>
             </Link>
             {sidebarExpanded && (
               <button

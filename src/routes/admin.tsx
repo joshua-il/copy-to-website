@@ -108,8 +108,15 @@ function AdminDashboardPage() {
       <div className="min-h-screen bg-black text-white flex flex-col justify-center items-center p-6 selection:bg-[#A11C28]">
         <div className="w-full max-w-md bg-[#0b0b10] border border-white/20 rounded-2xl p-8 shadow-2xl">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-11 h-11 rounded-xl bg-[#A11C28] flex items-center justify-center font-black text-white text-sm shadow-lg shadow-red-950/60">
-              VB
+            <div className="flex flex-col items-center">
+              <img
+                src="/assets/nrim-logo-white.png"
+                alt="NRIM Logo"
+                className="h-8 w-auto object-contain"
+              />
+              <span className="text-[8px] font-black tracking-[0.2em] text-white/80 uppercase mt-0.5">
+                VISUAL BIBLE TV
+              </span>
             </div>
             <div>
               <h1 className="text-xl font-black text-white">NRIM Admin Portal</h1>
@@ -207,8 +214,15 @@ function AdminDashboardPage() {
       <header className="border-b border-white/[0.08] bg-[#0c0c14] sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-[#A11C28] flex items-center justify-center font-black text-white text-xs">
-              VB
+            <div className="flex flex-col items-center">
+              <img
+                src="/assets/nrim-logo-white.png"
+                alt="NRIM Logo"
+                className="h-7 w-auto object-contain"
+              />
+              <span className="text-[7px] font-black tracking-[0.2em] text-white/80 uppercase">
+                VISUAL BIBLE TV
+              </span>
             </div>
             <div>
               <span className="text-xs font-black tracking-wider uppercase block">
