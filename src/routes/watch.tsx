@@ -328,22 +328,87 @@ function LiveTvPage() {
     };
   }, [currentTimeSec]);
 
-  // Determine what is currently playing on the screen
-  const displayedEpisode = useMemo(() => {
-    if (!isLiveSynced && manualEpisodeId) {
-      const found = ENGLISH_CHANNEL_EPISODES.find((ep) => ep.id === manualEpisodeId);
-      if (found) return found;
-    }
-    return liveBroadcastState.currentLiveEpisode;
-  }, [isLiveSynced, manualEpisodeId, liveBroadcastState.currentLiveEpisode]);
+  // STABLE PLAYBACK STATE: ONLY updates on episode transition or user action.
+  // CRITICAL: Never updates on 1-second ticks so the iframe plays continuously without blinking or reloading.
+  const [activePlayback, setActivePlayback] = useState<{
+    episodeId: string;
+    videoId: string;
+    startSeconds: number;
+    isLive: boolean;
+    playToken: number;
+  }>(() => {
+    // Map legacy episode query params if present
+    const legacyMap: Record<string, string> = {
+      genesis: "genesis-journey-to-egypt",
+      joseph: "genesis-story-of-joseph-early",
+      easter: "easter-special-crucified-christ",
+    };
+    const targetId = searchedEpisodeId ? (legacyMap[searchedEpisodeId] ?? searchedEpisodeId) : null;
 
-  // Calculate the starting timestamp for the YouTube player
-  const playerStartSeconds = useMemo(() => {
-    if (isLiveSynced) {
-      return Math.floor(liveBroadcastState.elapsedInEpisode);
+    if (targetId && initialMode === "vod") {
+      const found =
+        ENGLISH_CHANNEL_EPISODES.find((ep) => ep.id === targetId) ?? ENGLISH_CHANNEL_EPISODES[0];
+      return {
+        episodeId: found.id,
+        videoId: found.videoId,
+        startSeconds: 0,
+        isLive: false,
+        playToken: 1,
+      };
     }
-    return 0; // VOD plays from start
-  }, [isLiveSynced, liveBroadcastState.elapsedInEpisode]);
+
+    const nowSec = Math.floor(Date.now() / 1000);
+    const cycleOffset = nowSec % TOTAL_CYCLE_SECONDS;
+    let accumulated = 0;
+    let initialEp = ENGLISH_CHANNEL_EPISODES[0];
+    let initialOffset = 0;
+
+    for (const ep of ENGLISH_CHANNEL_EPISODES) {
+      if (accumulated + ep.durationSeconds > cycleOffset) {
+        initialEp = ep;
+        initialOffset = cycleOffset - accumulated;
+        break;
+      }
+      accumulated += ep.durationSeconds;
+    }
+
+    return {
+      episodeId: initialEp.id,
+      videoId: initialEp.videoId,
+      startSeconds: initialOffset,
+      isLive: true,
+      playToken: 1,
+    };
+  });
+
+  // When in Live mode, advance to next episode ONLY when the on-air episode ID changes naturally
+  useEffect(() => {
+    if (
+      activePlayback.isLive &&
+      liveBroadcastState.currentLiveEpisode.id !== activePlayback.episodeId
+    ) {
+      setActivePlayback({
+        episodeId: liveBroadcastState.currentLiveEpisode.id,
+        videoId: liveBroadcastState.currentLiveEpisode.videoId,
+        startSeconds: 0,
+        isLive: true,
+        playToken: Date.now(),
+      });
+    }
+  }, [
+    activePlayback.isLive,
+    activePlayback.episodeId,
+    liveBroadcastState.currentLiveEpisode.id,
+    liveBroadcastState.currentLiveEpisode.videoId,
+  ]);
+
+  // The episode metadata currently shown on screen
+  const displayedEpisode = useMemo(() => {
+    return (
+      ENGLISH_CHANNEL_EPISODES.find((ep) => ep.id === activePlayback.episodeId) ??
+      ENGLISH_CHANNEL_EPISODES[0]
+    );
+  }, [activePlayback.episodeId]);
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
@@ -354,13 +419,26 @@ function LiveTvPage() {
   };
 
   const syncToLiveBroadcast = () => {
-    setIsLiveSynced(true);
-    setManualEpisodeId(null);
+    const currentLive = liveBroadcastState.currentLiveEpisode;
+    setActivePlayback({
+      episodeId: currentLive.id,
+      videoId: currentLive.videoId,
+      startSeconds: Math.floor(liveBroadcastState.elapsedInEpisode),
+      isLive: true,
+      playToken: Date.now(),
+    });
   };
 
   const playEpisodeOnDemand = (epId: string) => {
-    setIsLiveSynced(false);
-    setManualEpisodeId(epId);
+    const found =
+      ENGLISH_CHANNEL_EPISODES.find((ep) => ep.id === epId) ?? ENGLISH_CHANNEL_EPISODES[0];
+    setActivePlayback({
+      episodeId: found.id,
+      videoId: found.videoId,
+      startSeconds: 0,
+      isLive: false,
+      playToken: Date.now(),
+    });
   };
 
   return (
@@ -402,7 +480,7 @@ function LiveTvPage() {
 
           <div className="flex items-center gap-3">
             {/* Live Sync Status Toggle */}
-            {isLiveSynced ? (
+            {activePlayback.isLive ? (
               <div className="flex items-center gap-1.5 bg-red-950/40 border border-red-600/40 px-2.5 py-1 rounded text-[11px] font-bold text-red-400">
                 <Radio className="w-3 h-3 text-red-500 animate-pulse" />
                 <span>SYNCED LIVE</span>
@@ -521,11 +599,11 @@ function LiveTvPage() {
               className="absolute inset-0 h-full w-full object-cover opacity-20 pointer-events-none"
             />
 
-            {/* YouTube Embed Player Synced to Current Live Second */}
+            {/* YouTube Embed Player — Smooth & Continuous (Never resets or reloads on second ticks) */}
             <iframe
-              key={`${displayedEpisode.id}-${isLiveSynced ? "live" : "vod"}-${Math.floor(playerStartSeconds / 30)}`}
+              key={`${activePlayback.episodeId}-${activePlayback.playToken}`}
               className="absolute inset-0 h-full w-full border-0 z-10"
-              src={`https://www.youtube-nocookie.com/embed/${displayedEpisode.videoId}?start=${playerStartSeconds}&autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&controls=1&enablejsapi=1`}
+              src={`https://www.youtube-nocookie.com/embed/${activePlayback.videoId}?start=${activePlayback.startSeconds}&autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1`}
               title={displayedEpisode.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               referrerPolicy="strict-origin-when-cross-origin"
@@ -539,14 +617,14 @@ function LiveTvPage() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
               </span>
               <span className="text-[10px] font-black tracking-widest text-white uppercase">
-                {isLiveSynced ? "LIVE 24/7 BROADCAST" : "ON-DEMAND SELECTION"}
+                {activePlayback.isLive ? "LIVE 24/7 BROADCAST" : "ON-DEMAND SELECTION"}
               </span>
               <span className="text-white/40 font-mono text-[10px]">· CH 01</span>
             </div>
           </div>
 
           {/* ── Live Playback Progress Scrubber (Synchronized Real-Time) ── */}
-          {isLiveSynced && (
+          {activePlayback.isLive && (
             <div className="bg-[#09090e] border-t border-white/[0.08] px-4 py-2.5 flex flex-col gap-1.5 select-none">
               <div className="flex items-center justify-between text-[11px] font-mono text-white/60">
                 <div className="flex items-center gap-2">
@@ -639,7 +717,7 @@ function LiveTvPage() {
             </div>
 
             <div className="mt-5 pt-3 border-t border-white/[0.06]">
-              {isLiveSynced ? (
+              {activePlayback.isLive ? (
                 <div className="text-[11px] text-white/50 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   <span>Viewing synchronized live stream</span>
@@ -685,8 +763,9 @@ function LiveTvPage() {
           {/* Schedule Timeline Cards */}
           <div className="space-y-3">
             {liveBroadcastState.scheduleGrid.map((item, idx) => {
-              const isCurrentPlaying = item.isLiveNow && isLiveSynced;
-              const isSelectedManual = !isLiveSynced && item.episode.id === manualEpisodeId;
+              const isCurrentPlaying = item.isLiveNow && activePlayback.isLive;
+              const isSelectedManual =
+                !activePlayback.isLive && item.episode.id === activePlayback.episodeId;
               return (
                 <div
                   key={`${item.episode.id}-${idx}`}
@@ -750,13 +829,13 @@ function LiveTvPage() {
                         type="button"
                         onClick={syncToLiveBroadcast}
                         className={`text-xs font-bold px-4 py-2 rounded uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                          isLiveSynced
+                          activePlayback.isLive
                             ? "bg-red-600 text-white shadow-md shadow-red-950/60"
                             : "bg-[#A11C28] hover:bg-[#7F151F] text-white"
                         }`}
                       >
                         <Play className="w-3 h-3 fill-white" />
-                        <span>{isLiveSynced ? "Watching Live" : "Tune In Live"}</span>
+                        <span>{activePlayback.isLive ? "Watching Live" : "Tune In Live"}</span>
                       </button>
                     ) : (
                       <button
