@@ -18,11 +18,14 @@ import {
   ExternalLink,
   ChevronLeft,
   Menu,
+  Globe as GlobeIcon,
+  Check,
 } from "lucide-react";
 import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
 import { joinWaitlist } from "@/lib/waitlist.functions";
 import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
+import Globe from "@/components/originkit/ui/globe-custom-style";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -124,6 +127,111 @@ const PITCH_TUNNEL_IMAGES = [
   "/assets/genesis-malayalam-poster.jpg",
   "/assets/genesis-tamil-poster.jpg",
   "/assets/yahweh-tablets-poster.jpg",
+];
+
+// ─── Data: Languages & Regions Reached (3D Globe Markers) ────────────────────
+
+interface ReachedLanguage {
+  id: string;
+  name: string;
+  nativeName: string;
+  regions: string;
+  badge: string;
+  isUpcoming?: boolean;
+  lat: number;
+  lng: number;
+}
+
+const REACHED_LANGUAGES: ReachedLanguage[] = [
+  {
+    id: "india",
+    name: "Hindi · Tamil · Malayalam",
+    nativeName: "हिन्दी · தமிழ் · മലയാളം",
+    regions: "India, South Asia & Global Diaspora",
+    badge: "3 Live Tracks",
+    lat: 20.59,
+    lng: 78.96,
+  },
+  {
+    id: "persian",
+    name: "Persian (Farsi)",
+    nativeName: "فارسی",
+    regions: "Iran, Middle East & Farsi Diaspora",
+    badge: "Judah (Gen 38) Live",
+    lat: 35.68,
+    lng: 51.38,
+  },
+  {
+    id: "tagalog",
+    name: "Tagalog",
+    nativeName: "Wikang Tagalog",
+    regions: "Philippines & Southeast Asia",
+    badge: "Genesis Series Live",
+    lat: 14.59,
+    lng: 120.98,
+  },
+  {
+    id: "english",
+    name: "English (Native)",
+    nativeName: "English",
+    regions: "USA, UK, Canada, Australia, New Zealand",
+    badge: "Full Catalog Live",
+    lat: 38.9,
+    lng: -77.03,
+  },
+  {
+    id: "malay",
+    name: "Malay",
+    nativeName: "Bahasa Melayu",
+    regions: "Malaysia, Singapore, Brunei",
+    badge: "Genesis Live",
+    lat: 3.13,
+    lng: 101.68,
+  },
+  {
+    id: "chinese",
+    name: "Chinese (Mandarin)",
+    nativeName: "中文 / 创世记",
+    regions: "China, Taiwan, East Asia Diaspora",
+    badge: "Joseph in Egypt Live",
+    lat: 31.23,
+    lng: 121.47,
+  },
+  {
+    id: "yoruba",
+    name: "Yoruba",
+    nativeName: "Èdè Yorùbá",
+    regions: "Nigeria & West Africa",
+    badge: "In Production",
+    isUpcoming: true,
+    lat: 6.52,
+    lng: 3.37,
+  },
+];
+
+const GLOBE_MARKERS = [
+  // India (Hindi, Tamil, Malayalam)
+  { lat: 28.61, lng: 77.2 },
+  { lat: 13.08, lng: 80.27 },
+  { lat: 9.93, lng: 76.26 },
+  // Persia (Farsi)
+  { lat: 35.68, lng: 51.38 },
+  // Philippines (Tagalog)
+  { lat: 14.59, lng: 120.98 },
+  // English (USA, UK, Canada, Australia)
+  { lat: 38.9, lng: -77.03 },
+  { lat: 34.05, lng: -118.24 },
+  { lat: 51.5, lng: -0.12 },
+  { lat: 45.42, lng: -75.69 },
+  { lat: -33.86, lng: 151.2 },
+  // Malay (Malaysia / Singapore)
+  { lat: 3.13, lng: 101.68 },
+  { lat: 1.35, lng: 103.81 },
+  // Yoruba (Nigeria / West Africa)
+  { lat: 6.52, lng: 3.37 },
+  // China (Mandarin)
+  { lat: 31.23, lng: 121.47 },
+  { lat: 39.9, lng: 116.4 },
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -228,6 +336,7 @@ function LandingPage() {
               { id: "pitch", label: "The Pitch", icon: Compass, href: "#pitch" },
               { id: "workflow", label: "Technical Workflow", icon: Cpu, href: "#workflow" },
               { id: "upcoming", label: "Upcoming (YAHWEH)", icon: Film, href: "#upcoming-yahweh" },
+              { id: "languages", label: "Languages Reached", icon: GlobeIcon, href: "#languages" },
               { id: "waitlist", label: "Join Waitlist", icon: Plus, href: "#waitlist" },
             ].map((item) => {
               const Icon = item.icon;
@@ -328,14 +437,14 @@ function LandingPage() {
           <span className="text-[10px] font-medium">Pitch</span>
         </a>
         <a
-          href="#workflow"
-          onClick={() => setActiveNav("workflow")}
+          href="#languages"
+          onClick={() => setActiveNav("languages")}
           className={`flex flex-col items-center gap-1 ${
-            activeNav === "workflow" ? "text-[#E50914]" : "text-white/60"
+            activeNav === "languages" ? "text-[#E50914]" : "text-white/60"
           }`}
         >
-          <Cpu className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Workflow</span>
+          <GlobeIcon className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Languages</span>
         </a>
         <a
           href="#waitlist"
@@ -829,7 +938,127 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 6. WAITLIST FUNNEL ───────────────────────────────────────── */}
+        {/* ── 6. GLOBAL LANGUAGES REACHED (ORIGINKIT 3D GLOBE) ─────────── */}
+        <section
+          id="languages"
+          className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#08080c] to-black border-t border-white/[0.08]"
+        >
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#E50914]/20 border border-[#E50914]/40 text-[#E50914] text-[11px] font-bold tracking-widest uppercase mb-3">
+                Global Network · 88 Nations
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
+                Languages Reached Across the Earth
+              </h2>
+              <p className="text-white/65 text-sm md:text-base leading-relaxed">
+                Scripture released and streaming in 8 major native languages across Asia, the Middle
+                East, the Pacific, and the Americas — advancing toward our goal of 100 languages.
+              </p>
+            </div>
+
+            {/* Split Grid: 3D Globe on Left, Language List on Right */}
+            <div className="grid lg:grid-cols-12 gap-8 items-center bg-[#0d0d12] border border-white/[0.08] rounded-2xl p-6 md:p-8 shadow-2xl overflow-hidden">
+              {/* Left Column: Originkit Interactive 3D Globe */}
+              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[420px] md:min-h-[480px] w-full overflow-hidden rounded-xl bg-black/60 border border-white/[0.06]">
+                {mounted ? (
+                  <Globe
+                    style={{ width: "100%", height: "100%", minHeight: "440px" }}
+                    direction="right"
+                    speed={1.6}
+                    scale={9}
+                    stopOnHover={true}
+                    fill="solid"
+                    fillColor="#2a2a32"
+                    oceanColor="#000000"
+                    showOutline={true}
+                    outlineColor="#666675"
+                    showGrid={true}
+                    graticuleColor="#1c1c24"
+                    markerConfig={{
+                      markers: GLOBE_MARKERS,
+                      color: "#E50914",
+                      size: 40,
+                    }}
+                    initialLatitude={20}
+                    initialLongitude={55}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">
+                    Loading Global Network...
+                  </div>
+                )}
+
+                {/* Globe Caption / Control Tip */}
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/40 pointer-events-none px-2">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
+                    Glowing Red Nodes = Active Regional Productions
+                  </span>
+                  <span className="hidden sm:inline">Drag to rotate globe</span>
+                </div>
+              </div>
+
+              {/* Right Column: Cards of Languages & Regions */}
+              <div className="lg:col-span-5 flex flex-col gap-2.5 max-h-[500px] overflow-y-auto pr-1 scrollbar-none">
+                {REACHED_LANGUAGES.map((lang) => (
+                  <div
+                    key={lang.id}
+                    className="p-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors flex items-center justify-between gap-3 group"
+                  >
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-bold text-white group-hover:text-[#E50914] transition-colors truncate">
+                          {lang.name}
+                        </span>
+                        <span className="text-xs text-white/40 font-normal">
+                          ({lang.nativeName})
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-white/50 truncate mt-0.5">
+                        {lang.regions}
+                      </span>
+                    </div>
+
+                    <div className="shrink-0 text-right">
+                      <span
+                        className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
+                          lang.isUpcoming
+                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                            : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        }`}
+                      >
+                        {lang.badge}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Target to reach 100 Languages Card */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-[#E50914]/20 via-[#E50914]/10 to-transparent border border-[#E50914]/40 flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-black text-white uppercase tracking-wider">
+                      Target: Reaching 100 Languages
+                    </div>
+                    <div className="text-[11px] text-white/70 mt-0.5">
+                      Expanding across Africa, Latin America, Southeast Asia, and indigenous
+                      dialects.
+                    </div>
+                  </div>
+                  <Link
+                    to="/watch"
+                    className="shrink-0 text-xs font-bold bg-white text-black px-3 py-1.5 rounded hover:bg-white/90 transition-colors uppercase tracking-wider"
+                  >
+                    Watch All
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 7. WAITLIST FUNNEL ───────────────────────────────────────── */}
         <section
           id="waitlist"
           className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#080808] to-black border-t border-white/[0.08] text-center"
@@ -887,7 +1116,7 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
+        {/* ── 8. FOOTER ────────────────────────────────────────────────── */}
         <footer className="border-t border-white/[0.08] bg-black py-12 px-6 md:px-12 text-xs text-white/40">
           <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
@@ -907,6 +1136,11 @@ function LandingPage() {
                   <li>
                     <a href="#vault" className="hover:text-white">
                       All Existing Projects
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#languages" className="hover:text-white">
+                      Languages & Globe
                     </a>
                   </li>
                   <li>
