@@ -127,6 +127,14 @@ const PITCH_TUNNEL_IMAGES = [
   "/assets/genesis-malayalam-poster.jpg",
   "/assets/genesis-tamil-poster.jpg",
   "/assets/yahweh-tablets-poster.jpg",
+  "/assets/yahweh-monument.jpg",
+  "/assets/yahweh-exodus-staff-poster.jpg",
+  "/assets/moses-parting-sea.jpg",
+  "/assets/genesis-pharaoh-prophet-sunset.jpg",
+  "/assets/genesis-poster.jpg",
+  "/assets/genesis-tagalog-poster.jpg",
+  "/assets/genesis-warriors-fire.jpg",
+  "/assets/judas-chosen-by-god-persian.jpg",
 ];
 
 // ─── Data: Languages & Regions Reached (3D Globe Markers) ────────────────────
@@ -279,7 +287,7 @@ function LandingPage() {
 
   return (
     <div
-      className="min-h-screen bg-[#000000] text-white font-sans selection:bg-[#E50914] selection:text-white"
+      className="min-h-screen bg-[#000000] text-white font-sans selection:bg-[#A11C28] selection:text-white"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── EXPANDING SIDE NAVIGATION BAR (NETFLIX OTT TV STYLE) ──────── */}
@@ -301,7 +309,7 @@ function LandingPage() {
               className="flex items-center gap-3 overflow-hidden group"
               title="Visual Bible TV"
             >
-              <div className="w-9 h-9 shrink-0 rounded bg-[#E50914] flex items-center justify-center font-black text-white text-xs tracking-tighter shadow-lg shadow-red-950/60">
+              <div className="w-9 h-9 shrink-0 rounded bg-[#A11C28] flex items-center justify-center font-black text-white text-xs tracking-tighter shadow-lg shadow-red-950/60">
                 VB
               </div>
               <div
@@ -355,7 +363,7 @@ function LandingPage() {
                 >
                   {/* Left Red Indicator Bar */}
                   {isActive && (
-                    <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#E50914] rounded-r" />
+                    <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#A11C28] rounded-r" />
                   )}
                   <Icon className="w-5 h-5 shrink-0 transition-transform group-hover:scale-110" />
                   <span
@@ -410,7 +418,7 @@ function LandingPage() {
           href="#hero"
           onClick={() => setActiveNav("home")}
           className={`flex flex-col items-center gap-1 ${
-            activeNav === "home" ? "text-[#E50914]" : "text-white/60"
+            activeNav === "home" ? "text-[#A11C28]" : "text-white/60"
           }`}
         >
           <Home className="w-5 h-5" />
@@ -420,7 +428,7 @@ function LandingPage() {
           href="#vault"
           onClick={() => setActiveNav("vault")}
           className={`flex flex-col items-center gap-1 ${
-            activeNav === "vault" ? "text-[#E50914]" : "text-white/60"
+            activeNav === "vault" ? "text-[#A11C28]" : "text-white/60"
           }`}
         >
           <Tv className="w-5 h-5" />
@@ -430,7 +438,7 @@ function LandingPage() {
           href="#pitch"
           onClick={() => setActiveNav("pitch")}
           className={`flex flex-col items-center gap-1 ${
-            activeNav === "pitch" ? "text-[#E50914]" : "text-white/60"
+            activeNav === "pitch" ? "text-[#A11C28]" : "text-white/60"
           }`}
         >
           <Compass className="w-5 h-5" />
@@ -440,7 +448,7 @@ function LandingPage() {
           href="#languages"
           onClick={() => setActiveNav("languages")}
           className={`flex flex-col items-center gap-1 ${
-            activeNav === "languages" ? "text-[#E50914]" : "text-white/60"
+            activeNav === "languages" ? "text-[#A11C28]" : "text-white/60"
           }`}
         >
           <GlobeIcon className="w-5 h-5" />
@@ -450,7 +458,7 @@ function LandingPage() {
           href="#waitlist"
           onClick={() => setActiveNav("waitlist")}
           className={`flex flex-col items-center gap-1 ${
-            activeNav === "waitlist" ? "text-[#E50914]" : "text-white/60"
+            activeNav === "waitlist" ? "text-[#A11C28]" : "text-white/60"
           }`}
         >
           <Plus className="w-5 h-5" />
@@ -464,7 +472,7 @@ function LandingPage() {
         <header className="absolute top-0 left-0 md:left-18 lg:left-20 right-0 z-40 flex items-center justify-between px-6 md:px-10 py-5 pointer-events-none">
           <div className="flex items-center gap-3 pointer-events-auto">
             <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/60 tracking-wider uppercase font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
               Nations Reach Network
             </span>
           </div>
@@ -473,7 +481,7 @@ function LandingPage() {
             <RegionalSelector value={language} onValueChange={setLanguage} />
             <a
               href="#waitlist"
-              className="hidden sm:inline-flex items-center gap-1.5 bg-[#E50914] text-white text-xs font-bold px-4 py-2 rounded shadow-md hover:bg-[#c0070f] transition-colors uppercase tracking-wider"
+              className="hidden sm:inline-flex items-center gap-1.5 bg-[#A11C28] text-white text-xs font-bold px-4 py-2 rounded shadow-md hover:bg-[#7F151F] transition-colors uppercase tracking-wider"
             >
               Get Early Access
             </a>
@@ -492,72 +500,72 @@ function LandingPage() {
               ref={iframeRef}
               src="https://www.youtube-nocookie.com/embed/z5abtVIszH8?start=265&autoplay=1&mute=1&controls=0&loop=1&playlist=z5abtVIszH8&playsinline=1&rel=0&modestbranding=1&enablejsapi=1"
               title="Visual Bible Background Stream"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160vw] h-[160vh] md:w-[130vw] md:h-[130vh] object-cover pointer-events-none select-none opacity-80"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160vw] h-[160vh] md:w-[130vw] md:h-[130vh] object-cover pointer-events-none select-none opacity-100"
               allow="autoplay; encrypted-media"
             />
-            {/* Cinematic OTT Gradient Overlay: Deep left vignette for contrast + bottom fade */}
+            {/* Cinematic Left Vignette: Middle third & right portions stay 100% crisp & HQ */}
             <div
               className="absolute inset-0"
               style={{
                 background: `
-                  linear-gradient(90deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.45) 65%, rgba(0,0,0,0.7) 100%),
-                  linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 20%, transparent 60%, rgba(0,0,0,0.95) 85%, #000000 100%)
+                  linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 28%, rgba(0,0,0,0.15) 50%, transparent 66%),
+                  linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 18%, transparent 65%, rgba(0,0,0,0.85) 88%, #000000 100%)
                 `,
               }}
             />
           </div>
 
-          {/* Hero Metadata & Show Info */}
-          <div className="relative z-10 pt-24 md:pt-32 px-6 md:px-12 max-w-2xl">
-            {/* Red Brand Pill */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-4 h-4 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[9px] leading-none">
+          {/* Hero Metadata & Show Info (Refined, 25% smaller, premium OTT placement) */}
+          <div className="relative z-10 pt-20 md:pt-28 px-6 md:px-12 max-w-lg md:max-w-xl">
+            {/* Brand Pill */}
+            <div className="flex items-center gap-2 mb-2.5">
+              <div className="w-4 h-4 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[9px] leading-none shadow">
                 VB
               </div>
-              <span className="text-[11px] font-bold tracking-[0.25em] text-white/90 uppercase">
+              <span className="text-[10px] font-bold tracking-[0.25em] text-white/90 uppercase">
                 SERIES · VISUAL BIBLE
               </span>
             </div>
 
             {/* Tagline */}
-            <div className="text-xs md:text-sm font-semibold tracking-[0.2em] text-[#A98B5A] uppercase mb-1">
+            <div className="text-[11px] font-semibold tracking-[0.2em] text-[#C4A468] uppercase mb-1">
               An NRIM Original Production
             </div>
 
-            {/* Title */}
+            {/* Title (scaled ~25% smaller with crisp boutique typography) */}
             <h1
-              className="font-black tracking-tight text-white leading-none mb-3"
-              style={{ fontSize: "clamp(44px, 6.5vw, 88px)" }}
+              className="font-black tracking-tight text-white leading-[1.08] mb-2"
+              style={{ fontSize: "clamp(26px, 4.2vw, 50px)" }}
             >
               IN THE BEGINNING
             </h1>
 
             {/* Subtitle */}
-            <p className="text-white/90 text-sm md:text-base font-medium tracking-wide uppercase mb-4">
+            <p className="text-white/85 text-xs md:text-sm font-semibold tracking-wider uppercase mb-3">
               The God Who Fulfills His Promise — The Book of Genesis
             </p>
 
             {/* Badges */}
-            <div className="flex items-center gap-2.5 text-xs text-white/80 mb-4 flex-wrap">
-              <span className="text-emerald-400 font-bold">50 Chapters Live</span>
-              <span className="text-white/60">Season 1</span>
-              <span className="border border-white/40 px-1.5 py-0.5 text-[10px] font-semibold text-white/80 rounded-[2px] leading-none">
+            <div className="flex items-center gap-2 text-xs text-white/80 mb-3.5 flex-wrap">
+              <span className="text-emerald-400 font-bold text-[11px]">50 Chapters Live</span>
+              <span className="text-white/50 text-[11px]">Season 1</span>
+              <span className="border border-white/30 px-1.5 py-0.5 text-[9px] font-semibold text-white/80 rounded-[2px] leading-none">
                 ALL AGES
               </span>
-              <span className="text-white/60">8 Languages</span>
-              <span className="border border-white/40 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
+              <span className="text-white/50 text-[11px]">8 Languages</span>
+              <span className="border border-white/30 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
                 VISION
               </span>
-              <span className="border border-white/40 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
+              <span className="border border-white/30 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
                 5.1 AUDIO
               </span>
-              <span className="border border-white/40 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
+              <span className="border border-white/30 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
                 4K HDR
               </span>
             </div>
 
             {/* Synopsis */}
-            <p className="text-white/75 text-sm md:text-base leading-relaxed mb-6 max-w-xl">
+            <p className="text-white/75 text-xs md:text-[13px] leading-relaxed mb-5 max-w-md line-clamp-3">
               From Creation and the fall of man to Abraham's covenant, Jacob's wrestling, and
               Joseph's rise in Egypt. Experience the complete 50 chapters of Genesis brought to life
               through cinematic AI and real-actor performances.
@@ -604,7 +612,7 @@ function LandingPage() {
           <div id="vault" className="relative z-10 px-6 md:px-12 pt-10 pb-8 mt-auto">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-4 bg-[#E50914] rounded-sm" />
+                <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
                 <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
                   Existing Productions · The Genesis Vault & Languages
                 </h2>
@@ -637,12 +645,12 @@ function LandingPage() {
                     <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
 
                     {/* Corner Brand Badge */}
-                    <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px] shadow">
+                    <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[10px] shadow">
                       VB
                     </div>
 
                     {/* Bottom Banner */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-[#E50914] text-white text-center py-1 font-bold text-[10px] tracking-wider uppercase shadow-md truncate px-1">
+                    <div className="absolute bottom-0 left-0 right-0 bg-[#A11C28] text-white text-center py-1 font-bold text-[10px] tracking-wider uppercase shadow-md truncate px-1">
                       {card.badge}
                     </div>
 
@@ -676,42 +684,36 @@ function LandingPage() {
           aria-label="The Visual Bible Pitch"
           className="relative isolate flex min-h-[750px] w-full items-center justify-center overflow-hidden bg-black py-20 px-6 md:px-12 border-t border-white/[0.08]"
         >
-          {/* Originkit Three.js 3D Tunnel in Background */}
+          {/* Originkit Three.js 3D Tunnel in Background (Crisp, High-Opacity, Steady Speed) */}
           {mounted && (
-            <div aria-hidden="true" className="pointer-events-auto absolute inset-0 z-0 opacity-60">
+            <div aria-hidden="true" className="pointer-events-auto absolute inset-0 z-0 opacity-95">
               <GalleryTunnel
                 images={PITCH_TUNNEL_IMAGES}
                 background="#000000"
-                lineColor="#222222"
-                lineOpacity={20}
+                lineColor="#33333e"
+                lineOpacity={25}
                 grid={6}
-                speed={40}
-                boost={80}
-                fade={90}
+                speed={14}
+                boost={32}
+                fade={95}
                 label={false}
                 cellMode="square"
               />
             </div>
           )}
 
-          {/* Radial wash for contrast */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-1/2 z-10 h-[80vh] w-[90vw] md:w-[65vw] -translate-x-1/2 -translate-y-1/2 blur-[40px] bg-black/85"
-          />
-
-          {/* Pitch Content Overlay */}
-          <div className="relative z-20 max-w-3xl mx-auto text-center flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[11px] font-bold tracking-[0.2em] uppercase mb-5 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
+          {/* Frosted Glass Pitch Card: Tunnel is fully visible all around and through the section */}
+          <div className="relative z-20 max-w-3xl mx-auto text-center flex flex-col items-center bg-black/50 backdrop-blur-md p-6 md:p-10 rounded-2xl border border-white/10 shadow-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[11px] font-bold tracking-[0.2em] uppercase mb-4 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
               The Pitch · Visual Bible Network
             </div>
 
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-[1.08] tracking-tight mb-5">
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.1] tracking-tight mb-4">
               Scripture Brought to Life for Every Nation.
             </h2>
 
-            <p className="text-white/80 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-10">
+            <p className="text-white/80 text-xs md:text-sm leading-relaxed max-w-xl mx-auto mb-8">
               The message remains eternal and unchanging. The medium has evolved. By pairing real
               dramatic actor performances with high-fidelity cinematic AI pipelines, NRIM is
               building the world's first complete, visual translation of the Bible — designed to
@@ -719,30 +721,30 @@ function LandingPage() {
             </p>
 
             {/* Highlights Bar: 1M+ views, 88 countries, 8 live languages, 100 Target */}
-            <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-2xl bg-black/70 backdrop-blur-xl border border-white/[0.12] shadow-2xl mb-10">
+            <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-xl bg-black/60 backdrop-blur-xl border border-white/[0.1] shadow-xl mb-8">
               <div className="flex flex-col items-center">
-                <span className="text-3xl md:text-4xl font-black text-white leading-none mb-1">
+                <span className="text-2xl md:text-3xl font-black text-white leading-none mb-1">
                   1M+
                 </span>
                 <span className="text-xs font-bold text-white/80">Views Worldwide</span>
                 <span className="text-[10px] text-white/40 mt-0.5">Streaming Reach</span>
               </div>
               <div className="flex flex-col items-center border-l border-white/10">
-                <span className="text-3xl md:text-4xl font-black text-white leading-none mb-1">
+                <span className="text-2xl md:text-3xl font-black text-white leading-none mb-1">
                   88
                 </span>
                 <span className="text-xs font-bold text-white/80">Countries</span>
                 <span className="text-[10px] text-white/40 mt-0.5">Nations Watching</span>
               </div>
               <div className="flex flex-col items-center border-l border-white/10">
-                <span className="text-3xl md:text-4xl font-black text-white leading-none mb-1">
+                <span className="text-2xl md:text-3xl font-black text-white leading-none mb-1">
                   8
                 </span>
                 <span className="text-xs font-bold text-white/80">Live Languages</span>
                 <span className="text-[10px] text-white/40 mt-0.5">Genesis Released</span>
               </div>
               <div className="flex flex-col items-center border-l border-white/10">
-                <span className="text-3xl md:text-4xl font-black text-[#E50914] leading-none mb-1">
+                <span className="text-2xl md:text-3xl font-black text-[#A11C28] leading-none mb-1">
                   100
                 </span>
                 <span className="text-xs font-bold text-white/90">Target Goal</span>
@@ -751,17 +753,17 @@ function LandingPage() {
             </div>
 
             {/* Pitch CTAs */}
-            <div className="flex items-center gap-4 flex-wrap justify-center">
+            <div className="flex items-center gap-3.5 flex-wrap justify-center">
               <Link
                 to="/watch"
-                className="flex items-center gap-2 bg-[#E50914] hover:bg-[#c0070f] text-white text-xs md:text-sm font-bold px-6 py-3 rounded-full transition-transform hover:scale-105 shadow-lg shadow-red-950/50 uppercase tracking-wider"
+                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs md:text-sm font-bold px-6 py-2.5 rounded-full transition-transform hover:scale-105 shadow-lg shadow-red-950/50 uppercase tracking-wider"
               >
                 <Play className="w-4 h-4 fill-white" />
                 Watch Live Stream
               </Link>
               <a
                 href="#workflow"
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs md:text-sm font-semibold px-6 py-3 rounded-full transition-colors"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs md:text-sm font-semibold px-5 py-2.5 rounded-full transition-colors"
               >
                 <Cpu className="w-4 h-4" />
                 Our Technical Workflow
@@ -787,7 +789,7 @@ function LandingPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="w-1.5 h-4 bg-[#E50914] rounded-sm" />
+                  <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
                   <span className="text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
                     Our Production Method
                   </span>
@@ -818,7 +820,7 @@ function LandingPage() {
             <div className="grid md:grid-cols-3 gap-6 mb-12">
               <div className="bg-[#101014] border border-white/[0.08] rounded-xl p-6 flex flex-col justify-between">
                 <div>
-                  <div className="w-10 h-10 rounded-lg bg-[#E50914]/20 border border-[#E50914]/40 flex items-center justify-center text-[#E50914] font-black text-sm mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#A11C28]/20 border border-[#A11C28]/40 flex items-center justify-center text-[#A11C28] font-black text-sm mb-4">
                     01
                   </div>
                   <h3 className="text-base font-bold text-white mb-2">Real Human Performances</h3>
@@ -888,7 +890,7 @@ function LandingPage() {
           <div className="max-w-5xl mx-auto">
             <div className="grid md:grid-cols-2 gap-10 items-center">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#E50914]/20 border border-[#E50914]/40 text-[#E50914] text-[11px] font-bold tracking-widest uppercase mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#A11C28]/20 border border-[#A11C28]/40 text-[#A11C28] text-[11px] font-bold tracking-widest uppercase mb-4">
                   NOW IN PRODUCTION · COMING 2026
                 </div>
                 <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
@@ -905,7 +907,7 @@ function LandingPage() {
                 <div className="flex items-center gap-4">
                   <a
                     href="#waitlist"
-                    className="flex items-center gap-2 bg-[#E50914] text-white text-xs font-bold px-6 py-3 rounded uppercase tracking-wider hover:bg-[#c0070f] transition-colors"
+                    className="flex items-center gap-2 bg-[#A11C28] text-white text-xs font-bold px-6 py-3 rounded uppercase tracking-wider hover:bg-[#7F151F] transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Join The Waitlist
@@ -928,7 +930,7 @@ function LandingPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <span className="text-[10px] font-bold tracking-widest text-[#E50914] uppercase">
+                  <span className="text-[10px] font-bold tracking-widest text-[#A11C28] uppercase">
                     In Theatres & Streaming Worldwide
                   </span>
                   <div className="text-lg font-black text-white">YAHWEH · The Book of Exodus</div>
@@ -946,7 +948,7 @@ function LandingPage() {
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#E50914]/20 border border-[#E50914]/40 text-[#E50914] text-[11px] font-bold tracking-widest uppercase mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#A11C28]/20 border border-[#A11C28]/40 text-[#A11C28] text-[11px] font-bold tracking-widest uppercase mb-3">
                 Global Network · 88 Nations
               </div>
               <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
@@ -978,7 +980,7 @@ function LandingPage() {
                     graticuleColor="#1c1c24"
                     markerConfig={{
                       markers: GLOBE_MARKERS,
-                      color: "#E50914",
+                      color: "#A11C28",
                       size: 40,
                     }}
                     initialLatitude={20}
@@ -993,7 +995,7 @@ function LandingPage() {
                 {/* Globe Caption / Control Tip */}
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/40 pointer-events-none px-2">
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
                     Glowing Red Nodes = Active Regional Productions
                   </span>
                   <span className="hidden sm:inline">Drag to rotate globe</span>
@@ -1009,7 +1011,7 @@ function LandingPage() {
                   >
                     <div className="flex flex-col min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-base font-bold text-white group-hover:text-[#E50914] transition-colors truncate">
+                        <span className="text-base font-bold text-white group-hover:text-[#A11C28] transition-colors truncate">
                           {lang.name}
                         </span>
                         <span className="text-xs text-white/40 font-normal">
@@ -1036,127 +1038,7 @@ function LandingPage() {
                 ))}
 
                 {/* Target to reach 100 Languages Card */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-[#E50914]/20 via-[#E50914]/10 to-transparent border border-[#E50914]/40 flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-black text-white uppercase tracking-wider">
-                      Target: Reaching 100 Languages
-                    </div>
-                    <div className="text-[11px] text-white/70 mt-0.5">
-                      Expanding across Africa, Latin America, Southeast Asia, and indigenous
-                      dialects.
-                    </div>
-                  </div>
-                  <Link
-                    to="/watch"
-                    className="shrink-0 text-xs font-bold bg-white text-black px-3 py-1.5 rounded hover:bg-white/90 transition-colors uppercase tracking-wider"
-                  >
-                    Watch All
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── 7. WAITLIST FUNNEL ───────────────────────────────────────── */}
-        <section
-          id="languages"
-          className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#08080c] to-black border-t border-white/[0.08]"
-        >
-          <div className="max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#E50914]/20 border border-[#E50914]/40 text-[#E50914] text-[11px] font-bold tracking-widest uppercase mb-3">
-                Global Network · 88 Nations
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
-                Languages Reached Across the Earth
-              </h2>
-              <p className="text-white/65 text-sm md:text-base leading-relaxed">
-                Scripture released and streaming in 8 major native languages across Asia, the Middle
-                East, the Pacific, and the Americas — advancing toward our goal of 100 languages.
-              </p>
-            </div>
-
-            {/* Split Grid: 3D Globe on Left, Language List on Right */}
-            <div className="grid lg:grid-cols-12 gap-8 items-center bg-[#0d0d12] border border-white/[0.08] rounded-2xl p-6 md:p-8 shadow-2xl overflow-hidden">
-              {/* Left Column: Originkit Interactive 3D Globe */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[420px] md:min-h-[480px] w-full overflow-hidden rounded-xl bg-black/60 border border-white/[0.06]">
-                {mounted ? (
-                  <Globe
-                    style={{ width: "100%", height: "100%", minHeight: "440px" }}
-                    direction="right"
-                    speed={1.6}
-                    scale={9}
-                    stopOnHover={true}
-                    fill="solid"
-                    fillColor="#2a2a32"
-                    oceanColor="#000000"
-                    showOutline={true}
-                    outlineColor="#666675"
-                    showGrid={true}
-                    graticuleColor="#1c1c24"
-                    markerConfig={{
-                      markers: GLOBE_MARKERS,
-                      color: "#E50914",
-                      size: 40,
-                    }}
-                    initialLatitude={20}
-                    initialLongitude={55}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">
-                    Loading Global Network...
-                  </div>
-                )}
-
-                {/* Globe Caption / Control Tip */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/40 pointer-events-none px-2">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
-                    Glowing Red Nodes = Active Regional Productions
-                  </span>
-                  <span className="hidden sm:inline">Drag to rotate globe</span>
-                </div>
-              </div>
-
-              {/* Right Column: Cards of Languages & Regions */}
-              <div className="lg:col-span-5 flex flex-col gap-2.5 max-h-[500px] overflow-y-auto pr-1 scrollbar-none">
-                {REACHED_LANGUAGES.map((lang) => (
-                  <div
-                    key={lang.id}
-                    className="p-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors flex items-center justify-between gap-3 group"
-                  >
-                    <div className="flex flex-col min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-base font-bold text-white group-hover:text-[#E50914] transition-colors truncate">
-                          {lang.name}
-                        </span>
-                        <span className="text-xs text-white/40 font-normal">
-                          ({lang.nativeName})
-                        </span>
-                      </div>
-                      <span className="text-[11px] text-white/50 truncate mt-0.5">
-                        {lang.regions}
-                      </span>
-                    </div>
-
-                    <div className="shrink-0 text-right">
-                      <span
-                        className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
-                          lang.isUpcoming
-                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                            : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                        }`}
-                      >
-                        {lang.badge}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Target to reach 100 Languages Card */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-[#E50914]/20 via-[#E50914]/10 to-transparent border border-[#E50914]/40 flex items-center justify-between gap-3">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-[#A11C28]/20 via-[#A11C28]/10 to-transparent border border-[#A11C28]/40 flex items-center justify-between gap-3">
                   <div>
                     <div className="text-xs font-black text-white uppercase tracking-wider">
                       Target: Reaching 100 Languages
@@ -1184,7 +1066,7 @@ function LandingPage() {
           className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#080808] to-black border-t border-white/[0.08] text-center"
         >
           <div className="max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E50914]/20 border border-[#E50914]/40 text-[#E50914] text-[11px] font-bold tracking-widest uppercase mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#A11C28]/20 border border-[#A11C28]/40 text-[#A11C28] text-[11px] font-bold tracking-widest uppercase mb-4">
               Be First to Watch
             </div>
             <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">
@@ -1215,12 +1097,12 @@ function LandingPage() {
                   required
                   disabled={status === "loading"}
                   aria-label="Email for waitlist"
-                  className="flex-1 bg-[#141419] border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#E50914] transition-colors"
+                  className="flex-1 bg-[#141419] border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#A11C28] transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={status === "loading"}
-                  className="bg-[#E50914] hover:bg-[#c0070f] text-white text-sm font-bold px-6 py-3 rounded transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap"
+                  className="bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-3 rounded transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap"
                 >
                   {status === "loading" ? "Joining…" : "Get Early Access"}
                 </button>
@@ -1331,7 +1213,7 @@ function LandingPage() {
                 © {new Date().getFullYear()} Visual Bible TV · Nations Reach International Missions
               </p>
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px]">
+                <div className="w-5 h-5 rounded-sm bg-[#A11C28] flex items-center justify-center font-black text-white text-[10px]">
                   VB
                 </div>
                 <span className="text-white/60 font-semibold tracking-wider uppercase">
