@@ -234,6 +234,8 @@ const GLOBE_MARKERS = [
   { lat: 39.9, lng: 116.4 },
 ];
 
+
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function LandingPage() {
@@ -559,8 +561,8 @@ function LandingPage() {
             {/* Synopsis */}
             <p className="text-white/75 text-sm md:text-base leading-relaxed mb-6 max-w-xl">
               From Creation and the fall of man to Abraham's covenant, Jacob's wrestling, and
-              Joseph's rise in Egypt. Experience the complete 50 chapters of Genesis brought to life
-              through cinematic AI and real-actor performances.
+              Joseph's rise in Egypt. Experience the complete 50 chapters of Genesis brought to
+              life through cinematic AI and real-actor performances.
             </p>
 
             {/* Action Buttons & Unmute Controls */}
@@ -634,7 +636,11 @@ function LandingPage() {
                     className="w-full overflow-hidden rounded bg-[#141419] border border-white/[0.08] relative shadow-lg"
                     style={{ aspectRatio: "2/3" }}
                   >
-                    <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                    <img
+                      src={card.image}
+                      alt={card.title}
+                      className="w-full h-full object-cover"
+                    />
 
                     {/* Corner Brand Badge */}
                     <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px] shadow">
@@ -660,9 +666,7 @@ function LandingPage() {
                     </div>
                   </div>
 
-                  <p className="mt-1.5 text-xs font-semibold text-white/90 truncate">
-                    {card.title}
-                  </p>
+                  <p className="mt-1.5 text-xs font-semibold text-white/90 truncate">{card.title}</p>
                   <p className="text-[10px] text-white/50 truncate">{card.language}</p>
                 </Link>
               ))}
@@ -838,7 +842,9 @@ function LandingPage() {
                   <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black text-sm mb-4">
                     02
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">Generative World-Building</h3>
+                  <h3 className="text-base font-bold text-white mb-2">
+                    Generative World-Building
+                  </h3>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Our proprietary neural workflows reconstruct ancient Egypt, the Red Sea, and
                     Sinai with museum-grade historical fidelity, lighting, and cinematic scale.
@@ -854,7 +860,9 @@ function LandingPage() {
                   <div className="w-10 h-10 rounded-lg bg-[#A98B5A]/20 border border-[#A98B5A]/40 flex items-center justify-center text-[#A98B5A] font-black text-sm mb-4">
                     03
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">100-Language Localization</h3>
+                  <h3 className="text-base font-bold text-white mb-2">
+                    100-Language Localization
+                  </h3>
                   <p className="text-xs text-white/60 leading-relaxed">
                     Neural voice dubbing and AI-driven lip synchronization allow actors to speak
                     fluently in Hindi, Tamil, Malayalam, Chinese, Persian, and dozens of regional
@@ -1060,6 +1068,123 @@ function LandingPage() {
 
         {/* ── 7. WAITLIST FUNNEL ───────────────────────────────────────── */}
         <section
+          id="languages"
+          className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#08080c] to-black border-t border-white/[0.08]"
+        >
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#E50914]/20 border border-[#E50914]/40 text-[#E50914] text-[11px] font-bold tracking-widest uppercase mb-3">
+                Global Network · 88 Nations
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
+                Languages Reached Across the Earth
+              </h2>
+              <p className="text-white/65 text-sm md:text-base leading-relaxed">
+                Scripture released and streaming in 8 major native languages across Asia, the Middle
+                East, the Pacific, and the Americas — advancing toward our goal of 100 languages.
+              </p>
+            </div>
+
+            {/* Split Grid: 3D Globe on Left, Language List on Right */}
+            <div className="grid lg:grid-cols-12 gap-8 items-center bg-[#0d0d12] border border-white/[0.08] rounded-2xl p-6 md:p-8 shadow-2xl overflow-hidden">
+              {/* Left Column: Originkit Interactive 3D Globe */}
+              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[420px] md:min-h-[480px] w-full overflow-hidden rounded-xl bg-black/60 border border-white/[0.06]">
+                {mounted ? (
+                  <Globe
+                    style={{ width: "100%", height: "100%", minHeight: "440px" }}
+                    direction="right"
+                    speed={1.6}
+                    scale={9}
+                    stopOnHover={true}
+                    fill="solid"
+                    fillColor="#2a2a32"
+                    oceanColor="#000000"
+                    showOutline={true}
+                    outlineColor="#666675"
+                    showGrid={true}
+                    graticuleColor="#1c1c24"
+                    markerConfig={{
+                      markers: GLOBE_MARKERS,
+                      color: "#E50914",
+                      size: 40,
+                    }}
+                    initialLatitude={20}
+                    initialLongitude={55}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">
+                    Loading Global Network...
+                  </div>
+                )}
+
+                {/* Globe Caption / Control Tip */}
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/40 pointer-events-none px-2">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
+                    Glowing Red Nodes = Active Regional Productions
+                  </span>
+                  <span className="hidden sm:inline">Drag to rotate globe</span>
+                </div>
+              </div>
+
+              {/* Right Column: Cards of Languages & Regions */}
+              <div className="lg:col-span-5 flex flex-col gap-2.5 max-h-[500px] overflow-y-auto pr-1 scrollbar-none">
+                {REACHED_LANGUAGES.map((lang) => (
+                  <div
+                    key={lang.id}
+                    className="p-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors flex items-center justify-between gap-3 group"
+                  >
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-bold text-white group-hover:text-[#E50914] transition-colors truncate">
+                          {lang.name}
+                        </span>
+                        <span className="text-xs text-white/40 font-normal">({lang.nativeName})</span>
+                      </div>
+                      <span className="text-[11px] text-white/50 truncate mt-0.5">
+                        {lang.regions}
+                      </span>
+                    </div>
+
+                    <div className="shrink-0 text-right">
+                      <span
+                        className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
+                          lang.isUpcoming
+                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                            : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        }`}
+                      >
+                        {lang.badge}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Target to reach 100 Languages Card */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-[#E50914]/20 via-[#E50914]/10 to-transparent border border-[#E50914]/40 flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-black text-white uppercase tracking-wider">
+                      Target: Reaching 100 Languages
+                    </div>
+                    <div className="text-[11px] text-white/70 mt-0.5">
+                      Expanding across Africa, Latin America, Southeast Asia, and indigenous dialects.
+                    </div>
+                  </div>
+                  <Link
+                    to="/watch"
+                    className="shrink-0 text-xs font-bold bg-white text-black px-3 py-1.5 rounded hover:bg-white/90 transition-colors uppercase tracking-wider"
+                  >
+                    Watch All
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 7. WAITLIST FUNNEL ───────────────────────────────────────── */}
+        <section
           id="waitlist"
           className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#080808] to-black border-t border-white/[0.08] text-center"
         >
@@ -1151,9 +1276,7 @@ function LandingPage() {
                 </ul>
               </div>
               <div>
-                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">
-                  Organization
-                </h4>
+                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">Organization</h4>
                 <ul className="space-y-2">
                   <li>
                     <a
@@ -1207,9 +1330,7 @@ function LandingPage() {
             </div>
 
             <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between items-center gap-3">
-              <p>
-                © {new Date().getFullYear()} Visual Bible TV · Nations Reach International Missions
-              </p>
+              <p>© {new Date().getFullYear()} Visual Bible TV · Nations Reach International Missions</p>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px]">
                   VB
