@@ -3,7 +3,9 @@ import { joinWaitlistSchema } from "@/lib/waitlist-schema";
 
 describe("joinWaitlistSchema", () => {
   it("normalizes a valid email address", () => {
-    expect(joinWaitlistSchema.parse({ email: "  Reader@Example.com " })).toEqual({ email: "reader@example.com" });
+    expect(joinWaitlistSchema.parse({ email: "  Reader@Example.com " })).toEqual({
+      email: "reader@example.com",
+    });
   });
 
   it("rejects an invalid email address", () => {

@@ -10,7 +10,8 @@ function createPublicClient(url: string, key: string) {
         const headers = new Headers(
           typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
         );
-        if (init?.headers) new Headers(init.headers).forEach((value, name) => headers.set(name, value));
+        if (init?.headers)
+          new Headers(init.headers).forEach((value, name) => headers.set(name, value));
         if (key.startsWith("sb_")) {
           if (headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization");
           headers.set("apikey", key);
