@@ -27,6 +27,7 @@ import { joinWaitlist } from "@/lib/waitlist.functions";
 import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
 import Globe from "@/components/originkit/ui/globe-custom-style";
 import InfiniteGrid from "@/components/originkit/ui/infinite-grid";
+import AccordionOS from "@/components/originkit/ui/accordion-os";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -246,6 +247,122 @@ const INFINITE_ARCHIVE_ITEMS: ArchiveGridItem[] = [
   },
 ];
 
+// ─── Data: Hanging Film Strips (Darkroom 35mm Celluloid Workflow) ───────────
+
+interface FilmStripItem {
+  id: string;
+  label: string;
+  code: string;
+  filmCode: string;
+  title: string;
+  subtitle: string;
+  coreStatement: string;
+  description: string;
+  frames: string[];
+}
+
+const WORKFLOW_FILM_STRIPS: FilmStripItem[] = [
+  {
+    id: "avatars",
+    label: "AVATAR EMBODIMENT",
+    code: "TENET 01",
+    filmCode: "APRICOT 5219",
+    title: "Biblical Avatars",
+    subtitle: "Real People as Living Scripture Avatars",
+    coreStatement: "We do not direct real humans — we use actual people as a biblical avatar.",
+    description:
+      "We do not cast actors to mimic Hollywood melodrama or recite script lines on a soundstage. Instead, we capture the authentic emotional gravity, genuine grief, joy, and spiritual presence of actual people — channeling their real human likeness into living biblical avatars for the patriarchs, prophets, and witnesses of scripture.",
+    frames: [
+      "/assets/genesis-shepherds-poster.jpg",
+      "/assets/genesis-warriors-fire.jpg",
+      "/assets/purpose-of-god-joseph-poster.jpg",
+    ],
+  },
+  {
+    id: "worldbuilding",
+    label: "SACRED GEOGRAPHY",
+    code: "TENET 02",
+    filmCode: "APRICOT 5219",
+    title: "World of the Bible",
+    subtitle: "Genesis & Exodus World-Building",
+    coreStatement: "We build the world of Genesis and Exodus — the ancient world of the Bible.",
+    description:
+      "From the primordial expanse of Eden and Abraham's encampments across Mesopotamia to the colossal courts of Pharaoh, the parted waters of the Red Sea, and the thunderous crags of Mount Sinai. We procedurally and historically reconstruct the sacred geography, architecture, textiles, and atmospheric lighting of antiquity with rigorous archaeological fidelity.",
+    frames: [
+      "/assets/yahweh-hero-parted-sea.jpg",
+      "/assets/genesis-pharaoh-prophet-sunset.jpg",
+      "/assets/yahweh-tablets-poster.jpg",
+    ],
+  },
+  {
+    id: "languages",
+    label: "UNREACHED FRONTIER",
+    code: "TENET 03",
+    filmCode: "APRICOT 5219",
+    title: "100 Languages",
+    subtitle: "Oral Scripture in Regional Tongues",
+    coreStatement:
+      "Focusing on and targeting 100 languages — reaching regional mother tongues without written scripture.",
+    description:
+      "Our localization pipeline is engineered specifically for people who normally would not have access to Scripture or have a translation of the Bible in their language. Many of these are regional oral dialects. By synchronizing neural voice translation with native oral delivery, we break the literacy barrier so every nation hears the Word in their heart tongue.",
+    frames: [
+      "/assets/genesis-hindi-campfire-poster.jpg",
+      "/assets/genesis-tamil-poster.jpg",
+      "/assets/genesis-chinese-poster.jpg",
+    ],
+  },
+];
+
+// ─── Data: Upcoming Projects (Originkit AccordionOS) ─────────────────────────
+
+const UPCOMING_PROJECTS_ITEMS = [
+  {
+    title: "YAHWEH — The Book of Exodus",
+    badge: "01 · EXODUS",
+    claim:
+      "The God Who Reveals His Power. The ten plagues of Egypt, the roaring waters of the Red Sea divided, the pillar of cloud and fire, and the giving of the Law atop Mount Sinai.",
+    image: "/assets/yahweh-hero-parted-sea.jpg",
+    alt: "YAHWEH The Book of Exodus",
+    offsetY: 0,
+  },
+  {
+    title: "In the Beginning — The Book of Genesis",
+    badge: "02 · GENESIS",
+    claim:
+      "The God Who Fulfills His Promise. The complete 50-chapter foundational saga from Creation and the Garden of Eden to Abraham, Isaac, Jacob, and the patriarchs.",
+    image: "/assets/genesis-shepherds-poster.jpg",
+    alt: "In the Beginning Genesis",
+    offsetY: 0,
+  },
+  {
+    title: "Visual Bible TV Series",
+    badge: "03 · SERIES",
+    claim:
+      "An episodic television broadcast network delivering chapter-by-chapter dramatizations with 4K HDR cinematography, spatial audio, and cinematic scoring.",
+    image: "/assets/in-the-beginning-banner.png",
+    alt: "Visual Bible TV Series",
+    offsetY: 0,
+  },
+  {
+    title: "The Purpose of God — The Story of Joseph",
+    badge: "04 · JOSEPH",
+    claim:
+      "Betrayed by his brothers, sold into Egyptian bondage, and exalted to the throne. A masterclass in divine sovereignty, forgiveness, and salvation.",
+    image: "/assets/purpose-of-god-joseph-poster.jpg",
+    alt: "The Purpose of God Joseph",
+    offsetY: 0,
+  },
+  {
+    title: "100 Languages Global Initiative",
+    badge: "05 · GLOBAL",
+    claim:
+      "Reaching unreached regional dialects and oral mother tongues without written scripture. Overcoming illiteracy so every nation hears the Word in their heart tongue.",
+    image: "/assets/genesis-hindi-campfire-poster.jpg",
+    alt: "100 Languages Global Initiative",
+    offsetY: 0,
+  },
+];
+
 // ─── Data: Languages & Regions Reached (3D Globe Markers) ────────────────────
 
 interface ReachedLanguage {
@@ -360,6 +477,8 @@ function LandingPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
+  const [hoveredStrip, setHoveredStrip] = useState<string | null>(null);
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -369,6 +488,10 @@ function LandingPage() {
 
   useEffect(() => {
     setMounted(true);
+    const timer = setTimeout(() => {
+      setVideoReady(true);
+    }, 3500);
+    return () => clearTimeout(timer);
   }, []);
 
   const toggleSound = () => {
@@ -449,12 +572,17 @@ function LandingPage() {
           {/* Navigation Items */}
           <nav className="flex flex-col gap-1.5 mt-2 w-full" aria-label="Main Menu">
             {[
-              { id: "home", label: "Home Showcase", icon: Home, href: "#hero" },
+              { id: "home", label: "Hero (YAHWEH)", icon: Home, href: "#hero" },
               { id: "vault", label: "Existing Projects", icon: Tv, href: "#vault" },
               { id: "pitch", label: "The Pitch", icon: Compass, href: "#pitch" },
               { id: "workflow", label: "Production Method", icon: Cpu, href: "#workflow" },
               { id: "archive", label: "Universe Archive", icon: Bookmark, href: "#archive" },
-              { id: "upcoming", label: "Upcoming (YAHWEH)", icon: Film, href: "#upcoming-yahweh" },
+              {
+                id: "upcoming",
+                label: "Upcoming Projects",
+                icon: Film,
+                href: "#upcoming-projects",
+              },
               { id: "languages", label: "Languages Reached", icon: GlobeIcon, href: "#languages" },
               { id: "waitlist", label: "Join Waitlist", icon: Plus, href: "#waitlist" },
             ].map((item) => {
@@ -599,21 +727,34 @@ function LandingPage() {
           </div>
         </header>
 
-        {/* ── 1. HERO SECTION: AUTOPLAYING GENESIS VIDEO FROM 4:25 (265s) ── */}
+        {/* ── 1. HERO SECTION: YAHWEH THE GOD WHO REVEALS HIS POWER ────────── */}
         <section
           id="hero"
           className="relative w-full overflow-hidden bg-black flex flex-col justify-between"
           style={{ minHeight: "100svh" }}
         >
-          {/* YouTube Video Background (starts at 4:25 = 265s, autoplay, muted) */}
+          {/* Hero Media: Starts with High-Resolution Poster, then streams video after a few seconds */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <iframe
-              ref={iframeRef}
-              src="https://www.youtube-nocookie.com/embed/z5abtVIszH8?start=265&autoplay=1&mute=1&controls=0&loop=1&playlist=z5abtVIszH8&playsinline=1&rel=0&modestbranding=1&enablejsapi=1"
-              title="Visual Bible Background Stream"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160vw] h-[160vh] md:w-[130vw] md:h-[130vh] object-cover pointer-events-none select-none opacity-100"
-              allow="autoplay; encrypted-media"
+            {/* Initial Hero Image (Moses with Tablets at the Parted Red Sea) */}
+            <img
+              src="/assets/yahweh-hero-parted-sea.jpg"
+              alt="YAHWEH · The God Who Reveals His Power"
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                videoReady ? "opacity-30" : "opacity-100"
+              }`}
             />
+
+            {/* YouTube Stream (Loads as requested after a few seconds) */}
+            {videoReady && (
+              <iframe
+                ref={iframeRef}
+                src="https://www.youtube-nocookie.com/embed/z5abtVIszH8?start=265&autoplay=1&mute=1&controls=0&loop=1&playlist=z5abtVIszH8&playsinline=1&rel=0&modestbranding=1&enablejsapi=1"
+                title="Visual Bible Background Stream"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160vw] h-[160vh] md:w-[130vw] md:h-[130vh] object-cover pointer-events-none select-none opacity-100 transition-opacity duration-1000"
+                allow="autoplay; encrypted-media"
+              />
+            )}
+
             {/* Cinematic Left Vignette: Middle third & right portions stay 100% crisp & HQ */}
             <div
               className="absolute inset-0"
@@ -634,36 +775,39 @@ function LandingPage() {
                 VB
               </div>
               <span className="text-[10px] font-bold tracking-[0.25em] text-white/90 uppercase">
-                SERIES · VISUAL BIBLE
+                UPCOMING PREMIERE · VISUAL BIBLE
               </span>
             </div>
 
             {/* Tagline */}
             <div className="text-[11px] font-semibold tracking-[0.2em] text-[#C4A468] uppercase mb-1">
-              An NRIM Original Production
+              An NRIM Theatrical & Streaming Production
             </div>
 
-            {/* Title (scaled ~25% smaller with crisp boutique typography) */}
+            {/* Title */}
             <h1
               className="font-black tracking-tight text-white leading-[1.08] mb-2"
-              style={{ fontSize: "clamp(26px, 4.2vw, 50px)" }}
+              style={{ fontSize: "clamp(28px, 4.5vw, 54px)" }}
             >
-              IN THE BEGINNING
+              YAHWEH
             </h1>
 
             {/* Subtitle */}
             <p className="text-white/85 text-xs md:text-sm font-semibold tracking-wider uppercase mb-3">
-              The God Who Fulfills His Promise — The Book of Genesis
+              The God Who Reveals His Power — The Book of Exodus
             </p>
 
             {/* Badges */}
             <div className="flex items-center gap-2 text-xs text-white/80 mb-3.5 flex-wrap">
-              <span className="text-emerald-400 font-bold text-[11px]">50 Chapters Live</span>
-              <span className="text-white/50 text-[11px]">Season 1</span>
+              <span className="inline-flex items-center gap-1.5 text-amber-400 font-bold text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                In Production 2026
+              </span>
+              <span className="text-white/50 text-[11px]">Season 2</span>
               <span className="border border-white/30 px-1.5 py-0.5 text-[9px] font-semibold text-white/80 rounded-[2px] leading-none">
                 ALL AGES
               </span>
-              <span className="text-white/50 text-[11px]">8 Languages</span>
+              <span className="text-white/50 text-[11px]">Target: 100 Languages</span>
               <span className="border border-white/30 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
                 VISION
               </span>
@@ -677,27 +821,28 @@ function LandingPage() {
 
             {/* Synopsis */}
             <p className="text-white/75 text-xs md:text-[13px] leading-relaxed mb-5 max-w-md line-clamp-3">
-              From Creation and the fall of man to Abraham's covenant, Jacob's wrestling, and
-              Joseph's rise in Egypt. Experience the complete 50 chapters of Genesis brought to life
-              through cinematic AI and real-actor performances.
+              Following the monumental completion of Genesis, the visual saga advances to Exodus.
+              Witness the clash of gods, the ten plagues of Egypt, the roaring waters of the Red Sea
+              divided, and the law delivered in fire atop Mount Sinai.
             </p>
 
-            {/* Action Buttons & Unmute Controls */}
+            {/* Action Buttons & Controls */}
             <div className="flex items-center gap-3 flex-wrap">
+              <a
+                href="#waitlist"
+                className="flex items-center gap-2.5 bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-2.5 rounded transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-red-950/50 uppercase tracking-wider"
+              >
+                <Plus className="w-4 h-4" />
+                Join The Premiere Waitlist
+              </a>
               <Link
                 to="/watch"
                 search={{ episode: "genesis" }}
-                className="flex items-center gap-2.5 bg-white text-black text-sm font-bold px-6 py-2.5 rounded hover:bg-white/90 transition-all duration-200 hover:scale-[1.02]"
-              >
-                <Play className="w-4 h-4 fill-black" />
-                Watch Genesis 1
-              </Link>
-              <a
-                href="#vault"
                 className="flex items-center gap-2 bg-white/15 backdrop-blur-md text-white text-sm font-semibold px-5 py-2.5 rounded hover:bg-white/25 transition-colors"
               >
-                Explore Projects
-              </a>
+                <Play className="w-3.5 h-3.5 fill-white" />
+                Watch Genesis First
+              </Link>
               <button
                 type="button"
                 onClick={toggleSound}
@@ -891,7 +1036,7 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 4. TECHNICAL WORKFLOW & PRODUCTION METHOD SECTION ───────── */}
+        {/* ── 4. TECHNICAL WORKFLOW: 35MM FILM STRIP DARKROOM PIPELINE ── */}
         <section
           id="workflow"
           className="py-24 px-6 md:px-12 bg-[#060608] border-t border-white/[0.08] relative overflow-hidden"
@@ -903,7 +1048,7 @@ function LandingPage() {
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
                   <span className="text-[11px] font-bold tracking-[0.25em] text-white/60 uppercase">
-                    Studio Production Pipeline · Director's Disclosure
+                    Darkroom Production Pipeline · 35mm Celluloid Archive
                   </span>
                 </div>
                 <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.08] tracking-tight mb-3">
@@ -912,9 +1057,9 @@ function LandingPage() {
                   <span className="text-white/40">The Medium is Different.</span>
                 </h2>
                 <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl">
-                  A theological and technical disclosure of how NRIM transforms living scripture
-                  into an authoritative, visual epic — without staging Hollywood melodrama or
-                  generating synthetic caricatures.
+                  A theological and technical disclosure of how NRIM transforms sacred scripture
+                  into an authoritative, visual epic. Hover over any developing negative strip to
+                  inspect our production methodology.
                 </p>
               </div>
 
@@ -932,85 +1077,150 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* The 3 Production Tenets: Unified Studio Architecture (Not Amateur Cards) */}
-            <div className="grid lg:grid-cols-3 gap-0 border border-white/[0.1] rounded-2xl bg-[#0a0a0e] overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08] shadow-2xl mb-12">
-              {/* Tenet 01: Human Avatars */}
-              <div className="p-7 md:p-9 flex flex-col justify-between hover:bg-white/[0.02] transition-colors">
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-[#A11C28] uppercase px-2.5 py-1 rounded bg-[#A11C28]/10 border border-[#A11C28]/25">
-                      TENET 01 · AVATAR EMBODIMENT
-                    </span>
-                    <span className="text-xs font-mono text-white/30">01 / 03</span>
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3">
-                    We do not direct real humans — we use actual people as a biblical avatar.
-                  </h3>
-                  <p className="text-xs md:text-sm text-white/65 leading-relaxed">
-                    We do not cast actors to mimic Hollywood melodrama or recite script lines on a
-                    soundstage. Instead, we capture the authentic emotional gravity, genuine grief,
-                    joy, and spiritual presence of actual people — channeling their real human
-                    likeness into living biblical avatars for the patriarchs, prophets, and
-                    witnesses of scripture.
-                  </p>
-                </div>
-                <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/40 font-mono uppercase tracking-wider">
-                  <span>Raw Performance Likeness</span>
-                  <span className="text-[#A11C28] font-bold">Biblical Avatars</span>
-                </div>
-              </div>
+            {/* ── HANGING 35MM FILM STRIPS GALLERY (DARKROOM WIRE & CLIPS) ── */}
+            <div className="relative py-8 px-4 md:px-8 mb-16 rounded-2xl bg-[#09090d] border border-white/[0.08] shadow-2xl overflow-hidden">
+              {/* Horizontal Hanging Wire */}
+              <div className="w-full h-[2px] bg-gradient-to-r from-zinc-700 via-zinc-400 to-zinc-700 relative z-20 shadow-md mb-8" />
 
-              {/* Tenet 02: World-Building */}
-              <div className="p-7 md:p-9 flex flex-col justify-between hover:bg-white/[0.02] transition-colors">
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-emerald-400 uppercase px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/25">
-                      TENET 02 · SACRED GEOGRAPHY
-                    </span>
-                    <span className="text-xs font-mono text-white/30">02 / 03</span>
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3">
-                    We build the world of Genesis and Exodus — the ancient world of the Bible.
-                  </h3>
-                  <p className="text-xs md:text-sm text-white/65 leading-relaxed">
-                    From the primordial expanse of Eden and Abraham's encampments across Mesopotamia
-                    to the colossal courts of Pharaoh, the parted waters of the Red Sea, and the
-                    thunderous crags of Mount Sinai. We procedurally and historically reconstruct
-                    the sacred geography, architecture, textiles, and atmospheric lighting of
-                    antiquity with rigorous archaeological fidelity.
-                  </p>
-                </div>
-                <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/40 font-mono uppercase tracking-wider">
-                  <span>Mesopotamia, Egypt & Sinai</span>
-                  <span className="text-emerald-400 font-bold">World of the Bible</span>
-                </div>
-              </div>
+              {/* Film Strips Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 pt-2">
+                {WORKFLOW_FILM_STRIPS.map((strip, idx) => {
+                  const isHovered = hoveredStrip === strip.id;
+                  return (
+                    <div
+                      key={strip.id}
+                      className="group flex flex-col items-center cursor-pointer transition-transform duration-300 hover:-translate-y-2"
+                      onMouseEnter={() => setHoveredStrip(strip.id)}
+                      onMouseLeave={() => setHoveredStrip(null)}
+                      onClick={() => setHoveredStrip(isHovered ? null : strip.id)}
+                    >
+                      {/* Top Metallic Binder Clip Clamping Onto The Wire */}
+                      <div className="relative z-30 flex flex-col items-center mb-[-4px]">
+                        {/* Silver Wire Loop Handle */}
+                        <div className="w-5 h-6 border-2 border-zinc-300 rounded-t-sm bg-transparent shadow-sm" />
+                        {/* Black Clip Clamp Body */}
+                        <div className="w-10 h-4 bg-zinc-950 border border-zinc-700 rounded-sm shadow-md mt-[-2px] flex items-center justify-center">
+                          <div className="w-6 h-[1.5px] bg-zinc-600" />
+                        </div>
+                      </div>
 
-              {/* Tenet 03: 100 Languages & Regional Unreached */}
-              <div className="p-7 md:p-9 flex flex-col justify-between hover:bg-white/[0.02] transition-colors">
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/25">
-                      TENET 03 · UNREACHED LANGUAGES
-                    </span>
-                    <span className="text-xs font-mono text-white/30">03 / 03</span>
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3">
-                    Focusing on and targeting 100 languages — reaching regional mother tongues
-                    without written scripture.
-                  </h3>
-                  <p className="text-xs md:text-sm text-white/65 leading-relaxed">
-                    Our localization pipeline is engineered specifically for people who normally
-                    would not have access to Scripture or have a translation of the Bible in their
-                    language. Many of these are regional oral dialects. By synchronizing neural
-                    voice translation with native oral delivery, we break the literacy barrier so
-                    every nation hears the Word in their heart tongue.
-                  </p>
-                </div>
-                <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/40 font-mono uppercase tracking-wider">
-                  <span>Oral Dialects & Unreached</span>
-                  <span className="text-amber-400 font-bold">100 Languages Target</span>
-                </div>
+                      {/* 35mm Celluloid Negative Film Strip */}
+                      <div
+                        className="w-full max-w-[290px] rounded-sm p-3 relative shadow-2xl border border-black/40 transition-shadow duration-300 group-hover:shadow-[0_20px_40px_rgba(184,93,25,0.25)]"
+                        style={{
+                          backgroundColor: "#b85d19",
+                          backgroundImage:
+                            "linear-gradient(180deg, #c86518 0%, #b85d19 50%, #9e4712 100%)",
+                        }}
+                      >
+                        {/* Top Film Stamp Imprint */}
+                        <div className="flex items-center justify-between text-[9px] font-mono font-black text-black/80 tracking-widest px-2 pb-2 border-b border-black/30 select-none">
+                          <span>{strip.filmCode}</span>
+                          <span>{strip.code}</span>
+                          <span>FRAME 24A</span>
+                        </div>
+
+                        {/* Film Body: Sprockets on Left & Right + 3 Image Stills in Middle */}
+                        <div className="flex items-stretch gap-2 py-2">
+                          {/* Left Sprocket Column */}
+                          <div className="flex flex-col justify-between py-1 select-none">
+                            {Array.from({ length: 9 }).map((_, sIdx) => (
+                              <div
+                                key={sIdx}
+                                className="w-2 h-3.5 rounded-[1.5px] bg-black/90 my-1 shadow-inner"
+                              />
+                            ))}
+                          </div>
+
+                          {/* Center Stills Column (3 Production Frames) */}
+                          <div className="flex-1 flex flex-col gap-2">
+                            {strip.frames.map((frameImg, fIdx) => (
+                              <div
+                                key={fIdx}
+                                className="relative rounded-[2px] overflow-hidden bg-black/80 border border-black/60 shadow-md group-hover:brightness-105 transition-all"
+                                style={{ aspectRatio: "16/10" }}
+                              >
+                                <img
+                                  src={frameImg}
+                                  alt={`${strip.title} still ${fIdx + 1}`}
+                                  className="w-full h-full object-cover filter contrast-125 sepia-[0.35]"
+                                />
+                                <div className="absolute inset-0 bg-amber-900/10 pointer-events-none" />
+                                <div className="absolute bottom-1 right-1 text-[8px] font-mono text-white/50 px-1 bg-black/60 rounded">
+                                  {fIdx + 1}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Right Sprocket Column */}
+                          <div className="flex flex-col justify-between py-1 select-none">
+                            {Array.from({ length: 9 }).map((_, sIdx) => (
+                              <div
+                                key={sIdx}
+                                className="w-2 h-3.5 rounded-[1.5px] bg-black/90 my-1 shadow-inner"
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Bottom Film Code */}
+                        <div className="flex items-center justify-between text-[8px] font-mono text-black/70 px-2 pt-1 border-t border-black/30 select-none">
+                          <span>KODAK MOTION FILM</span>
+                          <span>SAFETY FILM</span>
+                        </div>
+                      </div>
+
+                      {/* Wire Hook Dropping Down to White Index Card */}
+                      <div className="w-[1.5px] h-6 bg-zinc-400 z-10" />
+
+                      {/* Suspended White Index Card (Expands on Hover with Process Description) */}
+                      <div
+                        className={`w-full max-w-[290px] rounded-lg p-5 shadow-2xl border text-left transition-all duration-500 relative ${
+                          isHovered
+                            ? "bg-white text-zinc-950 border-[#A11C28]/40 shadow-2xl scale-[1.02]"
+                            : "bg-[#FAF9F6] text-zinc-900 border-zinc-200"
+                        }`}
+                      >
+                        {/* Top Label */}
+                        <div className="text-[10px] font-mono font-bold tracking-widest text-[#A11C28] uppercase mb-1">
+                          {strip.code} · {strip.label}
+                        </div>
+
+                        {/* Title in Script / Editorial Style */}
+                        <h3 className="font-serif italic text-xl font-bold text-zinc-900 leading-snug">
+                          {strip.title}
+                        </h3>
+
+                        {/* Subtitle */}
+                        <p className="text-xs text-zinc-500 font-sans mt-0.5 mb-2">
+                          {strip.subtitle}
+                        </p>
+
+                        {/* Expandable Process Description Panel */}
+                        <div
+                          className={`overflow-hidden transition-all duration-500 ${
+                            isHovered
+                              ? "max-h-96 opacity-100 pt-3 border-t border-zinc-200"
+                              : "max-h-0 opacity-0 group-hover:max-h-96 group-hover:opacity-100 group-hover:pt-3 group-hover:border-t group-hover:border-zinc-200"
+                          }`}
+                        >
+                          <p className="text-xs font-bold text-zinc-900 leading-snug mb-2 font-sans">
+                            "{strip.coreStatement}"
+                          </p>
+                          <p className="text-[11px] text-zinc-650 leading-relaxed font-sans text-zinc-700">
+                            {strip.description}
+                          </p>
+                        </div>
+
+                        {/* Hover indicator cue */}
+                        <div className="mt-2 text-[10px] font-mono text-zinc-400 group-hover:hidden flex items-center gap-1">
+                          <span>Hover to inspect process ↓</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -1114,61 +1324,55 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 5. UPCOMING PREMIERE FEATURE: YAHWEH (EXODUS) ─────────────── */}
+        {/* ── 6. UPCOMING PROJECTS & PRODUCTIONS (ORIGINKIT ACCORDION-OS) ── */}
         <section
-          id="upcoming-yahweh"
-          className="py-20 px-6 md:px-12 bg-black border-t border-white/[0.08]"
+          id="upcoming-projects"
+          className="py-24 px-6 md:px-12 bg-black border-t border-white/[0.08] relative overflow-hidden"
         >
-          <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#A11C28]/20 border border-[#A11C28]/40 text-[#A11C28] text-[11px] font-bold tracking-widest uppercase mb-4">
-                  NOW IN PRODUCTION · COMING 2026
-                </div>
-                <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
-                  YAHWEH
-                </h2>
-                <h3 className="text-sm font-semibold tracking-widest text-white/80 uppercase mb-4">
-                  The God Who Reveals His Power — The Book of Exodus
-                </h3>
-                <p className="text-white/70 text-sm leading-relaxed mb-6">
-                  Following the monumental completion of Genesis, the visual saga advances to
-                  Exodus. Witness the ten plagues, the roar of the parting waters, the pillar of
-                  fire, and the giving of the law atop Mount Sinai.
-                </p>
-                <div className="flex items-center gap-4">
-                  <a
-                    href="#waitlist"
-                    className="flex items-center gap-2 bg-[#A11C28] text-white text-xs font-bold px-6 py-3 rounded uppercase tracking-wider hover:bg-[#7F151F] transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Join The Waitlist
-                  </a>
-                  <Link
-                    to="/watch"
-                    className="text-xs font-semibold text-white/60 hover:text-white transition-colors"
-                  >
-                    Watch Genesis First →
-                  </Link>
-                </div>
+          <div className="max-w-6xl mx-auto mb-10 flex flex-col md:flex-row md:items-end justify-between gap-5">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
+                <span className="text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
+                  Production Slate · What's Ahead
+                </span>
               </div>
-
-              {/* YAHWEH Poster Showcase */}
-              <div className="relative group overflow-hidden rounded-xl border border-white/[0.1] shadow-2xl">
-                <img
-                  src="/assets/yahweh-tablets-poster.jpg"
-                  alt="YAHWEH The Book of Exodus"
-                  className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <span className="text-[10px] font-bold tracking-widest text-[#A11C28] uppercase">
-                    In Theatres & Streaming Worldwide
-                  </span>
-                  <div className="text-lg font-black text-white">YAHWEH · The Book of Exodus</div>
-                </div>
-              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-2">
+                Upcoming Projects
+              </h2>
+              <p className="text-white/65 text-xs md:text-sm max-w-xl">
+                The expanding cinematic universe of the Visual Bible. From the epic release of
+                YAHWEH to the complete Genesis broadcast series, episodic television, and character
+                chronicles.
+              </p>
             </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <a
+                href="#waitlist"
+                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 rounded transition-colors uppercase tracking-wider shadow-lg shadow-red-950/40"
+              >
+                <Plus className="w-4 h-4" />
+                Join Premiere Waitlist
+              </a>
+            </div>
+          </div>
+
+          {/* Originkit AccordionOS Interactive Canvas Frame */}
+          <div className="relative w-full h-[520px] md:h-[580px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#09090d] shadow-2xl">
+            {mounted && (
+              <AccordionOS
+                items={UPCOMING_PROJECTS_ITEMS}
+                defaultOpen={1}
+                autoplay={true}
+                interval={4.5}
+                pauseOnHover={true}
+                radius={16}
+                scale={100}
+                background="#09090d"
+                style={{ width: "100%", height: "100%" }}
+              />
+            )}
           </div>
         </section>
 
@@ -1292,12 +1496,31 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ── 7. WAITLIST FUNNEL ───────────────────────────────────────── */}
+        {/* ── 7. WAITLIST FUNNEL (WITH STREAMING CATALOG MOSAIC BACKDROP) ── */}
         <section
           id="waitlist"
-          className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#080808] to-black border-t border-white/[0.08] text-center"
+          className="relative py-28 px-6 md:px-12 overflow-hidden border-t border-white/[0.08] text-center"
         >
-          <div className="max-w-2xl mx-auto">
+          {/* Background Catalog Mosaic (User's Uploaded Streaming Catalog Grid) */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <img
+              src="/assets/waitlist-catalog-mosaic.jpg"
+              alt="Visual Bible Global Streaming Catalog"
+              className="w-full h-full object-cover object-center opacity-30 scale-105 filter blur-[0.5px]"
+            />
+            {/* Deep Dark Vignette Overlay for Crisp Form Legibility */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `
+                  radial-gradient(ellipse at center, rgba(10,10,14,0.85) 0%, rgba(0,0,0,0.95) 70%, #000000 100%),
+                  linear-gradient(180deg, #000000 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.85) 80%, #000000 100%)
+                `,
+              }}
+            />
+          </div>
+
+          <div className="relative z-10 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#A11C28]/20 border border-[#A11C28]/40 text-[#A11C28] text-[11px] font-bold tracking-widest uppercase mb-4">
               Be First to Watch
             </div>
@@ -1310,7 +1533,7 @@ function LandingPage() {
             </p>
 
             {status === "success" ? (
-              <div className="flex items-center justify-center gap-2 bg-[#141419] border border-emerald-500/40 rounded-lg p-5 text-emerald-400">
+              <div className="flex items-center justify-center gap-2 bg-[#141419]/90 backdrop-blur-md border border-emerald-500/40 rounded-lg p-5 text-emerald-400">
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
                 <span className="text-sm font-semibold">
                   You're on the premiere list! We'll notify you as soon as YAHWEH drops.
@@ -1329,12 +1552,12 @@ function LandingPage() {
                   required
                   disabled={status === "loading"}
                   aria-label="Email for waitlist"
-                  className="flex-1 bg-[#141419] border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#A11C28] transition-colors"
+                  className="flex-1 bg-black/75 backdrop-blur-md border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#A11C28] transition-colors shadow-inner"
                 />
                 <button
                   type="submit"
                   disabled={status === "loading"}
-                  className="bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-3 rounded transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap"
+                  className="bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-3 rounded transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap shadow-lg shadow-red-950/50"
                 >
                   {status === "loading" ? "Joining…" : "Get Early Access"}
                 </button>
