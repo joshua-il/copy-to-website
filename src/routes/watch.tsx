@@ -18,124 +18,70 @@ import { Button } from "@/components/ui/button";
 import { GlobalSidebar } from "@/components/global-sidebar";
 import { useGlobalLanguage } from "@/lib/language";
 import { useAdminAuth } from "@/lib/admin-auth";
-import { AdminCmsModal } from "@/components/admin/admin-cms-modal";
 import { SiteFooter } from "@/components/site-footer";
+import {
+  useCmsContent,
+  DEFAULT_BROADCAST_EPISODES,
+  type BroadcastEpisodeItem,
+} from "@/lib/cms-store";
 
-// ─── Data: 24/7 Linear Channel Schedule (6 Verified Episodes) ───────────────
+// ─── Episode Matching & Fallback Resolution ──────────────────────────────────
 
-interface ScheduledEpisode {
-  id: string;
-  title: string;
-  subtitle: string;
-  book: string;
-  durationSeconds: number;
-  durationFormatted: string;
-  videoId: string;
-  defaultStartSeconds: number;
-  synopsis: string;
-  poster: string;
-  tag: string;
-  chapter: string;
+function matchEpisode(
+  query: string | undefined | null,
+  list: BroadcastEpisodeItem[],
+): BroadcastEpisodeItem {
+  if (!list.length) return DEFAULT_BROADCAST_EPISODES[0];
+  if (!query) return list[0];
+
+  const q = query.toLowerCase().trim();
+
+  // 1. Exact ID match
+  const exact = list.find((ep) => ep.id.toLowerCase() === q);
+  if (exact) return exact;
+
+  // 2. Video ID match (e.g. z5abtVIszH8)
+  const byVideo = list.find((ep) => ep.videoId.toLowerCase() === q);
+  if (byVideo) return byVideo;
+
+  // 3. Aliases and slug matches
+  if (q === "genesis" || q.includes("46-50") || q.includes("journey")) {
+    const match = list.find((ep) => ep.id.includes("46-50") || ep.id === "genesis-46-50");
+    if (match) return match;
+  }
+  if (q === "joseph" || q.includes("37-44") || q.includes("betrayal") || q.includes("pit")) {
+    const match = list.find((ep) => ep.id.includes("37-44") || ep.id.includes("joseph"));
+    if (match) return match;
+  }
+  if (q.includes("dreamer") || q.includes("30-32")) {
+    const match = list.find((ep) => ep.id.includes("30-32") || ep.id.includes("dreamer"));
+    if (match) return match;
+  }
+  if (q.includes("reconciliation") || q.includes("45") || q.includes("brother")) {
+    const match = list.find((ep) => ep.id.includes("45") || ep.id.includes("reconciliation"));
+    if (match) return match;
+  }
+  if (q.includes("fire") || q.includes("42") || q.includes("faith")) {
+    const match = list.find((ep) => ep.id.includes("42") || ep.id.includes("fire"));
+    if (match) return match;
+  }
+  if (q === "yahweh" || q.includes("exodus") || q.includes("passover")) {
+    const match = list.find((ep) => ep.id.includes("yahweh") || ep.id.includes("exodus"));
+    if (match) return match;
+  }
+  if (q.includes("trailer")) {
+    const match = list.find((ep) => ep.id.includes("trailer"));
+    if (match) return match;
+  }
+
+  // 4. Substring in ID or Title
+  const partial = list.find(
+    (ep) => ep.id.toLowerCase().includes(q) || ep.title.toLowerCase().includes(q),
+  );
+  if (partial) return partial;
+
+  return list[0];
 }
-
-const ENGLISH_CHANNEL_EPISODES: ScheduledEpisode[] = [
-  {
-    id: "genesis-journey-to-egypt",
-    title: "The Journey to Egypt, The Final Blessing & The Beginning of a Nation",
-    subtitle: "Genesis 46–50 · The Climactic Patriarchal Finale",
-    book: "Book of Genesis",
-    chapter: "Chapters 46–50",
-    durationSeconds: 2459, // 40m 59s
-    durationFormatted: "40m 59s",
-    videoId: "z5abtVIszH8",
-    defaultStartSeconds: 0,
-    synopsis:
-      "Jacob hears God's voice in night visions: 'Fear not to go down to Egypt.' Reunited with Joseph, Jacob blesses Pharaoh and on his deathbed delivers the prophetic destiny of the twelve tribes of Israel before resting with his fathers.",
-    poster: "/assets/genesis-poster.jpg",
-    tag: "FEATURE BROADCAST",
-  },
-  {
-    id: "genesis-story-of-joseph-early",
-    title: "The Story of Joseph — Genesis 30, 31 & 32",
-    subtitle: "The Origins of the Covenant Dreamer",
-    book: "Book of Genesis",
-    chapter: "Chapters 30–32",
-    durationSeconds: 1247, // 20m 47s
-    durationFormatted: "20m 47s",
-    videoId: "BZkNTze00VA",
-    defaultStartSeconds: 0,
-    synopsis:
-      "Witness Rachel giving birth to Joseph, Jacob prospering through divine favor despite Laban's deception, the dramatic flight to Gilead, and Jacob wrestling with the angel of God until daybreak at Peniel.",
-    poster: "/assets/purpose-of-god-joseph-poster.jpg",
-    tag: "PATRIARCHAL SAGA",
-  },
-  {
-    id: "genesis-joseph-betrayal-forgiveness",
-    title: "Betrayal, Testing & Forgiveness · The Story of Joseph",
-    subtitle: "The Sovereign Purpose of God in Egyptian Captivity",
-    book: "Book of Genesis",
-    chapter: "Chapters 37–44",
-    durationSeconds: 1143, // 19m 03s
-    durationFormatted: "19m 03s",
-    videoId: "kutfZZlzDWA",
-    defaultStartSeconds: 0,
-    synopsis:
-      "Sold into slavery by his own brothers for twenty shekels of silver. Elevated through prison to ruler of Pharaoh's palace. Joseph tests his brothers' hearts when famine strikes Canaan to witness their true repentance.",
-    poster: "/assets/genesis-shepherds-poster.jpg",
-    tag: "SIGNATURE EPISODE",
-  },
-  {
-    id: "genesis-45-sold-brother-only-hope",
-    title: "Genesis 45 · The Brother They Sold Was Now Their Only Hope",
-    subtitle: "Reconciliation, Brokenness & Divine Providence",
-    book: "Book of Genesis",
-    chapter: "Chapter 45",
-    durationSeconds: 428, // 7m 08s
-    durationFormatted: "7m 08s",
-    videoId: "oZXdI34N3Ik",
-    defaultStartSeconds: 0,
-    synopsis:
-      "Joseph weeps aloud so loudly that the house of Pharaoh hears: 'I am Joseph! Does my father still live?' The definitive revelation that what brothers plotted for evil, God sovereignly purposed to save many lives.",
-    poster: "/assets/genesis-pharaoh-prophet-sunset.jpg",
-    tag: "KEY REVELATION",
-  },
-  {
-    id: "genesis-42-faith-through-the-fire",
-    title: "Genesis 42 · Faith Through the Fire",
-    subtitle: "Facing Adversity and the Testing of Conscience",
-    book: "Book of Genesis",
-    chapter: "Chapter 42",
-    durationSeconds: 253, // 4m 13s
-    durationFormatted: "4m 13s",
-    videoId: "xzdzeamlGjU",
-    defaultStartSeconds: 0,
-    synopsis:
-      "Famine tightens its grip across Canaan. Ten brothers travel down to Egypt to buy grain, unaware they are bowing before their long-lost sibling, awakening memories of guilt and the inexorable call of conscience.",
-    poster: "/assets/genesis-warriors-fire.jpg",
-    tag: "SCRIPTURE STUDY",
-  },
-  {
-    id: "easter-special-crucified-christ",
-    title: "Easter Theatrical Special · Who Crucified Christ?",
-    subtitle: "The Prophetic Arc from the Passover Lamb to Calvary",
-    book: "The Passion & Prophecy",
-    chapter: "Special Theatrical Feature",
-    durationSeconds: 279, // 4m 39s
-    durationFormatted: "4m 39s",
-    videoId: "ZoealOqy0Kg",
-    defaultStartSeconds: 0,
-    synopsis:
-      "Connecting the ancient sacrificial covenants of Genesis and Exodus to the ultimate drama of Golgotha. An authoritative visual breakdown of the prophecies fulfilled on the Cross and the dawn of the resurrection.",
-    poster: "/assets/in-the-beginning-banner.png",
-    tag: "SPECIAL FEATURE",
-  },
-];
-
-// Total broadcast loop cycle in seconds (approx 1h 36m 49s)
-const TOTAL_CYCLE_SECONDS = ENGLISH_CHANNEL_EPISODES.reduce(
-  (acc, ep) => acc + ep.durationSeconds,
-  0,
-);
 
 // ─── Multi-Language TV Channels Roster ──────────────────────────────────────
 
@@ -255,10 +201,20 @@ function LiveTvPage() {
   const [copied, setCopied] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState("en-live");
   const [currentTimeSec, setCurrentTimeSec] = useState(() => Math.floor(Date.now() / 1000));
-  const [isLiveSynced, setIsLiveSynced] = useState(initialMode !== "vod");
-  const [manualEpisodeId, setManualEpisodeId] = useState<string | null>(searchedEpisodeId ?? null);
   const { isAdmin } = useAdminAuth();
-  const [isCmsOpen, setIsCmsOpen] = useState(false);
+  const { cmsData } = useCmsContent();
+
+  // Dynamic episodes list from centralized CMS store (with factory fallback)
+  const episodesList = useMemo(() => {
+    return cmsData.broadcastEpisodes && cmsData.broadcastEpisodes.length
+      ? cmsData.broadcastEpisodes
+      : DEFAULT_BROADCAST_EPISODES;
+  }, [cmsData.broadcastEpisodes]);
+
+  // Total loop cycle in seconds
+  const totalCycleSeconds = useMemo(() => {
+    return episodesList.reduce((acc, ep) => acc + (ep.durationSeconds || 600), 0) || 3600;
+  }, [episodesList]);
 
   // 1-second interval to drive the 24/7 broadcast clock
   useEffect(() => {
@@ -270,33 +226,32 @@ function LiveTvPage() {
 
   // Compute live broadcast state based on wall-clock time
   const liveBroadcastState = useMemo(() => {
-    const cycleOffset = currentTimeSec % TOTAL_CYCLE_SECONDS;
+    const cycleOffset = currentTimeSec % totalCycleSeconds;
     let accumulated = 0;
     let activeIndex = 0;
     let elapsedInEpisode = 0;
 
-    for (let i = 0; i < ENGLISH_CHANNEL_EPISODES.length; i++) {
-      const ep = ENGLISH_CHANNEL_EPISODES[i];
-      if (accumulated + ep.durationSeconds > cycleOffset) {
+    for (let i = 0; i < episodesList.length; i++) {
+      const ep = episodesList[i];
+      const duration = ep.durationSeconds || 600;
+      if (accumulated + duration > cycleOffset) {
         activeIndex = i;
         elapsedInEpisode = cycleOffset - accumulated;
         break;
       }
-      accumulated += ep.durationSeconds;
+      accumulated += duration;
     }
 
-    const currentLiveEpisode = ENGLISH_CHANNEL_EPISODES[activeIndex];
-    const remainingInEpisode = currentLiveEpisode.durationSeconds - elapsedInEpisode;
-    const progressPercent = Math.min(
-      100,
-      Math.max(0, (elapsedInEpisode / currentLiveEpisode.durationSeconds) * 100),
-    );
+    const currentLiveEpisode = episodesList[activeIndex] || episodesList[0];
+    const duration = currentLiveEpisode.durationSeconds || 600;
+    const remainingInEpisode = Math.max(0, duration - elapsedInEpisode);
+    const progressPercent = Math.min(100, Math.max(0, (elapsedInEpisode / duration) * 100));
 
     // Compute upcoming program schedule for the next 12 hours
     const currentEpisodeStartTimestamp = (currentTimeSec - elapsedInEpisode) * 1000;
     let scheduleCursor = currentEpisodeStartTimestamp;
     const scheduleGrid: Array<{
-      episode: ScheduledEpisode;
+      episode: BroadcastEpisodeItem;
       indexInSchedule: number;
       startTime: Date;
       endTime: Date;
@@ -306,10 +261,11 @@ function LiveTvPage() {
 
     // Build next 10 consecutive broadcast slots
     for (let slot = 0; slot < 10; slot++) {
-      const epIndex = (activeIndex + slot) % ENGLISH_CHANNEL_EPISODES.length;
-      const ep = ENGLISH_CHANNEL_EPISODES[epIndex];
+      const epIndex = (activeIndex + slot) % episodesList.length;
+      const ep = episodesList[epIndex];
+      const epDuration = ep.durationSeconds || 600;
       const slotStart = new Date(scheduleCursor);
-      const slotEnd = new Date(scheduleCursor + ep.durationSeconds * 1000);
+      const slotEnd = new Date(scheduleCursor + epDuration * 1000);
 
       scheduleGrid.push({
         episode: ep,
@@ -320,7 +276,7 @@ function LiveTvPage() {
         isUpNext: slot === 1,
       });
 
-      scheduleCursor += ep.durationSeconds * 1000;
+      scheduleCursor += epDuration * 1000;
     }
 
     return {
@@ -331,7 +287,7 @@ function LiveTvPage() {
       progressPercent,
       scheduleGrid,
     };
-  }, [currentTimeSec]);
+  }, [currentTimeSec, episodesList, totalCycleSeconds]);
 
   // STABLE PLAYBACK STATE: ONLY updates on episode transition or user action.
   // CRITICAL: Never updates on 1-second ticks so the iframe plays continuously without blinking or reloading.
@@ -342,49 +298,56 @@ function LiveTvPage() {
     isLive: boolean;
     playToken: number;
   }>(() => {
-    // Map legacy episode query params if present
-    const legacyMap: Record<string, string> = {
-      genesis: "genesis-journey-to-egypt",
-      joseph: "genesis-story-of-joseph-early",
-      easter: "easter-special-crucified-christ",
-    };
-    const targetId = searchedEpisodeId ? (legacyMap[searchedEpisodeId] ?? searchedEpisodeId) : null;
-
-    if (targetId && initialMode === "vod") {
-      const found =
-        ENGLISH_CHANNEL_EPISODES.find((ep) => ep.id === targetId) ?? ENGLISH_CHANNEL_EPISODES[0];
+    if (searchedEpisodeId) {
+      const matched = matchEpisode(searchedEpisodeId, DEFAULT_BROADCAST_EPISODES);
       return {
-        episodeId: found.id,
-        videoId: found.videoId,
+        episodeId: matched.id,
+        videoId: matched.videoId,
         startSeconds: 0,
-        isLive: false,
+        isLive: initialMode === "live",
         playToken: 1,
       };
     }
 
     const nowSec = Math.floor(Date.now() / 1000);
-    const cycleOffset = nowSec % TOTAL_CYCLE_SECONDS;
+    const cycleOffset = nowSec % 3600;
     let accumulated = 0;
-    let initialEp = ENGLISH_CHANNEL_EPISODES[0];
+    let initialEp = DEFAULT_BROADCAST_EPISODES[0];
     let initialOffset = 0;
 
-    for (const ep of ENGLISH_CHANNEL_EPISODES) {
-      if (accumulated + ep.durationSeconds > cycleOffset) {
+    for (const ep of DEFAULT_BROADCAST_EPISODES) {
+      const duration = ep.durationSeconds || 600;
+      if (accumulated + duration > cycleOffset) {
         initialEp = ep;
         initialOffset = cycleOffset - accumulated;
         break;
       }
-      accumulated += ep.durationSeconds;
+      accumulated += duration;
     }
 
     return {
       episodeId: initialEp.id,
       videoId: initialEp.videoId,
       startSeconds: initialOffset,
-      isLive: true,
+      isLive: initialMode !== "vod",
       playToken: 1,
     };
   });
+
+  // Reactive Route Synchronization: When user clicks any homepage poster or changes URL params,
+  // immediately update playback to the requested episode!
+  useEffect(() => {
+    if (searchedEpisodeId) {
+      const matched = matchEpisode(searchedEpisodeId, episodesList);
+      setActivePlayback({
+        episodeId: matched.id,
+        videoId: matched.videoId,
+        startSeconds: 0,
+        isLive: initialMode === "live",
+        playToken: Date.now(),
+      });
+    }
+  }, [searchedEpisodeId, initialMode, episodesList]);
 
   // When in Live mode, advance to next episode ONLY when the on-air episode ID changes naturally
   useEffect(() => {
@@ -410,10 +373,10 @@ function LiveTvPage() {
   // The episode metadata currently shown on screen
   const displayedEpisode = useMemo(() => {
     return (
-      ENGLISH_CHANNEL_EPISODES.find((ep) => ep.id === activePlayback.episodeId) ??
-      ENGLISH_CHANNEL_EPISODES[0]
+      episodesList.find((ep) => ep.id === activePlayback.episodeId) ??
+      matchEpisode(activePlayback.episodeId, episodesList)
     );
-  }, [activePlayback.episodeId]);
+  }, [activePlayback.episodeId, episodesList]);
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
@@ -435,8 +398,7 @@ function LiveTvPage() {
   };
 
   const playEpisodeOnDemand = (epId: string) => {
-    const found =
-      ENGLISH_CHANNEL_EPISODES.find((ep) => ep.id === epId) ?? ENGLISH_CHANNEL_EPISODES[0];
+    const found = episodesList.find((ep) => ep.id === epId) ?? matchEpisode(epId, episodesList);
     setActivePlayback({
       episodeId: found.id,
       videoId: found.videoId,
@@ -522,15 +484,15 @@ function LiveTvPage() {
               </button>
 
               {isAdmin && (
-                <button
-                  type="button"
-                  onClick={() => setIsCmsOpen(true)}
+                <Link
+                  to="/admin"
+                  search={{ tab: "episodes" }}
                   className="inline-flex items-center gap-1.5 text-xs text-white bg-[#A11C28] hover:bg-[#7F151F] font-bold transition-colors px-2.5 py-1 rounded shadow"
-                  title="Manage YouTube links and episodes"
+                  title="Manage YouTube links and episodes in Studio CMS"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
-                  <span>Manage YouTube Episodes</span>
-                </button>
+                  <span>Studio CMS</span>
+                </Link>
               )}
             </div>
           </div>
@@ -621,7 +583,7 @@ function LiveTvPage() {
               <iframe
                 key={`${activePlayback.episodeId}-${activePlayback.playToken}`}
                 className="absolute inset-0 h-full w-full border-0 z-10"
-                src={`https://www.youtube-nocookie.com/embed/${activePlayback.videoId}?start=${activePlayback.startSeconds}&autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1`}
+                src={`https://www.youtube.com/embed/${activePlayback.videoId}?start=${activePlayback.startSeconds}&autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1`}
                 title={displayedEpisode.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 referrerPolicy="strict-origin-when-cross-origin"
@@ -887,12 +849,12 @@ function LiveTvPage() {
                 </p>
               </div>
               <span className="text-xs font-mono text-white/40">
-                {ENGLISH_CHANNEL_EPISODES.length} Releases
+                {episodesList.length} Releases
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {ENGLISH_CHANNEL_EPISODES.map((ep, idx) => {
+              {episodesList.map((ep, idx) => {
                 const isSelected = displayedEpisode.id === ep.id;
                 return (
                   <div
@@ -979,15 +941,6 @@ function LiveTvPage() {
         </div>
 
         <SiteFooter />
-
-        {/* Admin YouTube & Episode CMS Modal */}
-        {isCmsOpen && (
-          <AdminCmsModal
-            isOpen={isCmsOpen}
-            onClose={() => setIsCmsOpen(false)}
-            defaultTab="episodes"
-          />
-        )}
       </div>
     </main>
   );

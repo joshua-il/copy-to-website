@@ -27,7 +27,6 @@ import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { useCmsContent } from "@/lib/cms-store";
-import { AdminCmsModal } from "@/components/admin/admin-cms-modal";
 import { joinWaitlist } from "@/lib/waitlist.functions";
 import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
 import Globe from "@/components/originkit/ui/globe-custom-style";
@@ -467,9 +466,6 @@ function LandingPage() {
   const [language, setLanguage] = useGlobalLanguage();
   const { isAdmin } = useAdminAuth();
   const { cmsData } = useCmsContent();
-  const [adminCmsTab, setAdminCmsTab] = useState<
-    "hero" | "vault" | "projects" | "episodes" | "archive" | null
-  >(null);
   const [mounted, setMounted] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoReady, setVideoReady] = useState(false);
@@ -529,14 +525,15 @@ function LandingPage() {
           id="hero"
           className="relative w-full overflow-hidden bg-black flex flex-col justify-end min-h-[92vh] lg:min-h-screen pt-20 pb-28 md:pb-36 lg:pb-40 px-6 md:px-12"
         >
-          {/* Admin Floating In-Place Edit Button */}
+          {/* Admin Floating In-Place Edit Link */}
           {isAdmin && (
-            <button
-              onClick={() => setAdminCmsTab("hero")}
+            <Link
+              to="/admin"
+              search={{ tab: "hero" }}
               className="absolute top-6 right-6 z-30 flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xl shadow-black/80 uppercase tracking-wider transition-all"
             >
               <Edit3 className="w-3.5 h-3.5" /> Edit Hero Showcase
-            </button>
+            </Link>
           )}
 
           {/* Hero Media: Still Image (shows immediately) + YouTube Video (fades in after 2.5s) */}
@@ -684,12 +681,13 @@ function LandingPage() {
                 Existing Productions · The Genesis Vault & Languages
               </h2>
               {isAdmin && (
-                <button
-                  onClick={() => setAdminCmsTab("vault")}
+                <Link
+                  to="/admin"
+                  search={{ tab: "vault" }}
                   className="ml-2 flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-[11px] font-bold px-2.5 py-0.5 rounded transition-colors"
                 >
                   <Edit3 className="w-3 h-3" /> Edit Posters
-                </button>
+                </Link>
               )}
             </div>
             <Link
@@ -709,7 +707,7 @@ function LandingPage() {
               <Link
                 key={card.id}
                 to="/watch"
-                search={{ episode: card.episode }}
+                search={{ episode: card.episode, mode: "vod" }}
                 className="relative shrink-0 group cursor-pointer transition-transform duration-300 hover:scale-105"
                 style={{ width: "clamp(155px, 16vw, 215px)" }}
               >
@@ -1020,12 +1018,13 @@ function LandingPage() {
 
             <div className="flex items-center gap-3 shrink-0">
               {isAdmin && (
-                <button
-                  onClick={() => setAdminCmsTab("archive")}
+                <Link
+                  to="/admin"
+                  search={{ tab: "archive" }}
                   className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
                 >
-                  <Edit3 className="w-3.5 h-3.5" /> Edit Archive Posters
-                </button>
+                  <Edit3 className="w-3.5 h-3.5" /> Edit Canvas in Studio
+                </Link>
               )}
               <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-white/50 bg-white/[0.04] border border-white/[0.08] px-3.5 py-2 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -1071,8 +1070,8 @@ function LandingPage() {
                       navigate({ to: archiveItem.linkUrl });
                     }
                   } else {
-                    const ep = archiveItem.episode || "genesis";
-                    navigate({ to: "/watch", search: { episode: ep } });
+                    const ep = archiveItem.episode || "genesis-46-50";
+                    navigate({ to: "/watch", search: { episode: ep, mode: "vod" } });
                   }
                 }}
                 style={{ width: "100%", height: "100%" }}
@@ -1118,12 +1117,13 @@ function LandingPage() {
 
             <div className="flex items-center gap-3 shrink-0">
               {isAdmin && (
-                <button
-                  onClick={() => setAdminCmsTab("projects")}
+                <Link
+                  to="/admin"
+                  search={{ tab: "projects" }}
                   className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
                 >
-                  <Edit3 className="w-3.5 h-3.5" /> Edit Slate
-                </button>
+                  <Edit3 className="w-3.5 h-3.5" /> Edit Slate in Studio
+                </Link>
               )}
               <a
                 href="#waitlist"
@@ -1357,15 +1357,6 @@ function LandingPage() {
         {/* ── 8. FOOTER ────────────────────────────────────────────────── */}
         <SiteFooter />
       </div>
-
-      {/* Admin CMS In-Place Modal */}
-      {adminCmsTab && (
-        <AdminCmsModal
-          isOpen={adminCmsTab !== null}
-          onClose={() => setAdminCmsTab(null)}
-          defaultTab={adminCmsTab}
-        />
-      )}
     </div>
   );
 }

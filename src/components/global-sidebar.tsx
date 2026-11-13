@@ -16,8 +16,6 @@ import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { AdminBar } from "@/components/admin/admin-bar";
-import { AdminLoginModal } from "@/components/admin/admin-login-modal";
-import { AdminCmsModal } from "@/components/admin/admin-cms-modal";
 
 export function GlobalSidebar() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -196,21 +194,23 @@ export function GlobalSidebar() {
 
           {/* Admin CMS Access Button */}
           {isAdmin ? (
-            <button
-              onClick={() => setCmsModalOpen(true)}
+            <Link
+              to="/admin"
+              search={{ tab: "episodes" }}
               className="flex items-center gap-2 p-2 rounded-lg bg-[#A11C28]/20 hover:bg-[#A11C28]/35 border border-[#A11C28]/40 text-[#A11C28] hover:text-white transition-colors"
-              title="Admin CMS & YouTube Manager"
+              title="Studio CMS & YouTube Catalog"
             >
               <Shield className="w-4 h-4 shrink-0 fill-current" />
               {sidebarExpanded && (
                 <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
-                  Admin CMS
+                  Studio CMS
                 </span>
               )}
-            </button>
+            </Link>
           ) : (
-            <button
-              onClick={() => setLoginModalOpen(true)}
+            <Link
+              to="/admin"
+              search={{ tab: "episodes" }}
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-colors"
               title="Admin Sign In"
             >
@@ -218,7 +218,7 @@ export function GlobalSidebar() {
               {sidebarExpanded && (
                 <span className="text-[11px] font-medium whitespace-nowrap">Admin Sign In</span>
               )}
-            </button>
+            </Link>
           )}
 
           {/* NRIM Brand Link */}
@@ -282,14 +282,8 @@ export function GlobalSidebar() {
           );
         })}
       </nav>
-      {/* ── GLOBAL ADMIN STATUS BAR & MODALS ────────────────────────── */}
+      {/* ── GLOBAL ADMIN STATUS BAR ────────────────────────── */}
       <AdminBar />
-      <AdminLoginModal
-        isOpen={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
-        onSuccess={() => setCmsModalOpen(true)}
-      />
-      <AdminCmsModal isOpen={cmsModalOpen} onClose={() => setCmsModalOpen(false)} />
     </>
   );
 }
