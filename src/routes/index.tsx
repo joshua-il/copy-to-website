@@ -1,6 +1,20 @@
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Play, Plus, Star, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
+import {
+  Play,
+  Plus,
+  Star,
+  CheckCircle2,
+  AlertCircle,
+  ChevronRight,
+  Search,
+  Home,
+  Tv,
+  Film,
+  LayoutGrid,
+  Check,
+  Info,
+} from "lucide-react";
 import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
 import { joinWaitlist } from "@/lib/waitlist.functions";
@@ -35,25 +49,29 @@ const YAHWEH_CARDS = [
     id: "y1",
     title: "YAHWEH · The Tablets",
     image: "/assets/yahweh-tablets-poster.jpg",
-    label: "In Theatres Worldwide",
+    subtitle: "The Law & The Glory",
+    badge: "In Production",
   },
   {
     id: "y2",
     title: "The Deliverer",
     image: "/assets/yahweh-exodus-staff-poster.jpg",
-    label: "The Book of Exodus",
+    subtitle: "The Book of Exodus",
+    badge: "Coming Soon",
   },
   {
     id: "y3",
     title: "The Waters Divide",
     image: "/assets/moses-parting-sea.jpg",
-    label: "Red Sea Miracle",
+    subtitle: "The Red Sea Miracle",
+    badge: "Coming Soon",
   },
   {
     id: "y4",
     title: "YAHWEH · Monument",
     image: "/assets/yahweh-monument.jpg",
-    label: "Covenant & Fire",
+    subtitle: "Covenant & Fire",
+    badge: "In Theatres",
   },
 ];
 
@@ -99,17 +117,10 @@ const GENESIS_CARDS = [
 
 function LandingPage() {
   const [language, setLanguage] = useGlobalLanguage();
-  const [scrolled, setScrolled] = useState(false);
+  const [activeNav, setActiveNav] = useState("home");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-
-  // Transparent → solid nav on scroll
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   async function handleWaitlist(e: FormEvent) {
     e.preventDefault();
@@ -128,613 +139,708 @@ function LandingPage() {
 
   return (
     <div
-      className="min-h-screen bg-[#0a0a0a] text-white font-sans"
+      className="min-h-screen bg-[#000000] text-white font-sans selection:bg-[#E50914] selection:text-white"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      {/* ── NAVBAR ─────────────────────────────────────────────────────── */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/[0.07]"
-            : "bg-transparent"
-        }`}
+      {/* ── LEFT SIDE NAVIGATION BAR (NETFLIX TV APP STYLE) ──────────── */}
+      <aside
+        aria-label="Sidebar Navigation"
+        className="hidden md:flex fixed left-0 top-0 bottom-0 w-16 md:w-18 lg:w-20 bg-black/95 backdrop-blur-xl border-r border-white/[0.08] flex-col items-center justify-between py-6 z-50 transition-all duration-300"
       >
-        <div className="flex items-center justify-between h-16 px-[4%] max-w-[1600px] mx-auto">
-          {/* Logo */}
-          <a href="/" className="flex items-center gap-2 shrink-0">
+        {/* Top: Brand Mark */}
+        <div className="flex flex-col items-center gap-6">
+          <a
+            href="/"
+            className="group flex flex-col items-center justify-center w-11 h-11 rounded-lg hover:bg-white/10 transition-colors"
+            title="Visual Bible TV"
+          >
+            <div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center shadow-lg shadow-red-950/60 font-black text-white text-xs tracking-tighter">
+              VB
+            </div>
+          </a>
+
+          {/* Navigation Icons Rail */}
+          <nav className="flex flex-col items-center gap-2 mt-4" aria-label="Main Menu">
+            {/* Search */}
+            <a
+              href="#upcoming"
+              onClick={() => setActiveNav("search")}
+              className={`relative flex items-center justify-center w-12 h-12 rounded-lg transition-colors group ${
+                activeNav === "search"
+                  ? "text-white"
+                  : "text-white/45 hover:text-white hover:bg-white/[0.06]"
+              }`}
+              title="Search Catalog"
+            >
+              {activeNav === "search" && (
+                <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#E50914] rounded-r" />
+              )}
+              <Search className="w-5 h-5 transition-transform group-hover:scale-110" />
+            </a>
+
+            {/* Home (Active) */}
+            <a
+              href="#hero"
+              onClick={() => setActiveNav("home")}
+              className={`relative flex items-center justify-center w-12 h-12 rounded-lg transition-colors group ${
+                activeNav === "home"
+                  ? "text-white"
+                  : "text-white/45 hover:text-white hover:bg-white/[0.06]"
+              }`}
+              title="Home"
+            >
+              {activeNav === "home" && (
+                <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#E50914] rounded-r" />
+              )}
+              <Home className="w-5 h-5 transition-transform group-hover:scale-110" />
+            </a>
+
+            {/* Series / TV */}
+            <Link
+              to="/watch"
+              search={{ episode: "genesis" }}
+              onClick={() => setActiveNav("tv")}
+              className={`relative flex items-center justify-center w-12 h-12 rounded-lg transition-colors group ${
+                activeNav === "tv"
+                  ? "text-white"
+                  : "text-white/45 hover:text-white hover:bg-white/[0.06]"
+              }`}
+              title="Genesis Series (50 Chapters)"
+            >
+              {activeNav === "tv" && (
+                <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#E50914] rounded-r" />
+              )}
+              <Tv className="w-5 h-5 transition-transform group-hover:scale-110" />
+            </Link>
+
+            {/* Movies / Upcoming YAHWEH */}
+            <a
+              href="#upcoming"
+              onClick={() => setActiveNav("films")}
+              className={`relative flex items-center justify-center w-12 h-12 rounded-lg transition-colors group ${
+                activeNav === "films"
+                  ? "text-white"
+                  : "text-white/45 hover:text-white hover:bg-white/[0.06]"
+              }`}
+              title="YAHWEH Exodus Feature"
+            >
+              {activeNav === "films" && (
+                <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#E50914] rounded-r" />
+              )}
+              <Film className="w-5 h-5 transition-transform group-hover:scale-110" />
+            </a>
+
+            {/* My List / Waitlist */}
+            <a
+              href="#waitlist"
+              onClick={() => setActiveNav("list")}
+              className={`relative flex items-center justify-center w-12 h-12 rounded-lg transition-colors group ${
+                activeNav === "list"
+                  ? "text-white"
+                  : "text-white/45 hover:text-white hover:bg-white/[0.06]"
+              }`}
+              title="Join Waitlist"
+            >
+              {activeNav === "list" && (
+                <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#E50914] rounded-r" />
+              )}
+              <Plus className="w-5 h-5 transition-transform group-hover:scale-110" />
+            </a>
+
+            {/* Categories / Archive */}
+            <a
+              href="#genesis"
+              onClick={() => setActiveNav("categories")}
+              className={`relative flex items-center justify-center w-12 h-12 rounded-lg transition-colors group ${
+                activeNav === "categories"
+                  ? "text-white"
+                  : "text-white/45 hover:text-white hover:bg-white/[0.06]"
+              }`}
+              title="Archive Categories"
+            >
+              {activeNav === "categories" && (
+                <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#E50914] rounded-r" />
+              )}
+              <LayoutGrid className="w-5 h-5 transition-transform group-hover:scale-110" />
+            </a>
+          </nav>
+        </div>
+
+        {/* Bottom: Organization Logo */}
+        <div className="flex flex-col items-center gap-3">
+          <a
+            href="https://nrim.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+            title="Nations Reach International Missions"
+          >
             <img
               src="/assets/nrim-logo-white.png"
               alt="NRIM"
-              className="h-7 w-auto object-contain"
+              className="w-6 h-auto opacity-70 hover:opacity-100 transition-opacity"
             />
-            <span className="text-white font-semibold text-sm tracking-[0.15em] uppercase hidden sm:block">
-              Visual Bible
-            </span>
           </a>
+        </div>
+      </aside>
 
-          {/* Nav links — desktop */}
-          <div className="hidden md:flex items-center gap-6 text-sm text-white/70">
-            <a href="#hero" className="hover:text-white transition-colors">
-              Home
-            </a>
-            <a href="#genesis" className="hover:text-white transition-colors">
-              Genesis
-            </a>
-            <a href="#upcoming" className="hover:text-white transition-colors">
-              Upcoming
-            </a>
-            <Link to="/watch" className="hover:text-white transition-colors">
-              Watch
-            </Link>
-            <a
-              href="https://nrim.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              NRIM
-            </a>
+      {/* ── MOBILE BOTTOM NAVIGATION BAR ──────────────────────────────── */}
+      <nav
+        aria-label="Mobile Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-black/95 backdrop-blur-xl border-t border-white/[0.1] z-50 flex items-center justify-around px-2"
+      >
+        <a
+          href="#hero"
+          onClick={() => setActiveNav("home")}
+          className={`flex flex-col items-center gap-1 ${
+            activeNav === "home" ? "text-[#E50914]" : "text-white/60"
+          }`}
+        >
+          <Home className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Home</span>
+        </a>
+        <a
+          href="#upcoming"
+          onClick={() => setActiveNav("films")}
+          className={`flex flex-col items-center gap-1 ${
+            activeNav === "films" ? "text-[#E50914]" : "text-white/60"
+          }`}
+        >
+          <Film className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Upcoming</span>
+        </a>
+        <Link
+          to="/watch"
+          search={{ episode: "genesis" }}
+          onClick={() => setActiveNav("tv")}
+          className={`flex flex-col items-center gap-1 ${
+            activeNav === "tv" ? "text-[#E50914]" : "text-white/60"
+          }`}
+        >
+          <Tv className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Watch</span>
+        </Link>
+        <a
+          href="#waitlist"
+          onClick={() => setActiveNav("list")}
+          className={`flex flex-col items-center gap-1 ${
+            activeNav === "list" ? "text-[#E50914]" : "text-white/60"
+          }`}
+        >
+          <Plus className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Waitlist</span>
+        </a>
+      </nav>
+
+      {/* ── MAIN CONTENT CONTAINER (OFFSET FOR SIDEBAR ON DESKTOP) ───── */}
+      <div className="pl-0 md:pl-16 lg:pl-20 min-h-screen">
+        {/* Floating Top Controls (Language Selector + Organization Links) */}
+        <header className="absolute top-0 left-0 md:left-16 lg:left-20 right-0 z-40 flex items-center justify-between px-6 md:px-10 py-5 pointer-events-none">
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/50 tracking-wider uppercase font-semibold">
+              <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
+              Nations Reach Network
+            </span>
           </div>
 
-          {/* Right: CTA + language */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pointer-events-auto">
             <RegionalSelector value={language} onValueChange={setLanguage} />
             <a
               href="#waitlist"
-              className="hidden sm:inline-flex items-center gap-1.5 bg-white text-black text-xs font-semibold px-4 py-2 rounded-full hover:bg-white/90 transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 bg-[#E50914] text-white text-xs font-bold px-4 py-2 rounded shadow-md hover:bg-[#c0070f] transition-colors uppercase tracking-wider"
             >
-              Join Waitlist
+              Get Early Access
             </a>
           </div>
-        </div>
-      </nav>
+        </header>
 
-      {/* ── HERO — full-bleed YAHWEH ───────────────────────────────────── */}
-      <section
-        id="hero"
-        className="relative w-full overflow-hidden"
-        style={{ height: "100svh", maxHeight: "920px", minHeight: "600px" }}
-      >
-        {/* Background image */}
-        <img
-          src="/assets/yahweh-tablets-poster.jpg"
-          alt="YAHWEH — The Book of Exodus"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: "center 15%" }}
-          fetchPriority="high"
-        />
-
-        {/* 3-layer gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `
-              linear-gradient(77deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.6) 40%, rgba(10,10,10,0.1) 70%, transparent 100%),
-              linear-gradient(180deg, transparent 50%, rgba(10,10,10,0.9) 80%, #0a0a0a 100%),
-              linear-gradient(180deg, rgba(10,10,10,0.6) 0%, transparent 18%)
-            `,
-          }}
-        />
-
-        {/* Content — bottom-left anchor */}
-        <div
-          className="absolute left-[4%] right-[4%] md:right-auto"
-          style={{ bottom: "14%", maxWidth: "520px" }}
+        {/* ── HERO SECTION: NETFLIX TV OTT VIBE ───────────────────────── */}
+        <section
+          id="hero"
+          className="relative w-full overflow-hidden bg-black flex flex-col justify-between"
+          style={{ minHeight: "100svh" }}
         >
-          {/* Badge */}
-          <div className="flex items-center gap-2 mb-4">
-            <span className="flex items-center gap-1.5 bg-[#E50914] text-white text-[10px] font-bold px-3 py-1.5 rounded-full tracking-widest uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              Now In Production · 2026
-            </span>
+          {/* Hero Backdrop (Right anchored subject, deep dark left gradient) */}
+          <div className="absolute inset-0">
+            <img
+              src="/assets/yahweh-tablets-poster.jpg"
+              alt="YAHWEH — The Book of Exodus"
+              className="w-full h-full object-cover object-[70%_25%] md:object-[65%_20%]"
+              fetchPriority="high"
+            />
+            {/* Multi-layered cinematic gradients matching the Netflix TV reference */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `
+                  linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.4) 60%, transparent 100%),
+                  linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 25%, transparent 60%, rgba(0,0,0,0.95) 85%, #000000 100%)
+                `,
+              }}
+            />
           </div>
 
-          {/* Title */}
-          <h1
-            className="font-black tracking-tight text-white leading-none mb-2"
-            style={{ fontSize: "clamp(44px, 7vw, 96px)" }}
-          >
-            YAHWEH
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-white/80 text-sm font-medium tracking-widest uppercase mb-4">
-            The God Who Reveals His Power — The Book of Exodus
-          </p>
-
-          {/* Meta */}
-          <div className="flex items-center gap-3 text-xs text-white/60 mb-5 flex-wrap">
-            <span className="flex items-center gap-1">
-              <Star className="w-3 h-3 fill-[#F5B301] text-[#F5B301]" />
-              <span className="text-[#F5B301] font-semibold">9.9</span>
-            </span>
-            <span className="text-white/30">|</span>
-            <span>Biblical Epic</span>
-            <span className="text-white/30">·</span>
-            <span>Cinematic AI</span>
-            <span className="text-white/30">·</span>
-            <span>4K · Global</span>
-          </div>
-
-          {/* Synopsis */}
-          <p className="text-white/70 text-sm leading-relaxed mb-7 max-w-[460px]">
-            Following the monumental journey of Genesis, witness the plagues, the parting of the
-            waters, and the giving of the law — brought to life through revolutionary cinematic AI
-            and real-actor performances.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href="https://www.youtube.com/watch?v=3DULIG3sDS8"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-white text-black text-sm font-semibold px-6 py-3 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.02]"
-            >
-              <Play className="w-4 h-4 fill-black" />
-              Watch Workflow
-            </a>
-            <a
-              href="#waitlist"
-              className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-white/20 transition-all duration-300"
-            >
-              <Plus className="w-4 h-4" />
-              Join Waitlist
-            </a>
-          </div>
-        </div>
-
-        {/* Stats — bottom right, desktop only */}
-        <div className="absolute right-[4%] bottom-[14%] hidden lg:flex flex-col gap-4 text-right">
-          {[
-            { num: "1M+", label: "Views Worldwide" },
-            { num: "88", label: "Countries Reached" },
-            { num: "8", label: "Live Languages" },
-          ].map((s) => (
-            <div key={s.label}>
-              <div className="text-2xl font-black text-white leading-none">{s.num}</div>
-              <div className="text-[11px] text-white/50 font-medium tracking-wide mt-0.5">
-                {s.label}
+          {/* Hero Content (Positioned cleanly like Netflix TV metadata) */}
+          <div className="relative z-10 pt-24 md:pt-32 px-6 md:px-12 max-w-2xl">
+            {/* Brand Pill: Red N / VB FILM */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-4 h-4 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[9px] leading-none">
+                N
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── ROW 1: UPCOMING PREMIERE — YAHWEH ─────────────────────────── */}
-      <section id="upcoming" className="pt-10 pb-2 px-[4%]">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <div className="text-[11px] font-semibold tracking-[0.2em] text-[#E50914] uppercase mb-1">
-              Upcoming Premiere
-            </div>
-            <h2 className="text-lg font-bold text-white tracking-tight">
-              YAHWEH · The Book of Exodus
-            </h2>
-          </div>
-          <a
-            href="#waitlist"
-            className="flex items-center gap-1 text-xs text-white/50 hover:text-white transition-colors"
-          >
-            Get notified <ChevronRight className="w-3.5 h-3.5" />
-          </a>
-        </div>
-
-        {/* Portrait card carousel */}
-        <div
-          className="flex gap-4 overflow-x-auto pb-4"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
-        >
-          {YAHWEH_CARDS.map((card) => (
-            <a
-              key={card.id}
-              href="#waitlist"
-              className="relative shrink-0 group cursor-pointer"
-              style={{ width: "clamp(160px, 18vw, 220px)" }}
-            >
-              <div
-                className="w-full overflow-hidden rounded-xl border border-white/[0.07] bg-[#141419]"
-                style={{ aspectRatio: "2/3" }}
-              >
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
-                  <div className="flex items-center gap-2 bg-white text-black text-xs font-bold px-4 py-2 rounded-full">
-                    <Plus className="w-3.5 h-3.5" />
-                    Join Waitlist
-                  </div>
-                </div>
-              </div>
-              {/* Badge */}
-              <div className="absolute top-2 left-2 bg-[#E50914] text-white text-[9px] font-bold px-2 py-0.5 rounded tracking-widest">
-                COMING SOON
-              </div>
-              {/* Label */}
-              <p className="mt-2 text-xs text-white/60 truncate">{card.label}</p>
-              <p className="text-xs font-semibold text-white truncate">{card.title}</p>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      {/* ── ROW 2: NOW STREAMING — GENESIS ARCHIVE ────────────────────── */}
-      <section id="genesis" className="pt-10 pb-2 px-[4%]">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <div className="text-[11px] font-semibold tracking-[0.2em] text-emerald-400 uppercase mb-1">
-              Now Streaming
-            </div>
-            <h2 className="text-lg font-bold text-white tracking-tight">
-              In the Beginning · Genesis Archive
-            </h2>
-          </div>
-          <Link
-            to="/watch"
-            className="flex items-center gap-1 text-xs text-white/50 hover:text-white transition-colors"
-          >
-            View all <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* 16:9 card carousel */}
-        <div
-          className="flex gap-4 overflow-x-auto pb-4"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
-        >
-          {GENESIS_CARDS.map((card) => (
-            <Link
-              key={card.id}
-              to="/watch"
-              search={{ episode: card.episode }}
-              className="relative shrink-0 group"
-              style={{ width: "clamp(220px, 24vw, 300px)" }}
-            >
-              <div
-                className="w-full overflow-hidden rounded-xl border border-white/[0.07] bg-[#141419]"
-                style={{ aspectRatio: "16/9" }}
-              >
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                {/* Hover overlay — play button */}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                    <Play className="w-5 h-5 fill-black text-black ml-0.5" />
-                  </div>
-                </div>
-              </div>
-              <p className="mt-2 text-[11px] text-white/50 truncate">{card.label}</p>
-              <p className="text-xs font-semibold text-white truncate">{card.title}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ── FEATURED: JOSEPH / PURPOSE OF GOD ────────────────────────── */}
-      <section className="pt-10 pb-2 px-[4%]">
-        <div className="mb-5">
-          <div className="text-[11px] font-semibold tracking-[0.2em] text-[#A99B5A] uppercase mb-1">
-            Special Feature
-          </div>
-          <h2 className="text-lg font-bold text-white tracking-tight">
-            Purpose of God · The Story of Joseph
-          </h2>
-        </div>
-
-        <Link
-          to="/watch"
-          search={{ episode: "joseph" }}
-          className="relative group block max-w-3xl rounded-2xl overflow-hidden border border-white/[0.07]"
-          style={{ aspectRatio: "21/9" }}
-        >
-          <img
-            src="/assets/genesis-poster.jpg"
-            alt="Purpose of God — The Story of Joseph"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.5) 50%, transparent 100%)",
-            }}
-          />
-          <div className="absolute inset-0 flex flex-col justify-end p-7">
-            <div className="text-[10px] tracking-[0.25em] text-[#A99B5A] uppercase font-semibold mb-2">
-              From Genesis · Chapter 37–50
-            </div>
-            <h3 className="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
-              PURPOSE OF GOD
-            </h3>
-            <p className="text-sm text-white/70 max-w-sm mb-5">
-              Sold into slavery, elevated to ruler. Joseph's journey reveals how God works all
-              things for good to preserve His covenant people.
-            </p>
-            <div className="flex items-center gap-2 bg-white text-black text-xs font-bold px-5 py-2.5 rounded-full w-fit group-hover:bg-white/90 transition-colors">
-              <Play className="w-3.5 h-3.5 fill-black" />
-              Watch Now · 26 min
-            </div>
-          </div>
-        </Link>
-      </section>
-
-      {/* ── MISSION / VISION STRIP ────────────────────────────────────── */}
-      <section className="mt-20 px-[4%] max-w-[1200px] mx-auto">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Text */}
-          <div>
-            <div className="text-[11px] font-semibold tracking-[0.2em] text-white/40 uppercase mb-4">
-              Our Mission
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-5">
-              The Message is the Same.
-              <br />
-              <span className="text-white/50">The Medium is New.</span>
-            </h2>
-            <p className="text-white/60 text-sm leading-relaxed mb-5">
-              NRIM (Nations Reach International Missions) has pioneered a revolutionary AI-powered
-              cinematic pipeline — capturing real human performances and transforming them into
-              high-fidelity biblical narratives. The gospel doesn't change. The way we tell it does.
-            </p>
-            <p className="text-white/60 text-sm leading-relaxed mb-7">
-              50 chapters of Genesis have already been released across 8 languages, reaching 88
-              countries and crossing 1 million views. YAHWEH — The Book of Exodus — is next.
-            </p>
-            <a
-              href="https://www.youtube.com/watch?v=3DULIG3sDS8"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-white/20 text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <Play className="w-4 h-4" />
-              See Our Technical Workflow
-            </a>
-          </div>
-
-          {/* Stat grid */}
-          <div className="grid grid-cols-2 gap-5">
-            {[
-              { num: "1M+", label: "Views Worldwide", color: "text-white" },
-              { num: "88", label: "Countries Reached", color: "text-white" },
-              { num: "50", label: "Genesis Chapters Released", color: "text-white" },
-              { num: "8", label: "Live Languages", color: "text-white" },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-[#141419] border border-white/[0.07] rounded-2xl p-5"
-              >
-                <div className={`text-3xl font-black ${s.color} leading-none mb-1`}>{s.num}</div>
-                <div className="text-xs text-white/50 font-medium">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── EXTERNAL LINKS STRIP ─────────────────────────────────────── */}
-      <section className="mt-16 px-[4%] max-w-[1200px] mx-auto">
-        <div className="text-[11px] font-semibold tracking-[0.2em] text-white/30 uppercase mb-5">
-          Explore
-        </div>
-        <div className="flex flex-wrap gap-3">
-          {[
-            {
-              label: "Watch Genesis on YouTube",
-              href: "https://www.youtube.com/watch?v=z5abtVIszH8",
-              external: true,
-              accent: false,
-            },
-            { label: "Visual Bible · Watch Page", href: "/watch", external: false, accent: true },
-            {
-              label: "visualbible.nrim.org",
-              href: "https://visualbible.nrim.org",
-              external: true,
-              accent: false,
-            },
-            {
-              label: "NRIM · Nations Reach",
-              href: "https://nrim.org",
-              external: true,
-              accent: false,
-            },
-          ].map((link) =>
-            link.external ? (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`flex items-center gap-2 text-sm px-5 py-2.5 rounded-full border transition-colors ${
-                  link.accent
-                    ? "bg-[#E50914] border-[#E50914] text-white hover:bg-[#c0070f]"
-                    : "border-white/20 text-white/70 hover:text-white hover:border-white/40"
-                }`}
-              >
-                {link.label}
-                <ChevronRight className="w-3.5 h-3.5" />
-              </a>
-            ) : (
-              <Link
-                key={link.label}
-                to={link.href as "/watch"}
-                className={`flex items-center gap-2 text-sm px-5 py-2.5 rounded-full border transition-colors ${
-                  link.accent
-                    ? "bg-[#E50914] border-[#E50914] text-white hover:bg-[#c0070f]"
-                    : "border-white/20 text-white/70 hover:text-white hover:border-white/40"
-                }`}
-              >
-                {link.label}
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            ),
-          )}
-        </div>
-      </section>
-
-      {/* ── WAITLIST SECTION ──────────────────────────────────────────── */}
-      <section id="waitlist" className="mt-24 mb-20 px-[4%]">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="text-[11px] font-semibold tracking-[0.2em] text-[#A99B5A] uppercase mb-4">
-            Exclusive Premiere Access
-          </div>
-          <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">
-            Be First to Watch
-            <br />
-            <span className="text-white/40">YAHWEH</span>
-          </h2>
-          <p className="text-white/55 text-sm leading-relaxed mb-10 max-w-md mx-auto">
-            Join thousands worldwide. Get premiere dates, behind-the-scenes content, and
-            first-access to YAHWEH and upcoming Visual Bible releases before anyone else.
-          </p>
-
-          {status === "success" ? (
-            <div className="flex items-center justify-center gap-2 bg-[#141419] border border-emerald-500/30 rounded-2xl p-5 text-emerald-400">
-              <CheckCircle2 className="w-5 h-5 shrink-0" />
-              <span className="text-sm font-medium">
-                You're on the list! We'll notify you the moment YAHWEH drops.
+              <span className="text-[11px] font-bold tracking-[0.25em] text-white/90 uppercase">
+                FILM · VISUAL BIBLE
               </span>
             </div>
-          ) : (
-            <form
-              onSubmit={handleWaitlist}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+
+            {/* Above Title Tagline */}
+            <div className="text-xs md:text-sm font-semibold tracking-[0.2em] text-white/70 uppercase mb-1">
+              A Prossiga Media Production
+            </div>
+
+            {/* Main Show Title */}
+            <h1
+              className="font-black tracking-tight text-white leading-none mb-3"
+              style={{ fontSize: "clamp(46px, 7vw, 92px)" }}
             >
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email address"
-                required
-                disabled={status === "loading"}
-                aria-label="Email for waitlist"
-                className="flex-1 bg-[#141419] border border-white/[0.1] text-white text-sm placeholder:text-white/30 px-5 py-3.5 rounded-full focus:outline-none focus:border-white/30 transition-colors disabled:opacity-50"
-              />
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="bg-[#E50914] hover:bg-[#c0070f] text-white text-sm font-bold px-7 py-3.5 rounded-full transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 whitespace-nowrap"
-              >
-                {status === "loading" ? "Joining…" : "Get Early Access"}
-              </button>
-            </form>
-          )}
+              YAHWEH
+            </h1>
 
-          {status === "error" && (
-            <p className="mt-3 text-sm text-red-400 flex items-center justify-center gap-1.5">
-              <AlertCircle className="w-4 h-4" />
-              {errorMsg}
+            {/* Sub-Title */}
+            <p className="text-white/90 text-sm md:text-base font-medium tracking-wide uppercase mb-4">
+              The God Who Reveals His Power — The Book of Exodus
             </p>
-          )}
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 pt-10 border-t border-white/[0.07]">
-            {[
-              { num: "1M+", label: "Views Worldwide" },
-              { num: "88", label: "Countries Reached" },
-              { num: "8", label: "Live Languages" },
-              { num: "100", label: "Language Goal" },
-            ].map((s) => (
-              <div key={s.label}>
-                <div className="text-2xl font-black text-white">{s.num}</div>
-                <div className="text-[11px] text-white/40 mt-0.5">{s.label}</div>
+            {/* Netflix-Style Spec Badges Row */}
+            <div className="flex items-center gap-2.5 text-xs text-white/80 mb-4 flex-wrap">
+              <span className="text-emerald-400 font-bold">New</span>
+              <span className="text-white/60">2026</span>
+              <span className="border border-white/40 px-1.5 py-0.5 text-[10px] font-semibold text-white/80 rounded-[2px] leading-none">
+                16+
+              </span>
+              <span className="text-white/60">Feature Epic</span>
+              <span className="border border-white/40 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
+                VISION
+              </span>
+              <span className="border border-white/40 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
+                5.1
+              </span>
+              <span className="border border-white/40 px-1.5 py-0.5 text-[9px] font-bold text-white/90 rounded-[2px] leading-none tracking-wider">
+                4K UHD
+              </span>
+            </div>
+
+            {/* Synopsis Description */}
+            <p className="text-white/75 text-sm md:text-base leading-relaxed mb-6 max-w-xl">
+              Following the monumental 50 chapters of Genesis, the epic continues into the Book of
+              Exodus. Witness the plagues, the parting of the waters, and the giving of the law
+              brought to life through revolutionary cinematic AI and real-actor performances.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3">
+              <a
+                href="https://www.youtube.com/watch?v=3DULIG3sDS8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 bg-white text-black text-sm font-bold px-6 py-2.5 rounded hover:bg-white/90 transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Play className="w-4 h-4 fill-black" />
+                Watch Workflow
+              </a>
+              <a
+                href="#waitlist"
+                className="flex items-center gap-2 bg-white/20 backdrop-blur-md text-white text-sm font-semibold px-5 py-2.5 rounded hover:bg-white/30 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Join Waitlist
+              </a>
+            </div>
+          </div>
+
+          {/* ── ROW 1: "ONLY ON VISUAL BIBLE" (CAROUSEL TUCKED DIRECTLY IN HERO) ── */}
+          <div className="relative z-10 px-6 md:px-12 pt-10 pb-8 mt-auto">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-4 bg-[#E50914] rounded-sm" />
+                <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
+                  Only on Visual Bible · Upcoming Premieres
+                </h2>
               </div>
+              <a
+                href="#waitlist"
+                className="flex items-center gap-1 text-xs text-white/50 hover:text-white transition-colors"
+              >
+                Explore all <ChevronRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+
+            {/* Netflix-Style Portrait Poster Carousel */}
+            <div
+              className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+            >
+              {YAHWEH_CARDS.map((card) => (
+                <a
+                  key={card.id}
+                  href="#waitlist"
+                  className="relative shrink-0 group cursor-pointer transition-transform duration-300 hover:scale-105"
+                  style={{ width: "clamp(150px, 16vw, 210px)" }}
+                >
+                  {/* Poster Card Container */}
+                  <div
+                    className="w-full overflow-hidden rounded bg-[#141419] border border-white/[0.08] relative shadow-lg"
+                    style={{ aspectRatio: "2/3" }}
+                  >
+                    <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+
+                    {/* Netflix-Style Red Corner Brand Badge */}
+                    <div className="absolute top-2 left-2 w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px] shadow">
+                      N
+                    </div>
+
+                    {/* Bottom Red Banner: "Recently Added" / "In Production" Style */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-[#E50914] text-white text-center py-1 font-bold text-[10px] tracking-wider uppercase shadow-md">
+                      {card.badge}
+                    </div>
+
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-3 text-center">
+                      <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center mb-2 shadow">
+                        <Plus className="w-4 h-4 text-black" />
+                      </div>
+                      <span className="text-xs font-bold text-white leading-tight">
+                        Join Waitlist
+                      </span>
+                      <span className="text-[10px] text-white/70 mt-1">{card.subtitle}</span>
+                    </div>
+                  </div>
+
+                  {/* Title underneath */}
+                  <p className="mt-1.5 text-xs font-medium text-white/90 truncate">{card.title}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── ROW 2: GENESIS VAULT ARCHIVE ───────────────────────────── */}
+        <section id="genesis" className="pt-12 pb-4 px-6 md:px-12 bg-black">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-4 bg-emerald-500 rounded-sm" />
+              <div>
+                <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
+                  Now Streaming · Genesis Vault (50 Chapters)
+                </h2>
+                <p className="text-xs text-white/50">
+                  Completed series streaming across 8 live international languages
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/watch"
+              search={{ episode: "genesis" }}
+              className="flex items-center gap-1 text-xs text-white/50 hover:text-white transition-colors"
+            >
+              Watch full vault <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 16:9 Landscape Carousel */}
+          <div
+            className="flex gap-4 overflow-x-auto pb-4 scrollbar-none"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+          >
+            {GENESIS_CARDS.map((card) => (
+              <Link
+                key={card.id}
+                to="/watch"
+                search={{ episode: card.episode }}
+                className="relative shrink-0 group transition-transform duration-300 hover:scale-105"
+                style={{ width: "clamp(240px, 22vw, 320px)" }}
+              >
+                <div
+                  className="w-full overflow-hidden rounded bg-[#141419] border border-white/[0.08] relative"
+                  style={{ aspectRatio: "16/9" }}
+                >
+                  <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                  {/* Top-left N icon */}
+                  <div className="absolute top-2 left-2 w-4 h-4 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[9px] shadow">
+                    N
+                  </div>
+                  {/* Play Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-lg">
+                      <Play className="w-5 h-5 fill-black text-black ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <p className="text-xs font-semibold text-white truncate">{card.title}</p>
+                  <span className="text-[10px] text-white/50 bg-white/10 px-1.5 py-0.5 rounded">
+                    {card.label}
+                  </span>
+                </div>
+              </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── FOOTER ────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/[0.07] bg-[#0a0a0a] py-12 px-[4%]">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
-            {/* Brand */}
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <img
-                  src="/assets/nrim-logo-white.png"
-                  alt="NRIM"
-                  className="h-6 w-auto object-contain"
-                />
-                <span className="text-white font-semibold text-sm tracking-[0.15em] uppercase">
-                  Visual Bible
+        {/* ── ROW 3: FEATURED SPECIAL — PURPOSE OF GOD (JOSEPH) ──────── */}
+        <section className="pt-8 pb-8 px-6 md:px-12 bg-black">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-1.5 h-4 bg-[#A99B5A] rounded-sm" />
+            <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
+              Featured Special · Purpose of God
+            </h2>
+          </div>
+
+          <Link
+            to="/watch"
+            search={{ episode: "joseph" }}
+            className="relative group block max-w-4xl rounded-lg overflow-hidden border border-white/[0.08] transition-transform duration-300 hover:scale-[1.01]"
+            style={{ aspectRatio: "21/9" }}
+          >
+            <img
+              src="/assets/genesis-poster.jpg"
+              alt="Purpose of God — The Story of Joseph"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
+              }}
+            />
+            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-4 h-4 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[9px]">
+                  N
+                </span>
+                <span className="text-[10px] tracking-[0.2em] text-[#A99B5A] uppercase font-bold">
+                  SPECIAL PRESENTATION · 26 MIN
                 </span>
               </div>
-              <p className="text-xs text-white/40 leading-relaxed">
-                Until All Hear — Every Language, Every Nation.
-                <br />A production of NRIM (Nations Reach International Missions).
+              <h3 className="text-2xl md:text-4xl font-black text-white leading-tight mb-2">
+                PURPOSE OF GOD
+              </h3>
+              <p className="text-xs md:text-sm text-white/70 max-w-md mb-4 line-clamp-2 md:line-clamp-3">
+                From slavery to ruler of Egypt. Joseph's journey reveals how God orchestrates every
+                trial to preserve a covenant remnant.
               </p>
+              <div className="flex items-center gap-2 bg-white text-black text-xs font-bold px-5 py-2.5 rounded w-fit group-hover:bg-white/90 transition-colors">
+                <Play className="w-3.5 h-3.5 fill-black" />
+                Watch Feature Now
+              </div>
+            </div>
+          </Link>
+        </section>
+
+        {/* ── VISION & WORKFLOW STRIP ─────────────────────────────────── */}
+        <section className="py-16 px-6 md:px-12 bg-gradient-to-b from-black via-[#080808] to-black border-t border-white/[0.06]">
+          <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-1.5 h-4 bg-[#E50914] rounded-sm" />
+                <span className="text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
+                  Our Method & Mission
+                </span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-black text-white leading-tight mb-4">
+                The Message is the Same.
+                <br />
+                <span className="text-white/40">The Medium is Revolutionary.</span>
+              </h2>
+              <p className="text-white/70 text-sm leading-relaxed mb-4">
+                NRIM (Nations Reach International Missions) has engineered a pioneering pipeline
+                that marries real-actor human emotion with state-of-the-art AI rendering. We deliver
+                epic biblical cinema with zero loss in scriptural fidelity.
+              </p>
+              <p className="text-white/70 text-sm leading-relaxed mb-6">
+                50 chapters of Genesis have reached 88 countries across 8 languages. With YAHWEH, we
+                are expanding into theatrical exhibition and global broadcast.
+              </p>
+              <a
+                href="https://www.youtube.com/watch?v=3DULIG3sDS8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border border-white/20 text-white text-xs font-bold px-5 py-2.5 rounded hover:bg-white/10 transition-colors uppercase tracking-wider"
+              >
+                <Play className="w-3.5 h-3.5" />
+                Watch Technical Workflow
+              </a>
             </div>
 
-            {/* Links */}
-            <div>
-              <h4 className="text-xs font-semibold text-white/60 uppercase tracking-[0.15em] mb-4">
-                Navigate
-              </h4>
-              <ul className="space-y-2 text-sm text-white/40">
-                <li>
-                  <Link to="/watch" className="hover:text-white transition-colors">
-                    Watch · Stream
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="https://nrim.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    NRIM · nrim.org
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://visualbible.nrim.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    visualbible.nrim.org
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.youtube.com/@NationsReach"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    YouTube · 50 Genesis Chapters
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Languages */}
-            <div>
-              <h4 className="text-xs font-semibold text-white/60 uppercase tracking-[0.15em] mb-4">
-                Languages
-              </h4>
-              <p className="text-xs text-white/40 leading-relaxed">
-                English · Hindi · Tamil · Malayalam · Persian · Tagalog · Chinese · Malay
-              </p>
-              <p className="text-xs text-white/25 mt-2">Yoruba & Regional — Coming Soon</p>
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { num: "1M+", label: "Views Worldwide", sub: "YouTube & Broadcast" },
+                { num: "88", label: "Countries", sub: "Global reach" },
+                { num: "50", label: "Chapters Live", sub: "Genesis Complete" },
+                { num: "8 / 100", label: "Languages", sub: "Active & Target" },
+              ].map((m) => (
+                <div key={m.label} className="bg-[#121216] border border-white/[0.08] rounded p-5">
+                  <div className="text-3xl font-black text-white leading-none mb-1">{m.num}</div>
+                  <div className="text-xs font-bold text-white/80">{m.label}</div>
+                  <div className="text-[11px] text-white/40 mt-0.5">{m.sub}</div>
+                </div>
+              ))}
             </div>
           </div>
+        </section>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-8 border-t border-white/[0.07] gap-3">
-            <p className="text-xs text-white/25">
-              © {new Date().getFullYear()} Visual Bible TV · A NRIM Production
+        {/* ── WAITLIST FUNNEL ─────────────────────────────────────────── */}
+        <section
+          id="waitlist"
+          className="py-20 px-6 md:px-12 bg-black border-t border-white/[0.06] text-center"
+        >
+          <div className="max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#E50914]/20 border border-[#E50914]/40 text-[#E50914] text-[11px] font-bold tracking-widest uppercase mb-4">
+              Exclusive Premiere Access
+            </div>
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">
+              Be the First to Watch YAHWEH
+            </h2>
+            <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-md mx-auto">
+              Join our global premiere community. Receive private screening links, theatrical
+              updates, and behind-the-scenes production reels.
             </p>
-            <p className="text-xs text-white/25">visualbible.tv</p>
+
+            {status === "success" ? (
+              <div className="flex items-center justify-center gap-2 bg-[#141419] border border-emerald-500/40 rounded p-5 text-emerald-400">
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <span className="text-sm font-semibold">
+                  You're on the premiere list! We'll notify you as soon as YAHWEH drops.
+                </span>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleWaitlist}
+                className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
+              >
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  required
+                  disabled={status === "loading"}
+                  aria-label="Email for waitlist"
+                  className="flex-1 bg-[#141419] border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#E50914] transition-colors"
+                />
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="bg-[#E50914] hover:bg-[#c0070f] text-white text-sm font-bold px-6 py-3 rounded transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap"
+                >
+                  {status === "loading" ? "Joining…" : "Join Waitlist"}
+                </button>
+              </form>
+            )}
+
+            {status === "error" && (
+              <p className="mt-3 text-sm text-red-400 flex items-center justify-center gap-1.5">
+                <AlertCircle className="w-4 h-4" />
+                {errorMsg}
+              </p>
+            )}
           </div>
-        </div>
-      </footer>
+        </section>
+
+        {/* ── FOOTER (NETFLIX STYLE) ──────────────────────────────────── */}
+        <footer className="border-t border-white/[0.08] bg-black py-12 px-6 md:px-12 text-xs text-white/40">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+              <div>
+                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">Ecosystem</h4>
+                <ul className="space-y-2">
+                  <li>
+                    <Link to="/watch" className="hover:text-white">
+                      Watch Stream
+                    </Link>
+                  </li>
+                  <li>
+                    <a href="#hero" className="hover:text-white">
+                      Home Showcase
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#upcoming" className="hover:text-white">
+                      YAHWEH Premiere
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">
+                  Organization
+                </h4>
+                <ul className="space-y-2">
+                  <li>
+                    <a
+                      href="https://nrim.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white"
+                    >
+                      nrim.org
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://visualbible.nrim.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white"
+                    >
+                      visualbible.nrim.org
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.youtube.com/@NationsReach"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white"
+                    >
+                      YouTube Channel
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">Languages</h4>
+                <p className="leading-relaxed">
+                  English · Hindi · Tamil · Malayalam · Persian · Tagalog · Chinese · Malay
+                </p>
+              </div>
+              <div>
+                <h4 className="text-white/70 font-bold uppercase tracking-wider mb-3">
+                  Production
+                </h4>
+                <p className="leading-relaxed">
+                  A Prossiga Media Film / Nations Reach International Missions production.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between items-center gap-3">
+              <p>
+                © {new Date().getFullYear()} Visual Bible TV · Nations Reach International Missions
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-sm bg-[#E50914] flex items-center justify-center font-black text-white text-[10px]">
+                  VB
+                </div>
+                <span className="text-white/60 font-semibold tracking-wider uppercase">
+                  Visual Bible TV
+                </span>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
