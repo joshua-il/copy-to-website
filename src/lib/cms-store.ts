@@ -500,6 +500,10 @@ export function useCmsContent() {
     });
   };
 
+  const saveAllCmsData = (newData: SiteCmsData) => {
+    saveCmsData(newData);
+  };
+
   const updateHero = (updates: Partial<HeroContent>) => {
     const next = { ...data, hero: { ...data.hero, ...updates } };
     saveCmsData(next);
@@ -534,6 +538,7 @@ export function useCmsContent() {
 
   return {
     cmsData: data,
+    saveAllCmsData,
     updateHero,
     updateVaultProductions,
     updateUpcomingProjects,

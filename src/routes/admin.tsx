@@ -185,6 +185,7 @@ function AdminDashboardPage() {
   const { adminUser, isAdmin, login, logout } = useAdminAuth();
   const {
     cmsData,
+    saveAllCmsData,
     updateHero,
     updateVaultProductions,
     updateUpcomingProjects,
@@ -234,6 +235,23 @@ function AdminDashboardPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
 
+  // Keep form data synchronized when cmsData updates
+  useEffect(() => {
+    setHeroForm({ ...cmsData.hero });
+    setVaultForm([...cmsData.vaultProductions]);
+    setProjectsForm([...cmsData.upcomingProjects]);
+    setEpisodesForm([
+      ...(cmsData.broadcastEpisodes && cmsData.broadcastEpisodes.length
+        ? cmsData.broadcastEpisodes
+        : DEFAULT_BROADCAST_EPISODES),
+    ]);
+    setArchiveForm([
+      ...(cmsData.archiveItems && cmsData.archiveItems.length
+        ? cmsData.archiveItems
+        : DEFAULT_CMS_DATA.archiveItems),
+    ]);
+  }, [cmsData]);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
@@ -244,11 +262,13 @@ function AdminDashboardPage() {
   };
 
   const handleSave = () => {
-    updateHero(heroForm);
-    updateVaultProductions(vaultForm);
-    updateUpcomingProjects(projectsForm);
-    updateBroadcastEpisodes(episodesForm);
-    updateArchiveItems(archiveForm);
+    saveAllCmsData({
+      hero: heroForm,
+      vaultProductions: vaultForm,
+      upcomingProjects: projectsForm,
+      broadcastEpisodes: episodesForm,
+      archiveItems: archiveForm,
+    });
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
   };
@@ -343,10 +363,10 @@ function AdminDashboardPage() {
 
           {/* Quick Select for Authorized Team Members */}
           <div className="mt-8 pt-6 border-t border-white/[0.08]">
-            <span className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">
-              Select Authorized Team Account (1-Click Sign In)
+            <span className="block text-xs font-bold text-white/70 uppercase tracking-wider mb-2.5">
+              Instant 1-Click Team Access
             </span>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {Object.keys(AUTHORIZED_ADMINS).map((item) => (
                 <button
                   key={item}
@@ -359,13 +379,21 @@ function AdminDashboardPage() {
                       setLoginError(res.error || "Login failed");
                     }
                   }}
-                  className="text-[11px] px-2.5 py-1 rounded bg-white/[0.06] hover:bg-[#A11C28] hover:text-white text-white/80 border border-white/10 transition-colors flex items-center gap-1.5"
+                  className="px-3 py-2 rounded-lg bg-white/[0.06] hover:bg-[#A11C28] hover:text-white text-white/90 border border-white/10 transition-all flex items-center justify-between text-left group"
                 >
-                  <span>{item}</span>
-                  <span className="text-[9px] opacity-60">({AUTHORIZED_ADMINS[item]})</span>
+                  <div className="truncate">
+                    <span className="text-xs font-bold block">{AUTHORIZED_ADMINS[item]}</span>
+                    <span className="text-[10px] text-white/50 group-hover:text-white/80 block truncate">
+                      {item}
+                    </span>
+                  </div>
+                  <Shield className="w-3.5 h-3.5 text-[#A11C28] group-hover:text-white shrink-0" />
                 </button>
               ))}
             </div>
+            <p className="text-[10px] text-white/40 mt-3 text-center">
+              Team password: <code className="text-amber-400">nrim-admin-2026!</code>
+            </p>
           </div>
 
           <div className="mt-6 text-center">
