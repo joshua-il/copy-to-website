@@ -12,10 +12,13 @@ import {
   RefreshCw,
   Share2,
   Tv,
+  Edit3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlobalSidebar } from "@/components/global-sidebar";
 import { useGlobalLanguage } from "@/lib/language";
+import { useAdminAuth } from "@/lib/admin-auth";
+import { AdminCmsModal } from "@/components/admin/admin-cms-modal";
 import { SiteFooter } from "@/components/site-footer";
 
 // ─── Data: 24/7 Linear Channel Schedule (6 Verified Episodes) ───────────────
@@ -254,6 +257,8 @@ function LiveTvPage() {
   const [currentTimeSec, setCurrentTimeSec] = useState(() => Math.floor(Date.now() / 1000));
   const [isLiveSynced, setIsLiveSynced] = useState(initialMode !== "vod");
   const [manualEpisodeId, setManualEpisodeId] = useState<string | null>(searchedEpisodeId ?? null);
+  const { isAdmin } = useAdminAuth();
+  const [isCmsOpen, setIsCmsOpen] = useState(false);
 
   // 1-second interval to drive the 24/7 broadcast clock
   useEffect(() => {
@@ -515,6 +520,18 @@ function LiveTvPage() {
                   </>
                 )}
               </button>
+
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setIsCmsOpen(true)}
+                  className="inline-flex items-center gap-1.5 text-xs text-white bg-[#A11C28] hover:bg-[#7F151F] font-bold transition-colors px-2.5 py-1 rounded shadow"
+                  title="Manage YouTube links and episodes"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Manage YouTube Episodes</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -962,6 +979,15 @@ function LiveTvPage() {
         </div>
 
         <SiteFooter />
+
+        {/* Admin YouTube & Episode CMS Modal */}
+        {isCmsOpen && (
+          <AdminCmsModal
+            isOpen={isCmsOpen}
+            onClose={() => setIsCmsOpen(false)}
+            defaultTab="episodes"
+          />
+        )}
       </div>
     </main>
   );

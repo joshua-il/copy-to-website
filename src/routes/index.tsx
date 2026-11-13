@@ -20,10 +20,14 @@ import {
   Menu,
   Globe as GlobeIcon,
   Check,
+  Edit3,
 } from "lucide-react";
 import { GlobalSidebar } from "@/components/global-sidebar";
 import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
+import { useAdminAuth } from "@/lib/admin-auth";
+import { useCmsContent } from "@/lib/cms-store";
+import { AdminCmsModal } from "@/components/admin/admin-cms-modal";
 import { joinWaitlist } from "@/lib/waitlist.functions";
 import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
 import Globe from "@/components/originkit/ui/globe-custom-style";
@@ -458,6 +462,11 @@ const GLOBE_MARKERS = [
 function LandingPage() {
   const navigate = useNavigate();
   const [language, setLanguage] = useGlobalLanguage();
+  const { isAdmin } = useAdminAuth();
+  const { cmsData } = useCmsContent();
+  const [adminCmsTab, setAdminCmsTab] = useState<"hero" | "vault" | "projects" | "episodes" | null>(
+    null,
+  );
   const [mounted, setMounted] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoReady, setVideoReady] = useState(false);
@@ -471,11 +480,12 @@ function LandingPage() {
 
   useEffect(() => {
     setMounted(true);
+    const delay = (cmsData.hero.videoDelaySeconds || 2.5) * 1000;
     const timer = setTimeout(() => {
       setVideoReady(true);
-    }, 2500);
+    }, delay);
     return () => clearTimeout(timer);
-  }, []);
+  }, [cmsData.hero.videoDelaySeconds]);
 
   const toggleSound = () => {
     if (!iframeRef.current?.contentWindow) return;
@@ -516,29 +526,39 @@ function LandingPage() {
           id="hero"
           className="relative w-full overflow-hidden bg-black flex flex-col justify-end min-h-[92vh] lg:min-h-screen pt-20 pb-28 md:pb-36 lg:pb-40 px-6 md:px-12"
         >
+          {/* Admin Floating In-Place Edit Button */}
+          {isAdmin && (
+            <button
+              onClick={() => setAdminCmsTab("hero")}
+              className="absolute top-6 right-6 z-30 flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xl shadow-black/80 uppercase tracking-wider transition-all"
+            >
+              <Edit3 className="w-3.5 h-3.5" /> Edit Hero Showcase
+            </button>
+          )}
+
           {/* Hero Media: Still Image (shows immediately) + YouTube Video (fades in after 2.5s) */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/* Still hero image — always present, fades out as video loads */}
             <img
-              src="/assets/yahweh-hero-mount-sinai.jpg"
-              alt="YAHWEH · The God Who Reveals His Power"
+              src={cmsData.hero.heroImage}
+              alt={cmsData.hero.title}
               className={`absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-[65%_center] lg:object-center select-none transition-opacity duration-1000 ${videoReady ? "opacity-0" : "opacity-100"}`}
               loading="eager"
               decoding="async"
             />
 
-            {/* YouTube background video — starts 1 min in (&start=60), fades in 2.5s after mount */}
+            {/* YouTube background video — starts 1 min in (&start=60), fades in after delay */}
             <div
               className={`absolute inset-0 transition-opacity duration-1500 ${videoReady ? "opacity-100" : "opacity-0"}`}
             >
               <iframe
                 ref={iframeRef}
-                src="https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=1&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60"
+                src={cmsData.hero.videoUrl}
                 allow="autoplay; fullscreen"
                 allowFullScreen
                 className="absolute w-[177.78%] h-[177.78%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
                 style={{ border: "none" }}
-                title="YAHWEH — Visual Bible Hero Video"
+                title="Visual Bible Hero Video"
               />
             </div>
 
@@ -568,7 +588,7 @@ function LandingPage() {
 
             {/* Tagline */}
             <div className="text-[11px] font-semibold tracking-[0.2em] text-[#C4A468] uppercase mb-1">
-              An NRIM Theatrical & Streaming Production
+              {cmsData.hero.tagline}
             </div>
 
             {/* Title */}
@@ -576,12 +596,12 @@ function LandingPage() {
               className="font-black tracking-tight text-white leading-[1.08] mb-2"
               style={{ fontSize: "clamp(32px, 5vw, 60px)" }}
             >
-              YAHWEH
+              {cmsData.hero.title}
             </h1>
 
             {/* Subtitle */}
             <p className="text-white/85 text-xs md:text-sm font-semibold tracking-wider uppercase mb-3">
-              The God Who Reveals His Power — The Book of Exodus
+              {cmsData.hero.subtitle}
             </p>
 
             {/* Badges */}
@@ -608,9 +628,7 @@ function LandingPage() {
 
             {/* Synopsis */}
             <p className="text-white/75 text-xs md:text-[13px] leading-relaxed mb-5 max-w-md line-clamp-3">
-              Following the monumental completion of Genesis, the visual saga advances to Exodus.
-              Witness the clash of gods, the ten plagues of Egypt, the roaring waters of the Red Sea
-              divided, and the law delivered in fire atop Mount Sinai.
+              {cmsData.hero.synopsis}
             </p>
 
             {/* Action Buttons & Controls */}
@@ -660,6 +678,14 @@ function LandingPage() {
               <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
                 Existing Productions · The Genesis Vault & Languages
               </h2>
+              {isAdmin && (
+                <button
+                  onClick={() => setAdminCmsTab("vault")}
+                  className="ml-2 flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-[11px] font-bold px-2.5 py-0.5 rounded transition-colors"
+                >
+                  <Edit3 className="w-3 h-3" /> Edit Posters
+                </button>
+              )}
             </div>
             <Link
               to="/watch"
@@ -674,7 +700,7 @@ function LandingPage() {
             className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
           >
-            {EXISTING_PRODUCTIONS.map((card) => (
+            {cmsData.vaultProductions.map((card) => (
               <Link
                 key={card.id}
                 to="/watch"
@@ -1046,6 +1072,14 @@ function LandingPage() {
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
+              {isAdmin && (
+                <button
+                  onClick={() => setAdminCmsTab("projects")}
+                  className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
+                >
+                  <Edit3 className="w-3.5 h-3.5" /> Edit Slate
+                </button>
+              )}
               <a
                 href="#waitlist"
                 className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 rounded transition-colors uppercase tracking-wider shadow-lg shadow-red-950/40"
@@ -1060,7 +1094,7 @@ function LandingPage() {
           <div className="relative w-full h-[520px] md:h-[580px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#09090d] shadow-2xl">
             {mounted && (
               <AccordionOS
-                items={UPCOMING_PROJECTS_ITEMS}
+                items={cmsData.upcomingProjects}
                 defaultOpen={1}
                 autoplay={true}
                 interval={4.5}
@@ -1381,6 +1415,15 @@ function LandingPage() {
           </div>
         </footer>
       </div>
+
+      {/* Admin CMS In-Place Modal */}
+      {adminCmsTab && (
+        <AdminCmsModal
+          isOpen={adminCmsTab !== null}
+          onClose={() => setAdminCmsTab(null)}
+          defaultTab={adminCmsTab}
+        />
+      )}
     </div>
   );
 }

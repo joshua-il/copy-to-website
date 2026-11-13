@@ -1,12 +1,30 @@
 import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Radio, Sparkles, Layers, Plus, ChevronLeft, Globe } from "lucide-react";
+import {
+  Home,
+  Radio,
+  Sparkles,
+  Layers,
+  Plus,
+  ChevronLeft,
+  Globe,
+  Lock,
+  Shield,
+  Edit3,
+} from "lucide-react";
 import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
+import { useAdminAuth } from "@/lib/admin-auth";
+import { AdminBar } from "@/components/admin/admin-bar";
+import { AdminLoginModal } from "@/components/admin/admin-login-modal";
+import { AdminCmsModal } from "@/components/admin/admin-cms-modal";
 
 export function GlobalSidebar() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [language, setLanguage] = useGlobalLanguage();
+  const { adminUser, isAdmin } = useAdminAuth();
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [cmsModalOpen, setCmsModalOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const navItems = [
@@ -165,8 +183,8 @@ export function GlobalSidebar() {
           </nav>
         </div>
 
-        {/* Bottom: Regional Language Selector & NRIM Org */}
-        <div className="w-full flex flex-col gap-3 pt-4 border-t border-white/[0.08]">
+        {/* Bottom: Regional Language Selector, Admin CMS Trigger, & NRIM Org */}
+        <div className="w-full flex flex-col gap-2 pt-4 border-t border-white/[0.08]">
           {/* Regional Selector in Sidebar */}
           {sidebarExpanded ? (
             <div className="px-1">
@@ -179,6 +197,33 @@ export function GlobalSidebar() {
             >
               <Globe className="w-5 h-5 text-amber-400" />
             </div>
+          )}
+
+          {/* Admin CMS Access Button */}
+          {isAdmin ? (
+            <button
+              onClick={() => setCmsModalOpen(true)}
+              className="flex items-center gap-2 p-2 rounded-lg bg-[#A11C28]/20 hover:bg-[#A11C28]/35 border border-[#A11C28]/40 text-[#A11C28] hover:text-white transition-colors"
+              title="Admin CMS & YouTube Manager"
+            >
+              <Shield className="w-4 h-4 shrink-0 fill-current" />
+              {sidebarExpanded && (
+                <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+                  Admin CMS
+                </span>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={() => setLoginModalOpen(true)}
+              className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-colors"
+              title="Admin Sign In"
+            >
+              <Lock className="w-4 h-4 shrink-0" />
+              {sidebarExpanded && (
+                <span className="text-[11px] font-medium whitespace-nowrap">Admin Sign In</span>
+              )}
+            </button>
           )}
 
           {/* NRIM Brand Link */}
@@ -242,6 +287,14 @@ export function GlobalSidebar() {
           );
         })}
       </nav>
+      {/* ── GLOBAL ADMIN STATUS BAR & MODALS ────────────────────────── */}
+      <AdminBar />
+      <AdminLoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onSuccess={() => setCmsModalOpen(true)}
+      />
+      <AdminCmsModal isOpen={cmsModalOpen} onClose={() => setCmsModalOpen(false)} />
     </>
   );
 }
