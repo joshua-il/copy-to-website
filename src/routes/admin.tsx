@@ -28,7 +28,7 @@ import {
   CheckCircle2,
   Globe,
 } from "lucide-react";
-import { useAdminAuth, AUTHORIZED_ADMINS, DEFAULT_ADMIN_PASSWORD } from "@/lib/admin-auth";
+import { useAdminAuth } from "@/lib/admin-auth";
 import {
   useCmsContent,
   DEFAULT_BROADCAST_EPISODES,
@@ -408,41 +408,6 @@ function AdminDashboardPage() {
               Sign In to Studio CMS
             </Button>
           </form>
-
-          {/* Quick Select for Authorized Team Members */}
-          <div className="mt-8 pt-6 border-t border-white/[0.08]">
-            <span className="block text-xs font-bold text-white/70 uppercase tracking-wider mb-2.5">
-              Instant 1-Click Team Access
-            </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {Object.keys(AUTHORIZED_ADMINS).map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => {
-                    setEmail(item);
-                    setPassword(DEFAULT_ADMIN_PASSWORD);
-                    const res = login(item, DEFAULT_ADMIN_PASSWORD);
-                    if (!res.success) {
-                      setLoginError(res.error || "Login failed");
-                    }
-                  }}
-                  className="px-3 py-2 rounded-lg bg-white/[0.06] hover:bg-[#A11C28] hover:text-white text-white/90 border border-white/10 transition-all flex items-center justify-between text-left group"
-                >
-                  <div className="truncate">
-                    <span className="text-xs font-bold block">{AUTHORIZED_ADMINS[item]}</span>
-                    <span className="text-[10px] text-white/50 group-hover:text-white/80 block truncate">
-                      {item}
-                    </span>
-                  </div>
-                  <Shield className="w-3.5 h-3.5 text-[#A11C28] group-hover:text-white shrink-0" />
-                </button>
-              ))}
-            </div>
-            <p className="text-[10px] text-white/40 mt-3 text-center">
-              Team password: <code className="text-amber-400">nrim-admin-2026!</code>
-            </p>
-          </div>
 
           <div className="mt-6 text-center">
             <Link

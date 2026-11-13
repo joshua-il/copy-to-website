@@ -192,8 +192,8 @@ export function GlobalSidebar() {
             </div>
           )}
 
-          {/* Admin CMS Access Button */}
-          {isAdmin ? (
+          {/* Admin CMS Access Button (Only visible when authenticated as an admin) */}
+          {isAdmin && (
             <Link
               to="/admin"
               search={{ tab: "episodes" }}
@@ -205,18 +205,6 @@ export function GlobalSidebar() {
                 <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
                   Studio CMS
                 </span>
-              )}
-            </Link>
-          ) : (
-            <Link
-              to="/admin"
-              search={{ tab: "episodes" }}
-              className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-colors"
-              title="Admin Sign In"
-            >
-              <Lock className="w-4 h-4 shrink-0" />
-              {sidebarExpanded && (
-                <span className="text-[11px] font-medium whitespace-nowrap">Admin Sign In</span>
               )}
             </Link>
           )}
