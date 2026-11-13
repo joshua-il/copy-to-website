@@ -21,7 +21,8 @@ import {
   Globe as GlobeIcon,
   Check,
 } from "lucide-react";
-import { SiteHeader, RegionalSelector } from "@/components/site-header";
+import { GlobalSidebar } from "@/components/global-sidebar";
+import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
 import { joinWaitlist } from "@/lib/waitlist.functions";
 import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
@@ -457,8 +458,6 @@ const GLOBE_MARKERS = [
 function LandingPage() {
   const navigate = useNavigate();
   const [language, setLanguage] = useGlobalLanguage();
-  const [activeNav, setActiveNav] = useState("home");
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoReady, setVideoReady] = useState(false);
@@ -474,7 +473,7 @@ function LandingPage() {
     setMounted(true);
     const timer = setTimeout(() => {
       setVideoReady(true);
-    }, 5000);
+    }, 2500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -507,199 +506,17 @@ function LandingPage() {
       className="min-h-screen bg-[#000000] text-white font-sans selection:bg-[#A11C28] selection:text-white"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      {/* ── EXPANDING SIDE NAVIGATION BAR (NETFLIX OTT TV STYLE) ──────── */}
-      <aside
-        aria-label="Sidebar Navigation"
-        onMouseEnter={() => setSidebarExpanded(true)}
-        onMouseLeave={() => setSidebarExpanded(false)}
-        className={`hidden md:flex fixed left-0 top-0 bottom-0 bg-black/95 backdrop-blur-2xl border-r border-white/[0.1] flex-col justify-between py-6 z-50 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-          sidebarExpanded
-            ? "w-64 shadow-2xl shadow-black/95 px-4"
-            : "w-18 lg:w-20 px-2 items-center"
-        }`}
-      >
-        {/* Top: Logo & Toggle */}
-        <div className="flex flex-col gap-6 w-full">
-          <div className="flex items-center justify-between px-1">
-            <a
-              href="#hero"
-              className="flex items-center gap-3 overflow-hidden group"
-              title="Visual Bible TV"
-            >
-              <div className="w-9 h-9 shrink-0 rounded bg-[#A11C28] flex items-center justify-center font-black text-white text-xs tracking-tighter shadow-lg shadow-red-950/60">
-                VB
-              </div>
-              <div
-                className={`flex flex-col transition-opacity duration-200 ${
-                  sidebarExpanded ? "opacity-100" : "opacity-0 w-0 pointer-events-none"
-                }`}
-              >
-                <span className="text-xs font-black tracking-[0.2em] text-white uppercase whitespace-nowrap">
-                  Visual Bible
-                </span>
-                <span className="text-[9px] font-semibold text-white/50 tracking-widest uppercase">
-                  TV Network
-                </span>
-              </div>
-            </a>
-            {sidebarExpanded && (
-              <button
-                onClick={() => setSidebarExpanded(false)}
-                className="text-white/40 hover:text-white p-1 rounded transition-colors"
-                title="Collapse Sidebar"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Navigation Items */}
-          <nav className="flex flex-col gap-1.5 mt-2 w-full" aria-label="Main Menu">
-            {[
-              { id: "home", label: "Hero (YAHWEH)", icon: Home, href: "#hero" },
-              { id: "vault", label: "Existing Projects", icon: Tv, href: "#vault" },
-              { id: "pitch", label: "The Pitch", icon: Compass, href: "#pitch" },
-              { id: "workflow", label: "Production Method", icon: Cpu, href: "#workflow" },
-              { id: "archive", label: "Universe Archive", icon: Bookmark, href: "#archive" },
-              {
-                id: "upcoming",
-                label: "Upcoming Projects",
-                icon: Film,
-                href: "#upcoming-projects",
-              },
-              { id: "languages", label: "Languages Reached", icon: GlobeIcon, href: "#languages" },
-              { id: "waitlist", label: "Join Waitlist", icon: Plus, href: "#waitlist" },
-            ].map((item) => {
-              const Icon = item.icon;
-              const isActive = activeNav === item.id;
-              return (
-                <a
-                  key={item.id}
-                  href={item.href}
-                  onClick={() => setActiveNav(item.id)}
-                  className={`relative flex items-center gap-3.5 h-11 rounded-lg px-2.5 transition-all duration-200 group ${
-                    isActive
-                      ? "bg-white/[0.08] text-white font-semibold"
-                      : "text-white/55 hover:text-white hover:bg-white/[0.05]"
-                  }`}
-                  title={item.label}
-                >
-                  {/* Left Red Indicator Bar */}
-                  {isActive && (
-                    <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#A11C28] rounded-r" />
-                  )}
-                  <Icon className="w-5 h-5 shrink-0 transition-transform group-hover:scale-110" />
-                  <span
-                    className={`text-xs whitespace-nowrap transition-all duration-200 ${
-                      sidebarExpanded
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 -translate-x-2 w-0 pointer-events-none"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                </a>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Bottom: Organization Details */}
-        <div className="w-full pt-4 border-t border-white/[0.08]">
-          <a
-            href="https://nrim.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.06] transition-colors overflow-hidden group"
-            title="Nations Reach International Missions"
-          >
-            <img
-              src="/assets/nrim-logo-white.png"
-              alt="NRIM"
-              className="w-6 h-auto shrink-0 opacity-70 group-hover:opacity-100 transition-opacity"
-            />
-            <div
-              className={`flex flex-col transition-opacity duration-200 ${
-                sidebarExpanded ? "opacity-100" : "opacity-0 w-0 pointer-events-none"
-              }`}
-            >
-              <span className="text-[11px] font-bold text-white/90 whitespace-nowrap">
-                NRIM Organization
-              </span>
-              <span className="text-[9px] text-white/40 tracking-wider">nrim.org</span>
-            </div>
-          </a>
-        </div>
-      </aside>
-
-      {/* ── MOBILE BOTTOM NAVIGATION BAR ──────────────────────────────── */}
-      <nav
-        aria-label="Mobile Navigation"
-        className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-black/95 backdrop-blur-xl border-t border-white/[0.1] z-50 flex items-center justify-around px-2"
-      >
-        <a
-          href="#hero"
-          onClick={() => setActiveNav("home")}
-          className={`flex flex-col items-center gap-1 ${
-            activeNav === "home" ? "text-[#A11C28]" : "text-white/60"
-          }`}
-        >
-          <Home className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Home</span>
-        </a>
-        <a
-          href="#vault"
-          onClick={() => setActiveNav("vault")}
-          className={`flex flex-col items-center gap-1 ${
-            activeNav === "vault" ? "text-[#A11C28]" : "text-white/60"
-          }`}
-        >
-          <Tv className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Projects</span>
-        </a>
-        <a
-          href="#pitch"
-          onClick={() => setActiveNav("pitch")}
-          className={`flex flex-col items-center gap-1 ${
-            activeNav === "pitch" ? "text-[#A11C28]" : "text-white/60"
-          }`}
-        >
-          <Compass className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Pitch</span>
-        </a>
-        <a
-          href="#languages"
-          onClick={() => setActiveNav("languages")}
-          className={`flex flex-col items-center gap-1 ${
-            activeNav === "languages" ? "text-[#A11C28]" : "text-white/60"
-          }`}
-        >
-          <GlobeIcon className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Languages</span>
-        </a>
-        <a
-          href="#waitlist"
-          onClick={() => setActiveNav("waitlist")}
-          className={`flex flex-col items-center gap-1 ${
-            activeNav === "waitlist" ? "text-[#A11C28]" : "text-white/60"
-          }`}
-        >
-          <Plus className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Waitlist</span>
-        </a>
-      </nav>
+      {/* ── GLOBAL SIDEBAR & MOBILE NAVIGATION (NO TOP NAVBAR) ───────── */}
+      <GlobalSidebar />
 
       {/* ── MAIN CONTENT CONTAINER (PADDED FOR COLLAPSED SIDEBAR) ─────── */}
       <div className="pl-0 md:pl-18 lg:pl-20 min-h-screen">
-        {/* Global Site Header */}
-        <SiteHeader language={language} setLanguage={setLanguage} />
-
         {/* ── 1. HERO SECTION: YAHWEH THE GOD WHO REVEALS HIS POWER ────────── */}
         <section
           id="hero"
-          className="relative w-full overflow-hidden bg-black flex flex-col justify-center min-h-[85vh] lg:min-h-screen pt-12 md:pt-16 pb-16 px-6 md:px-12"
+          className="relative w-full overflow-hidden bg-black flex flex-col justify-end min-h-[92vh] lg:min-h-screen pt-20 pb-28 md:pb-36 lg:pb-40 px-6 md:px-12"
         >
-          {/* Hero Media: Still Image (shows immediately) + YouTube Video (fades in after 5s) */}
+          {/* Hero Media: Still Image (shows immediately) + YouTube Video (fades in after 2.5s) */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/* Still hero image — always present, fades out as video loads */}
             <img
@@ -710,13 +527,13 @@ function LandingPage() {
               decoding="async"
             />
 
-            {/* YouTube background video — fades in 5s after mount */}
+            {/* YouTube background video — starts 1 min in (&start=60), fades in 2.5s after mount */}
             <div
               className={`absolute inset-0 transition-opacity duration-1500 ${videoReady ? "opacity-100" : "opacity-0"}`}
             >
               <iframe
                 ref={iframeRef}
-                src="https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=1&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1"
+                src="https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=1&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60"
                 allow="autoplay; fullscreen"
                 allowFullScreen
                 className="absolute w-[177.78%] h-[177.78%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -731,7 +548,7 @@ function LandingPage() {
               style={{
                 background: `
                   linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.15) 55%, transparent 70%),
-                  linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 20%, transparent 70%, rgba(0,0,0,0.9) 95%, #000000 100%)
+                  linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 20%, transparent 60%, rgba(0,0,0,0.85) 85%, #000000 100%)
                 `,
               }}
             />
@@ -835,7 +652,7 @@ function LandingPage() {
         {/* ── 2. CAROUSEL: EXISTING PROJECTS (GENESIS, JOSEPH, & LANGUAGES) ── */}
         <section
           id="vault"
-          className="relative z-10 px-6 md:px-12 py-10 bg-[#09090d] border-t border-white/[0.08]"
+          className="-mt-20 md:-mt-28 lg:-mt-36 relative z-20 px-6 md:px-12 pt-8 pb-12 bg-gradient-to-t from-[#09090d] via-[#09090d]/95 to-transparent border-t border-white/[0.08]"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
