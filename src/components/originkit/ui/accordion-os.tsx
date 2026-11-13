@@ -112,9 +112,9 @@ function posOf(offsetY: unknown): string {
 const DEFAULT_FONT: React.CSSProperties = {
   fontFamily: "Inter",
   fontWeight: 600,
-  fontSize: 15,
-  letterSpacing: "-0.015em",
-  lineHeight: "1.5em",
+  fontSize: 13.5,
+  letterSpacing: "-0.01em",
+  lineHeight: "1.4em",
   textAlign: "left",
 };
 const SYSTEM_SANS = 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif';
@@ -122,33 +122,35 @@ const SYSTEM_SANS = 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-s
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // The card is laid out on a logical stage and scaled to the frame, so spacing holds at any size.
-const MIN_W = 600;
+const MIN_W = 760;
 const MIN_H = 470; // five pills, one open with a three-line note, and the step deck, inside the padding
 const PAD = 24;
-const COLUMN = 290;
+const COLUMN = 420;
 const PILL_GAP = 10;
-const PILL_PAD = 18;
+const PILL_PAD = 16;
 const PHOTO_BLEED = 3; // px each photo reaches past the card edge, hidden by its clip
 const NOTE_W = COLUMN - PILL_PAD * 2 - 2; // an open pill's content width, inside its padding and 1px border
 
-const SPRING = { type: "spring" as const, stiffness: 340, damping: 28, mass: 0.8 };
-// The note's height rides the pill's spring, critically damped so it never dips below zero on the way shut.
-const HEIGHT_SPRING = { type: "spring" as const, stiffness: 340, damping: 34, mass: 0.8 };
-const BOUNCY = { type: "spring" as const, stiffness: 400, damping: 22 };
+const SMOOTH = { duration: 0.42, ease: [0.25, 1, 0.5, 1] as const };
+const HEIGHT_SMOOTH = { duration: 0.38, ease: [0.25, 1, 0.5, 1] as const };
+const BOUNCY = { duration: 0.35, ease: [0.25, 1, 0.5, 1] as const };
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 
 const css = `
 .aos { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; user-select: none; outline: none; }
-.aos-pill { box-sizing: border-box; width: fit-content; max-width: ${COLUMN}px; padding: 13px ${PILL_PAD}px; border-radius: 22px; cursor: pointer; outline: none; overflow: hidden;
-  background: rgba(245,245,247,0.72); border: 1px solid rgba(255,255,255,0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  transition: background-color .25s ease, border-color .25s ease; }
-.aos-pill:hover { background: rgba(255,255,255,0.92); border-color: rgba(0,0,0,0.12); }
-.aos-pill:focus-visible { box-shadow: 0 0 0 2px rgba(0,0,0,0.4); }
-.aos-pill[data-open="true"] { width: ${COLUMN}px; background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.1); }
-.aos-nav { box-sizing: border-box; width: 26px; height: 26px; padding: 0; margin: 0; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; color: #1f2937;
-  background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-.aos-nav:focus-visible { outline: 2px solid rgba(0,0,0,0.4); outline-offset: 1px; }
+.aos-pill { box-sizing: border-box; width: fit-content; max-width: ${COLUMN}px; padding: 10px ${PILL_PAD}px; border-radius: 16px; cursor: pointer; outline: none; overflow: hidden;
+  background: rgba(10, 10, 16, 0.82); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  transition: background-color .3s cubic-bezier(0.25, 1, 0.5, 1), border-color .3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow .3s cubic-bezier(0.25, 1, 0.5, 1); }
+.aos-pill:hover { background: rgba(18, 18, 26, 0.92); border-color: rgba(255,255,255,0.25); box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
+.aos-pill:focus-visible { box-shadow: 0 0 0 2px rgba(161,28,40,0.6); }
+.aos-pill[data-open="true"] { width: ${COLUMN}px; background: rgba(8, 8, 14, 0.94); border-color: rgba(161,28,40,0.55); box-shadow: 0 12px 32px rgba(0,0,0,0.85), 0 0 20px rgba(161,28,40,0.18); }
+.aos-nav { box-sizing: border-box; width: 28px; height: 28px; padding: 0; margin: 0; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: #ffffff;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: background-color .2s ease, border-color .2s ease; }
+.aos-nav:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); }
+.aos-nav:focus-visible { outline: 2px solid rgba(161,28,40,0.6); outline-offset: 1px; }
 `;
 
 /**
@@ -177,33 +179,32 @@ function Note({
     return () => ro.disconnect();
   }, []);
 
-  const spring = reduce ? { duration: 0 } : HEIGHT_SPRING;
+  const transition = reduce ? { duration: 0 } : HEIGHT_SMOOTH;
   return (
     <motion.div
-      // Scale-corrected like the title row, so the text doesn't stretch while the pill's width springs.
-      // Opacity and real height only. The note used to blur in and out as well: an animated filter
-      // re-rasterises the text every frame and snaps it sharp at the end, which read as a flicker.
-      // The closing fade runs as long as the collapse, so the card never shrinks as an empty box.
       initial={{ opacity: 0, height: 0 }}
       animate={{
         opacity: 1,
         height: h,
-        transition: { height: spring, opacity: { duration: 0.3, delay: 0.08 } },
+        transition: { height: transition, opacity: { duration: 0.28, delay: 0.06 } },
       }}
-      exit={{ opacity: 0, height: 0, transition: { height: spring, opacity: { duration: 0.3 } } }}
-      // Zero width with a full min-width: the note fills an open pill but never holds a closing one wide.
-      // Clipped only top to bottom; the pill clips the sides, so the text is cut by its edge as it narrows.
+      exit={{
+        opacity: 0,
+        height: 0,
+        transition: { height: transition, opacity: { duration: 0.2 } },
+      }}
       style={{ overflowX: "visible", overflowY: "clip", width: 0, minWidth: "100%" }}
     >
-      <div ref={ref} style={{ paddingTop: 10 }}>
-        {/* Fixed to the open width so it never re-wraps as the pill narrows; indented past the 22px icon and its 12px gap. */}
+      <div ref={ref} style={{ paddingTop: 8 }}>
         <p
           style={{
             boxSizing: "border-box",
             width: NOTE_W,
             margin: 0,
             paddingLeft: 34,
-            color: "#4b5563",
+            color: "rgba(255,255,255,0.76)",
+            fontSize: "12px",
+            lineHeight: 1.6,
             overflowWrap: "break-word",
             ...textStyle,
           }}
@@ -294,13 +295,14 @@ export default function AccordionOS(props: AccordionOSProps) {
     fontWeight: f.fontWeight,
     lineHeight: `${fs * (4 / 3)}px`,
     letterSpacing: f.letterSpacing,
-    color: "#111111",
+    color: "#ffffff",
     whiteSpace: "nowrap",
     flexShrink: 0,
   };
   const noteStyle: React.CSSProperties = {
-    fontSize: 13 * k,
-    lineHeight: f.lineHeight ?? 1.5,
+    fontSize: 11.5 * k,
+    lineHeight: 1.6,
+    color: "rgba(255, 255, 255, 0.78)",
     textAlign: f.textAlign,
   };
 
@@ -475,6 +477,17 @@ export default function AccordionOS(props: AccordionOSProps) {
               />
             );
           })}
+          {/* Subtle directional gradient overlay so text pills have pristine contrast against any photo */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(90deg, rgba(3,3,6,0.85) 0%, rgba(3,3,6,0.55) 45%, rgba(3,3,6,0.1) 75%, transparent 100%)",
+              pointerEvents: "none",
+              zIndex: 3,
+            }}
+          />
         </div>
 
         {/* The stage: laid out at the reference size and scaled to the card. */}
@@ -522,7 +535,7 @@ export default function AccordionOS(props: AccordionOSProps) {
                     animate={
                       titleW.length === n ? { width: open ? COLUMN : closedW(i) } : undefined
                     }
-                    transition={reduce ? { duration: 0 } : SPRING}
+                    transition={reduce ? { duration: 0 } : SMOOTH}
                     role="button"
                     tabIndex={0}
                     aria-expanded={open}
@@ -536,18 +549,18 @@ export default function AccordionOS(props: AccordionOSProps) {
                         select(open ? null : i);
                       }
                     }}
-                    whileHover={reduce ? undefined : { scale: open ? 1.01 : 1.03, x: 3 }}
+                    whileHover={reduce ? undefined : { scale: open ? 1.008 : 1.02, x: 2 }}
                     whileTap={reduce ? undefined : { scale: 0.98 }}
-                    style={{ borderRadius: 22 }}
+                    style={{ borderRadius: 16 }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 12, width: "100%" }}>
                       <motion.div
                         animate={{
-                          backgroundColor: open ? "rgba(2,2,2,0.9)" : "rgba(255,255,255,0.8)",
-                          color: open ? "#ffffff" : "#020202",
-                          borderColor: open ? "rgba(0,0,0,0.8)" : "rgba(2,2,2,0.2)",
+                          backgroundColor: open ? "#A11C28" : "rgba(255,255,255,0.1)",
+                          color: "#ffffff",
+                          borderColor: open ? "#A11C28" : "rgba(255,255,255,0.2)",
                         }}
-                        transition={BOUNCY}
+                        transition={SMOOTH}
                         style={{
                           width: 22,
                           height: 22,
@@ -558,7 +571,7 @@ export default function AccordionOS(props: AccordionOSProps) {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          boxShadow: "0 2px 5px rgba(0,0,0,0.04)",
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
                         }}
                       >
                         <motion.svg
@@ -566,7 +579,7 @@ export default function AccordionOS(props: AccordionOSProps) {
                           width={13}
                           height={13}
                           animate={{ rotate: open ? 135 : 0 }}
-                          transition={BOUNCY}
+                          transition={SMOOTH}
                           aria-hidden
                         >
                           <line
@@ -575,7 +588,7 @@ export default function AccordionOS(props: AccordionOSProps) {
                             x2="12"
                             y2="19"
                             stroke="currentColor"
-                            strokeWidth="2"
+                            strokeWidth="2.2"
                             strokeLinecap="round"
                           />
                           <line
@@ -584,7 +597,7 @@ export default function AccordionOS(props: AccordionOSProps) {
                             x2="19"
                             y2="12"
                             stroke="currentColor"
-                            strokeWidth="2"
+                            strokeWidth="2.2"
                             strokeLinecap="round"
                           />
                         </motion.svg>
@@ -615,12 +628,14 @@ export default function AccordionOS(props: AccordionOSProps) {
                             initial={false}
                             animate={{ opacity: open ? 1 : 0 }}
                             transition={
-                              reduce ? { duration: 0 } : { duration: 0.2, delay: open ? 0.12 : 0 }
+                              reduce ? { duration: 0 } : { duration: 0.25, delay: open ? 0.08 : 0 }
                             }
                             style={{
-                              fontSize: 10 * k,
+                              fontSize: 9.5 * k,
                               fontWeight: 700,
-                              color: "rgba(0,0,0,0.75)",
+                              color: "#F59E0B",
+                              letterSpacing: "0.08em",
+                              textTransform: "uppercase",
                               fontVariantNumeric: "tabular-nums",
                               flexShrink: 0,
                             }}
@@ -646,24 +661,25 @@ export default function AccordionOS(props: AccordionOSProps) {
               })}
             </div>
 
-            <div style={{ marginTop: "auto", paddingTop: 18 }}>
+            <div style={{ marginTop: "auto", paddingTop: 16 }}>
               <AnimatePresence>
                 {active !== null && (
                   <motion.div
-                    initial={{ opacity: 0, y: 15, scale: 0.9 }}
+                    initial={{ opacity: 0, y: 12, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 15, scale: 0.9 }}
-                    transition={reduce ? { duration: 0 } : BOUNCY}
+                    exit={{ opacity: 0, y: 12, scale: 0.95 }}
+                    transition={reduce ? { duration: 0 } : SMOOTH}
                     style={{
                       display: "flex",
                       alignItems: "center",
                       gap: 8,
                       padding: 4,
                       borderRadius: 100,
-                      background: "rgba(255,255,255,0.65)",
-                      border: "1px solid rgba(0,0,0,0.05)",
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
+                      background: "rgba(10,10,16,0.85)",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      backdropFilter: "blur(16px)",
+                      WebkitBackdropFilter: "blur(16px)",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
                     }}
                   >
                     <button
@@ -695,7 +711,7 @@ export default function AccordionOS(props: AccordionOSProps) {
                         fontSize: 11 * k,
                         fontWeight: 600,
                         lineHeight: 1,
-                        color: "#374151",
+                        color: "#E5E7EB",
                         fontVariantNumeric: "tabular-nums",
                       }}
                     >

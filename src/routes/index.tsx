@@ -21,7 +21,7 @@ import {
   Globe as GlobeIcon,
   Check,
 } from "lucide-react";
-import { RegionalSelector } from "@/components/site-header";
+import { SiteHeader, RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
 import { joinWaitlist } from "@/lib/waitlist.functions";
 import GalleryTunnel from "@/components/originkit/ui/hero-13/gallery-tunnel";
@@ -474,7 +474,7 @@ function LandingPage() {
     setMounted(true);
     const timer = setTimeout(() => {
       setVideoReady(true);
-    }, 3500);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -691,44 +691,43 @@ function LandingPage() {
 
       {/* ── MAIN CONTENT CONTAINER (PADDED FOR COLLAPSED SIDEBAR) ─────── */}
       <div className="pl-0 md:pl-18 lg:pl-20 min-h-screen">
-        {/* Floating Top Controls */}
-        <header className="absolute top-0 left-0 md:left-18 lg:left-20 right-0 z-40 flex items-center justify-between px-6 md:px-10 py-5 pointer-events-none">
-          <div className="flex items-center gap-3 pointer-events-auto">
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/60 tracking-wider uppercase font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-              Nations Reach Network
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 pointer-events-auto">
-            <RegionalSelector value={language} onValueChange={setLanguage} />
-            <a
-              href="#waitlist"
-              className="hidden sm:inline-flex items-center gap-1.5 bg-[#A11C28] text-white text-xs font-bold px-4 py-2 rounded shadow-md hover:bg-[#7F151F] transition-colors uppercase tracking-wider"
-            >
-              Get Early Access
-            </a>
-          </div>
-        </header>
+        {/* Global Site Header */}
+        <SiteHeader language={language} setLanguage={setLanguage} />
 
         {/* ── 1. HERO SECTION: YAHWEH THE GOD WHO REVEALS HIS POWER ────────── */}
         <section
           id="hero"
-          className="relative w-full overflow-hidden bg-black flex flex-col justify-center min-h-[85vh] lg:min-h-screen pt-24 pb-16 px-6 md:px-12"
+          className="relative w-full overflow-hidden bg-black flex flex-col justify-center min-h-[85vh] lg:min-h-screen pt-12 md:pt-16 pb-16 px-6 md:px-12"
         >
-          {/* Hero Media: Image 2 Full-Resolution High-Quality Banner */}
+          {/* Hero Media: Still Image (shows immediately) + YouTube Video (fades in after 5s) */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Still hero image — always present, fades out as video loads */}
             <img
               src="/assets/yahweh-hero-mount-sinai.jpg"
               alt="YAHWEH · The God Who Reveals His Power"
-              className="absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-[65%_center] lg:object-center select-none"
+              className={`absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-[65%_center] lg:object-center select-none transition-opacity duration-1000 ${videoReady ? "opacity-0" : "opacity-100"}`}
               loading="eager"
               decoding="async"
             />
 
-            {/* Directional Gradient: Darker on left behind text, completely transparent on right so Moses & Tablets are 100% crisp & full resolution */}
+            {/* YouTube background video — fades in 5s after mount */}
             <div
-              className="absolute inset-0"
+              className={`absolute inset-0 transition-opacity duration-1500 ${videoReady ? "opacity-100" : "opacity-0"}`}
+            >
+              <iframe
+                ref={iframeRef}
+                src="https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=1&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+                className="absolute w-[177.78%] h-[177.78%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ border: "none" }}
+                title="YAHWEH — Visual Bible Hero Video"
+              />
+            </div>
+
+            {/* Directional Gradient: Darker on left behind text, transparent on right for image/video clarity */}
+            <div
+              className="absolute inset-0 z-10"
               style={{
                 background: `
                   linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.15) 55%, transparent 70%),
@@ -814,6 +813,21 @@ function LandingPage() {
                 <Play className="w-3.5 h-3.5 fill-white" />
                 Watch Genesis First
               </Link>
+              {/* Sound toggle — only visible after video loads */}
+              {videoReady && (
+                <button
+                  onClick={toggleSound}
+                  className="flex items-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/20 text-white/80 hover:text-white text-xs font-semibold px-3 py-2.5 rounded transition-colors"
+                  aria-label={isMuted ? "Unmute video" : "Mute video"}
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-3.5 h-3.5" />
+                  ) : (
+                    <Volume2 className="w-3.5 h-3.5" />
+                  )}
+                  {isMuted ? "Unmute" : "Mute"}
+                </button>
+              )}
             </div>
           </div>
         </section>
@@ -1237,6 +1251,7 @@ function LandingPage() {
                 radius={16}
                 scale={100}
                 background="#09090d"
+                font={{ fontSize: 12, fontWeight: 600, letterSpacing: "-0.01em" }}
                 style={{ width: "100%", height: "100%" }}
               />
             )}
