@@ -21,6 +21,9 @@ import {
   Globe as GlobeIcon,
   Check,
   Edit3,
+  Users,
+  TrendingUp,
+  Sparkles,
 } from "lucide-react";
 import { GlobalSidebar } from "@/components/global-sidebar";
 import { RegionalSelector } from "@/components/site-header";
@@ -363,85 +366,176 @@ const UPCOMING_PROJECTS_ITEMS = [
   },
 ];
 
-// ─── Data: Languages & Regions Reached (3D Globe Markers) ────────────────────
+// ─── Data: Regional Demographic & Potential Reach Analysis ──────────────────
 
-interface ReachedLanguage {
+export interface RegionAnalysis {
   id: string;
   name: string;
   nativeName: string;
-  regions: string;
   badge: string;
   isUpcoming?: boolean;
-  lat: number;
-  lng: number;
+  territory: string;
+  totalPopulation: string;
+  potentialReach: string;
+  highlightStat: string; // e.g. "47 million yoruba speaking people"
+  subStat: string;
+  languages: string[];
+  oralityInsight: string;
+  activeRelease: string;
+  releaseUrl: string;
+  isExternal?: boolean;
+  reachRatio: number;
 }
 
-const REACHED_LANGUAGES: ReachedLanguage[] = [
-  {
-    id: "india",
-    name: "Hindi · Tamil · Malayalam",
-    nativeName: "हिन्दी · தமிழ் · മലയാളം",
-    regions: "India, South Asia & Global Diaspora",
-    badge: "3 Live Tracks",
-    lat: 20.59,
-    lng: 78.96,
-  },
-  {
-    id: "persian",
-    name: "Persian (Farsi)",
-    nativeName: "فارسی",
-    regions: "Iran, Middle East & Farsi Diaspora",
-    badge: "Judah (Gen 38) Live",
-    lat: 35.68,
-    lng: 51.38,
-  },
-  {
-    id: "tagalog",
-    name: "Tagalog",
-    nativeName: "Wikang Tagalog",
-    regions: "Philippines & Southeast Asia",
-    badge: "Genesis Series Live",
-    lat: 14.59,
-    lng: 120.98,
-  },
-  {
-    id: "english",
-    name: "English (Native)",
-    nativeName: "English",
-    regions: "USA, UK, Canada, Australia, New Zealand",
-    badge: "Full Catalog Live",
-    lat: 38.9,
-    lng: -77.03,
-  },
-  {
-    id: "malay",
-    name: "Malay",
-    nativeName: "Bahasa Melayu",
-    regions: "Malaysia, Singapore, Brunei",
-    badge: "Genesis Live",
-    lat: 3.13,
-    lng: 101.68,
-  },
-  {
-    id: "chinese",
-    name: "Chinese (Mandarin)",
-    nativeName: "中文 / 创世记",
-    regions: "China, Taiwan, East Asia Diaspora",
-    badge: "Joseph in Egypt Live",
-    lat: 31.23,
-    lng: 121.47,
-  },
-  {
+export const REGIONAL_ANALYSIS_DATA: Record<string, RegionAnalysis> = {
+  Nigeria: {
     id: "yoruba",
-    name: "Yoruba",
-    nativeName: "Èdè Yorùbá",
-    regions: "Nigeria, West Africa & Global Diaspora (45M+ speakers)",
+    name: "Yoruba (Nigeria & West Africa)",
+    nativeName: "Èdè Yorùbá · Nàìjíríà",
     badge: "Sneak Peek Live",
     isUpcoming: false,
-    lat: 6.52,
-    lng: 3.37,
+    territory: "Nigeria, Benin, Togo & Global African Diaspora",
+    totalPopulation: "225 Million (Nigeria) / 430 Million (West Africa)",
+    potentialReach: "47 million yoruba speaking people",
+    highlightStat: "47 million yoruba speaking people",
+    subStat: "Primary heart language across Yorubaland & West African diaspora",
+    languages: ["Yoruba (Èdè Yorùbá)"],
+    oralityInsight:
+      "Yoruba is a vibrant Niger-Congo tonal language celebrated for rich oral poetry (Oriki), folklore, and spoken proverbs. The visual bible eliminates reading and literacy constraints, allowing 47 million people to experience Scripture in their authentic cultural heart-cadence.",
+    activeRelease: "Genesis in the Yoruba Language (Sneak Peek 4K)",
+    releaseUrl: "https://www.youtube.com/watch?v=DxNeDE-9J8A",
+    isExternal: true,
+    reachRatio: 21,
   },
-];
+  India: {
+    id: "india",
+    name: "India (Hindi · Tamil · Malayalam)",
+    nativeName: "भारत · हिन्दी · தமிழ் · മലയാളം",
+    badge: "3 Live Tracks",
+    isUpcoming: false,
+    territory: "Republic of India & South Asian Global Diaspora",
+    totalPopulation: "1.43 Billion People",
+    potentialReach: "728+ Million people",
+    highlightStat: "728+ Million people",
+    subStat: "Hindi (~600M+), Tamil (~77M+), Malayalam (~38M+)",
+    languages: ["Hindi (हिन्दी)", "Tamil (தமிழ்)", "Malayalam (മലയാളം)"],
+    oralityInsight:
+      "India is home to the world's largest oral and visual storytelling culture. By delivering full chapter dramatizations in Hindi, Tamil, and Malayalam with authentic native voice acting and spatial score, the Visual Bible reaches over 728 million people across northern, southern, and diaspora communities.",
+    activeRelease: "Genesis Chapters 1–50 (Hindi, Tamil & Malayalam)",
+    releaseUrl: "/watch?episode=genesis-hindi",
+    isExternal: false,
+    reachRatio: 51,
+  },
+  China: {
+    id: "china",
+    name: "China (Mandarin Chinese)",
+    nativeName: "中国 · 中文 / 普通话",
+    badge: "Joseph Edition Live",
+    isUpcoming: false,
+    territory: "China, Taiwan, Singapore & Global Chinese Diaspora",
+    totalPopulation: "1.41 Billion People",
+    potentialReach: "1.18 Billion Mandarin speaking people",
+    highlightStat: "1.18 Billion people",
+    subStat: "World's largest spoken native language",
+    languages: ["Mandarin Chinese (中文)"],
+    oralityInsight:
+      "Mandarin is spoken by over 1.18 billion people worldwide. Cinematic biblical visualization delivers profound spiritual and historical context that bypasses textual and ideological hurdles, communicating God's redemption through the universal medium of film.",
+    activeRelease: "The Purpose of God: The Story of Joseph (Mandarin)",
+    releaseUrl: "/watch?episode=joseph-mandarin",
+    isExternal: false,
+    reachRatio: 84,
+  },
+  Iran: {
+    id: "persia",
+    name: "Iran / Persia (Farsi)",
+    nativeName: "ایران · فارسی",
+    badge: "Judah (Gen 38) Live",
+    isUpcoming: false,
+    territory: "Iran, Afghanistan (Dari), Tajikistan (Tajiki) & Middle East Diaspora",
+    totalPopulation: "89 Million (Iran) / 130 Million (Persian Plateau)",
+    potentialReach: "127+ Million Farsi/Persian speaking people",
+    highlightStat: "127+ Million people",
+    subStat: "Major regional influence across Central Asia & Middle East",
+    languages: ["Persian / Farsi (فارسی)", "Dari (دری)"],
+    oralityInsight:
+      "With millennia of poetic and oral recitation culture, Persian speakers connect deeply with acoustic and visual majesty. The Visual Bible provides unhindered, safe digital access for 127M+ people to witness the Word in their mother tongue.",
+    activeRelease: "Judah's Redemption (Genesis Chapter 38 - Farsi)",
+    releaseUrl: "/watch?episode=judah-persian",
+    isExternal: false,
+    reachRatio: 98,
+  },
+  Philippines: {
+    id: "philippines",
+    name: "Philippines (Tagalog)",
+    nativeName: "Pilipinas · Wikang Tagalog",
+    badge: "Genesis Series Live",
+    isUpcoming: false,
+    territory: "Philippines Archipelago & 10M+ Global Filipino Diaspora",
+    totalPopulation: "117 Million People",
+    potentialReach: "87+ Million Tagalog speaking people",
+    highlightStat: "87+ Million people",
+    subStat: "National lingua franca and worldwide OFW diaspora",
+    languages: ["Tagalog (Wikang Tagalog)", "Filipino"],
+    oralityInsight:
+      "The Philippines has one of the highest digital media consumptions in the world. Tagalog visual scripture connects directly with multigenerational families and community viewing groups across the islands and international worker diaspora.",
+    activeRelease: "Genesis Patriarchal Chronicles (Tagalog Edition)",
+    releaseUrl: "/watch?episode=genesis-tagalog",
+    isExternal: false,
+    reachRatio: 74,
+  },
+  Egypt: {
+    id: "egypt",
+    name: "Egypt & Arab World (Arabic)",
+    nativeName: "مصر · العربية",
+    badge: "Exodus Sagas Pipeline",
+    isUpcoming: true,
+    territory: "Egypt, Levant, North Africa & Arabian Peninsula",
+    totalPopulation: "112 Million (Egypt) / 450 Million (Arab World)",
+    potentialReach: "400+ Million Arabic speaking people",
+    highlightStat: "400+ Million people",
+    subStat: "Native historical geography of the Exodus and Sinai narrative",
+    languages: ["Modern Standard Arabic (العربية)", "Egyptian Colloquial"],
+    oralityInsight:
+      "Filmed with authentic archaeological fidelity to the landscapes of Goshen, the Nile, and Mount Sinai, this edition brings the historical Exodus narrative back to the 400 million people of the Arab world in their native Semitic acoustic heritage.",
+    activeRelease: "YAHWEH: The Book of Exodus (Arabic Sagas)",
+    releaseUrl: "/watch?episode=yahweh-exodus",
+    isExternal: false,
+    reachRatio: 89,
+  },
+  "United States of America": {
+    id: "english",
+    name: "Global English Master Catalog",
+    nativeName: "United States · UK · Canada · Australia",
+    badge: "Master 4K Catalog Live",
+    isUpcoming: false,
+    territory: "North America, British Isles, Australasia & Global Common Market",
+    totalPopulation: "470 Million (Core Anglosphere)",
+    potentialReach: "1.5+ Billion English speaking people worldwide",
+    highlightStat: "1.5+ Billion people",
+    subStat: "Global digital lingua franca across all continents",
+    languages: ["English (Native 5.1 Spatial Audio)"],
+    oralityInsight:
+      "Serving as the flagship foundation of the entire Visual Bible initiative, the English master catalog sets the cinematic, acoustic, and theological benchmark, reaching 1.5 billion people across every continent.",
+    activeRelease: "Complete 16-Episode Streaming Vault & 24/7 Channel",
+    releaseUrl: "/watch",
+    isExternal: false,
+    reachRatio: 95,
+  },
+};
+
+function getRegionAnalysis(cName: string | null | undefined): RegionAnalysis {
+  if (!cName) return REGIONAL_ANALYSIS_DATA["Nigeria"];
+  if (REGIONAL_ANALYSIS_DATA[cName]) return REGIONAL_ANALYSIS_DATA[cName];
+  if (
+    cName === "United Kingdom" ||
+    cName === "Canada" ||
+    cName === "Australia" ||
+    cName === "United States"
+  ) {
+    return REGIONAL_ANALYSIS_DATA["United States of America"];
+  }
+  return REGIONAL_ANALYSIS_DATA["Nigeria"];
+}
 
 const GLOBE_MARKERS = [
   // India (Hindi, Tamil, Malayalam)
@@ -476,6 +570,7 @@ function LandingPage() {
   const { isAdmin } = useAdminAuth();
   const { cmsData } = useCmsContent();
   const [mounted, setMounted] = useState(false);
+  const [selectedRegionKey, setSelectedRegionKey] = useState<string>("Nigeria");
   const [isMuted, setIsMuted] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [hoveredStrip, setHoveredStrip] = useState<string | null>(null);
@@ -1219,6 +1314,20 @@ function LandingPage() {
                     outlineColor="#50505e"
                     showGrid={true}
                     graticuleColor="#16161e"
+                    onHoverCountry={(cName) => {
+                      if (cName) {
+                        const mapped =
+                          cName === "United Kingdom" ||
+                          cName === "Canada" ||
+                          cName === "Australia" ||
+                          cName === "United States"
+                            ? "United States of America"
+                            : cName;
+                        if (REGIONAL_ANALYSIS_DATA[mapped]) {
+                          setSelectedRegionKey(mapped);
+                        }
+                      }
+                    }}
                     coveredRegions={{
                       countries: [
                         "India",
@@ -1253,86 +1362,212 @@ function LandingPage() {
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/60 pointer-events-none px-2 bg-black/40 backdrop-blur-sm py-1 rounded-md border border-white/5">
                   <span className="flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-sm bg-white shadow" />
-                    Solid White = Reached Regional Territories (India & Global Productions)
+                    Hover highlighted regions on globe or click chips to analyze
                   </span>
                   <span className="hidden sm:inline text-white/40">Drag to rotate globe</span>
                 </div>
               </div>
 
-              {/* Right Column: Cards of Languages & Regions */}
-              <div className="lg:col-span-5 flex flex-col gap-2.5 max-h-[500px] overflow-y-auto pr-1 scrollbar-none">
-                {/* Yoruba Sneak Peek Spotlight Card in Languages Column */}
-                <a
-                  href="https://www.youtube.com/watch?v=DxNeDE-9J8A"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3.5 rounded-xl bg-gradient-to-r from-red-950/40 via-red-900/20 to-black border border-[#A11C28]/60 hover:border-[#ff4d5e] transition-all flex items-center justify-between gap-3 group shadow-lg"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-[#A11C28] text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <Play className="w-4 h-4 fill-white ml-0.5" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-white group-hover:text-[#ff4d5e] transition-colors truncate">
-                        Sneak peak of Genesis in the Yoruba language
-                      </span>
-                      <span className="text-[10px] text-white/60 truncate">
-                        Èdè Yorùbá · Nigeria, West Africa & Global Diaspora
+              {/* Right Column: Demographic & Potential Reach Analysis Dashboard */}
+              <div className="lg:col-span-5 flex flex-col gap-3 min-h-[500px]">
+                {/* Territory Selector Pills */}
+                <div className="p-3.5 rounded-xl bg-gradient-to-b from-[#14141c] to-[#0a0a0f] border border-white/[0.1] shadow-xl">
+                  <div className="flex items-center justify-between gap-2 mb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-white/70 uppercase">
+                        Demographic & Reach Analysis
                       </span>
                     </div>
+                    <span className="text-[10px] font-mono text-white/40">
+                      Hover Globe or Select
+                    </span>
                   </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-white/50 group-hover:text-white shrink-0" />
-                </a>
 
-                {REACHED_LANGUAGES.map((lang) => (
-                  <div
-                    key={lang.id}
-                    className="p-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors flex items-center justify-between gap-3 group"
-                  >
-                    <div className="flex flex-col min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-base font-bold text-white group-hover:text-[#A11C28] transition-colors truncate">
-                          {lang.name}
-                        </span>
-                        <span className="text-xs text-white/40 font-normal">
-                          ({lang.nativeName})
-                        </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { key: "Nigeria", label: "Yorùbá (Nigeria)", reach: "47M" },
+                      { key: "India", label: "India", reach: "728M" },
+                      { key: "China", label: "China", reach: "1.18B" },
+                      { key: "Iran", label: "Iran", reach: "127M" },
+                      { key: "Philippines", label: "Philippines", reach: "87M" },
+                      { key: "Egypt", label: "Egypt", reach: "400M" },
+                      { key: "United States of America", label: "English", reach: "1.5B" },
+                    ].map((item) => {
+                      const isSelected = selectedRegionKey === item.key;
+                      return (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => setSelectedRegionKey(item.key)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                            isSelected
+                              ? "bg-[#A11C28] text-white shadow-md shadow-[#A11C28]/40 border border-[#ff4d5e]/50 scale-[1.02]"
+                              : "bg-white/[0.04] hover:bg-white/[0.09] text-white/70 border border-white/[0.06]"
+                          }`}
+                        >
+                          <span>{item.label}</span>
+                          <span
+                            className={`text-[9px] px-1 py-0.5 rounded font-mono ${
+                              isSelected
+                                ? "bg-black/30 text-white"
+                                : "bg-white/[0.06] text-white/50"
+                            }`}
+                          >
+                            {item.reach}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Dynamic Region Analysis Card */}
+                {(() => {
+                  const reg = getRegionAnalysis(selectedRegionKey);
+                  const isYoruba = reg.id === "yoruba";
+                  return (
+                    <div className="p-5 rounded-xl bg-gradient-to-b from-[#111118] via-[#0d0d14] to-[#07070a] border border-white/[0.12] shadow-2xl flex flex-col justify-between flex-1 relative overflow-hidden">
+                      {/* Subtle ambient accent glow behind card */}
+                      <div className="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-[#A11C28]/15 blur-3xl pointer-events-none" />
+
+                      <div>
+                        {/* Region Header */}
+                        <div className="flex items-start justify-between gap-3 mb-3.5">
+                          <div>
+                            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                              <h3 className="text-base md:text-lg font-black text-white tracking-tight">
+                                {reg.name}
+                              </h3>
+                              <span className="text-xs text-white/40 font-normal">
+                                ({reg.nativeName})
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-white/55 font-sans leading-snug">
+                              {reg.territory}
+                            </p>
+                          </div>
+                          <span
+                            className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
+                              reg.isUpcoming
+                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                            }`}
+                          >
+                            {reg.badge}
+                          </span>
+                        </div>
+
+                        {/* Dual Population & Reach Metric Blocks */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3">
+                          {/* Total Territory Population */}
+                          <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] flex flex-col justify-between">
+                            <span className="text-[10px] font-mono tracking-wider uppercase text-white/45 flex items-center gap-1.5 mb-1">
+                              <Users className="w-3 h-3 text-white/40" />
+                              Regional Population
+                            </span>
+                            <span className="text-sm md:text-base font-black text-white tracking-tight">
+                              {reg.totalPopulation}
+                            </span>
+                            <span className="text-[10px] text-white/40 mt-0.5">
+                              Demographic base in region
+                            </span>
+                          </div>
+
+                          {/* Potential Reach Through Visual Bible */}
+                          <div className="p-3 rounded-lg bg-gradient-to-br from-[#A11C28]/25 via-emerald-950/20 to-black/60 border border-[#A11C28]/40 flex flex-col justify-between">
+                            <span className="text-[10px] font-mono tracking-wider uppercase text-amber-300 flex items-center gap-1.5 mb-1">
+                              <Sparkles className="w-3 h-3 text-amber-300" />
+                              Potential Scripture Reach
+                            </span>
+                            <span
+                              className={`font-black tracking-tight leading-snug ${
+                                isYoruba
+                                  ? "text-sm md:text-base text-amber-200"
+                                  : "text-base md:text-lg text-emerald-400"
+                              }`}
+                            >
+                              {reg.highlightStat}
+                            </span>
+                            <span className="text-[10px] text-white/60 mt-0.5">
+                              {reg.subStat}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Cultural Orality & Visual Scripture Mission Impact */}
+                        <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] mb-3">
+                          <div className="text-[10px] font-mono uppercase tracking-wider text-white/45 mb-1 flex items-center gap-1.5">
+                            <TrendingUp className="w-3 h-3 text-emerald-400" />
+                            Overcoming Literacy & Access Barriers
+                          </div>
+                          <p className="text-[11px] text-white/70 leading-relaxed font-sans">
+                            {reg.oralityInsight}
+                          </p>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {reg.languages.map((l) => (
+                              <span
+                                key={l}
+                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/10 text-white/90 border border-white/10"
+                              >
+                                {l}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-[11px] text-white/50 truncate mt-0.5">
-                        {lang.regions}
-                      </span>
-                    </div>
 
-                    <div className="shrink-0 text-right">
-                      <span
-                        className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
-                          lang.isUpcoming
-                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                            : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                        }`}
-                      >
-                        {lang.badge}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                      {/* Active Scripture Release & Action CTA */}
+                      <div className="pt-2.5 border-t border-white/[0.08] flex items-center justify-between gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <span className="text-[9px] text-white/40 uppercase tracking-wider font-mono block">
+                            Active Translation
+                          </span>
+                          <span className="text-xs font-bold text-white truncate block">
+                            {reg.activeRelease}
+                          </span>
+                        </div>
 
-                {/* Target to reach 100 Languages Card */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-[#A11C28]/20 via-[#A11C28]/10 to-transparent border border-[#A11C28]/40 flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-black text-white uppercase tracking-wider">
-                      Target: Reaching 100 Languages
+                        <div className="flex items-center gap-2 shrink-0">
+                          {reg.isExternal ? (
+                            <a
+                              href={reg.releaseUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-[#A11C28] hover:bg-[#7F151F] text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all shadow-md shadow-red-950/50 uppercase tracking-wider"
+                            >
+                              <Play className="w-3 h-3 fill-white" />
+                              Watch Sneak Peek
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          ) : (
+                            <Link
+                              to={reg.releaseUrl as any}
+                              className="inline-flex items-center gap-1.5 bg-[#A11C28] hover:bg-[#7F151F] text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all shadow-md shadow-red-950/50 uppercase tracking-wider"
+                            >
+                              <Play className="w-3 h-3 fill-white" />
+                              Watch Edition
+                            </Link>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-[11px] text-white/70 mt-0.5">
-                      Expanding across Africa, Latin America, Southeast Asia, and indigenous
-                      dialects.
-                    </div>
+                  );
+                })()}
+
+                {/* Bottom Global Initiative Footnote */}
+                <div className="p-2.5 rounded-xl bg-gradient-to-r from-white/[0.04] to-transparent border border-white/[0.06] flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <GlobeIcon className="w-3.5 h-3.5 text-white/50 shrink-0" />
+                    <span className="text-[11px] text-white/60 truncate">
+                      Combined Reach: <strong className="text-white">4.1+ Billion people</strong> across covered territories.
+                    </span>
                   </div>
                   <Link
                     to="/watch"
-                    className="shrink-0 text-xs font-bold bg-white text-black px-3 py-1.5 rounded hover:bg-white/90 transition-colors uppercase tracking-wider"
+                    className="shrink-0 text-[10px] font-bold text-[#ff4d5e] hover:text-white transition-colors uppercase tracking-wider"
                   >
-                    Watch All
+                    Watch All →
                   </Link>
                 </div>
               </div>

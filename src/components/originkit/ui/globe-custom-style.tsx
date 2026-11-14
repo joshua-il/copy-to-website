@@ -178,6 +178,7 @@ export interface CoveredRegionConfig {
 
 export interface HoveredCountryData {
     name: string;
+    rawCountryName?: string;
     nativeName?: string;
     languages: string[];
     status: string;
@@ -270,6 +271,7 @@ interface GlobeProps {
     dragSpeed?: number;
     detail?: number;
     style?: CSSProperties;
+    onHoverCountry?: (countryName: string | null) => void;
 }
 
 function __OriginkitBase_Globe({
@@ -309,6 +311,7 @@ function __OriginkitBase_Globe({
     dragSpeed = 5,
     detail = 5,
     style,
+    onHoverCountry,
 }: GlobeProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [, setIsLoading] = useState(true);
@@ -1059,6 +1062,7 @@ function __OriginkitBase_Globe({
         const handleMouseDown = (event: MouseEvent) => {
             isDragging = true;
             setHoveredCountry(null);
+            onHoverCountry?.(null);
             velocity.x = 0;
             velocity.y = 0;
             lastMouseX = event.clientX;
@@ -1101,6 +1105,7 @@ function __OriginkitBase_Globe({
 
             if (isDragging || intersects.length === 0) {
                 setHoveredCountry(null);
+                onHoverCountry?.(null);
                 return;
             }
 
@@ -1123,6 +1128,7 @@ function __OriginkitBase_Globe({
                         const info = COVERED_COUNTRY_DETAILS[cName];
                         matched = {
                             name: info?.name || cName,
+                            rawCountryName: cName,
                             nativeName: info?.nativeName,
                             languages:
                                 info?.languages || ["Regional Territory"],
@@ -1143,6 +1149,7 @@ function __OriginkitBase_Globe({
                             feat.properties?.NAME || feat.properties?.ADMIN;
                         matched = {
                             name: cName,
+                            rawCountryName: cName,
                             languages: [
                                 "Target: Reaching 100 Languages Initiative",
                             ],
@@ -1157,10 +1164,16 @@ function __OriginkitBase_Globe({
             }
 
             setHoveredCountry(matched);
+            if (matched) {
+                onHoverCountry?.(matched.rawCountryName || matched.name);
+            } else {
+                onHoverCountry?.(null);
+            }
         };
         const handleMouseLeave = () => {
             isHovering = false;
             setHoveredCountry(null);
+            onHoverCountry?.(null);
         };
         canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mouseleave", handleMouseLeave);
@@ -1369,6 +1382,10 @@ const __originkitPresetProps = {
   "oceanColor": "#000000"
 };
 
-export default function Globe(props: Record<string, unknown>) {
+export default function Globe(
+    props: Record<string, unknown> & {
+        onHoverCountry?: (countryName: string | null) => void;
+    }
+) {
   return <__OriginkitBase_Globe {...(__originkitPresetProps as Record<string, unknown>)} {...props} />;
 }
