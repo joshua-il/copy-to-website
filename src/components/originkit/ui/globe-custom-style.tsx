@@ -1353,7 +1353,7 @@ function __OriginkitBase_Globe({
                         ),
                     }}
                 >
-                    <div className="bg-[#07070b]/95 backdrop-blur-md border border-white/20 p-3.5 shadow-2xl min-w-[220px] max-w-[280px] text-left">
+                    <div className="bg-[#07070b]/95 backdrop-blur-md border border-white/20 p-3.5 shadow-2xl min-w-[220px] max-w-[280px] text-left rounded-none">
                         <div className="flex items-center justify-between gap-2 mb-2">
                             <span className="text-sm font-black text-white tracking-tight uppercase">
                                 {hoveredCountry.name}

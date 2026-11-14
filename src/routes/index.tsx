@@ -839,7 +839,7 @@ function LandingPage() {
             <Link
               to="/admin"
               search={{ tab: "hero" }}
-              className="absolute top-6 right-6 z-30 flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xl shadow-black/80 uppercase tracking-wider transition-all"
+              className="absolute top-6 right-6 z-30 flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-3 py-1.5 rounded-none shadow-xl shadow-black/80 uppercase tracking-wider transition-all"
             >
               <Edit3 className="w-3.5 h-3.5" /> Edit Hero Showcase
             </Link>
@@ -946,7 +946,7 @@ function LandingPage() {
             <div className="flex items-center gap-3 flex-wrap">
               <a
                 href="#waitlist"
-                className="flex items-center gap-2.5 bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-2.5 rounded transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-red-950/50 uppercase tracking-wider"
+                className="flex items-center gap-2.5 bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-2.5 rounded-none transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-red-950/50 uppercase tracking-wider"
               >
                 <Plus className="w-4 h-4" />
                 Join The Premiere Waitlist
@@ -954,7 +954,7 @@ function LandingPage() {
               <Link
                 to="/watch"
                 search={{ episode: "genesis" }}
-                className="flex items-center gap-2 bg-white/15 backdrop-blur-md text-white text-sm font-semibold px-5 py-2.5 rounded hover:bg-white/25 transition-colors"
+                className="flex items-center gap-2 bg-white/15 backdrop-blur-md text-white text-sm font-semibold px-5 py-2.5 rounded-none hover:bg-white/25 transition-colors"
               >
                 <Play className="w-3.5 h-3.5 fill-white" />
                 Watch Genesis First
@@ -964,7 +964,7 @@ function LandingPage() {
                 <button
                   type="button"
                   onClick={toggleSound}
-                  className="flex items-center gap-1.5 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 hover:border-white/40 text-white text-xs font-semibold px-3 py-2.5 rounded transition-all shadow-md"
+                  className="flex items-center gap-1.5 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 hover:border-white/40 text-white text-xs font-semibold px-3.5 py-2.5 rounded-none transition-all shadow-md"
                   aria-label={isMuted ? "Unmute video banner" : "Mute video banner"}
                 >
                   {isMuted ? (
@@ -1027,7 +1027,7 @@ function LandingPage() {
                   <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
 
                   {/* Corner Brand Badge */}
-                  <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-sm bg-black/80 backdrop-blur-md border border-white/20 flex items-center gap-1 shadow">
+                  <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-none bg-black/80 backdrop-blur-md border border-white/20 flex items-center gap-1 shadow">
                     <img
                       src="/assets/nrim-logo-white.png"
                       alt="NRIM"
@@ -1045,7 +1045,7 @@ function LandingPage() {
 
                   {/* Hover Overlay */}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-3 text-center">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow">
+                    <div className="w-10 h-10 rounded-none bg-white flex items-center justify-center mb-2 shadow">
                       <Play className="w-4 h-4 fill-black text-black ml-0.5" />
                     </div>
                     <span className="text-xs font-bold text-white leading-tight">Watch Stream</span>
@@ -1088,9 +1088,9 @@ function LandingPage() {
             </div>
           )}
 
-          {/* Frosted Glass Pitch Card: Tunnel is fully visible all around and through the section */}
-          <div className="relative z-20 max-w-3xl mx-auto text-center flex flex-col items-center bg-black/50 backdrop-blur-md p-6 md:p-10 rounded-2xl border border-white/10 shadow-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[11px] font-bold tracking-[0.2em] uppercase mb-4 backdrop-blur-md">
+          {/* Frosted Glass Pitch Card: Straight Cinema Bleed Card */}
+          <div className="relative z-20 max-w-4xl mx-auto text-center flex flex-col items-center bg-black/75 backdrop-blur-md p-6 md:p-12 rounded-none border border-white/15 shadow-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-none bg-white/10 border border-white/20 text-white text-[11px] font-bold tracking-[0.2em] uppercase mb-4 backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />A Production of
               NRIM
             </div>
@@ -1099,35 +1099,35 @@ function LandingPage() {
               VISUAL BIBLE: Until All Hear: Every Language, Every Nation.
             </h2>
 
-            <p className="text-white/80 text-xs md:text-sm leading-relaxed max-w-xl mx-auto mb-8 font-medium">
+            <p className="text-white/80 text-xs md:text-sm leading-relaxed max-w-2xl mx-auto mb-8 font-medium">
               Bringing the Bible to life through an AI production pipeline using real people and
               transforming them into characters from the Bible.
             </p>
 
             {/* Highlights Bar: 1M+ views, 88 countries, 8 live languages, 100 Target */}
-            <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-xl bg-black/60 backdrop-blur-xl border border-white/[0.1] shadow-xl mb-8">
-              <div className="flex flex-col items-center">
+            <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 border border-white/15 mb-8 rounded-none">
+              <div className="flex flex-col items-center p-5 bg-[#0a0a0f] rounded-none">
                 <span className="text-2xl md:text-3xl font-black text-white leading-none mb-1">
                   1M+
                 </span>
                 <span className="text-xs font-bold text-white/80">Views Worldwide</span>
                 <span className="text-[10px] text-white/40 mt-0.5">Streaming Reach</span>
               </div>
-              <div className="flex flex-col items-center border-l border-white/10">
+              <div className="flex flex-col items-center p-5 bg-[#0a0a0f] rounded-none">
                 <span className="text-2xl md:text-3xl font-black text-white leading-none mb-1">
                   88
                 </span>
                 <span className="text-xs font-bold text-white/80">Countries</span>
                 <span className="text-[10px] text-white/40 mt-0.5">Global Viewership</span>
               </div>
-              <div className="flex flex-col items-center border-l border-white/10">
+              <div className="flex flex-col items-center p-5 bg-[#0a0a0f] rounded-none">
                 <span className="text-2xl md:text-3xl font-black text-white leading-none mb-1">
                   8
                 </span>
                 <span className="text-xs font-bold text-white/80">Live Languages</span>
                 <span className="text-[10px] text-white/40 mt-0.5">Current Broadcast</span>
               </div>
-              <div className="flex flex-col items-center border-l border-white/10">
+              <div className="flex flex-col items-center p-5 bg-[#0a0a0f] rounded-none">
                 <span className="text-2xl md:text-3xl font-black text-[#A11C28] leading-none mb-1">
                   100
                 </span>
@@ -1140,14 +1140,14 @@ function LandingPage() {
             <div className="flex items-center gap-3.5 flex-wrap justify-center">
               <Link
                 to="/watch"
-                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs md:text-sm font-bold px-6 py-2.5 rounded-full transition-transform hover:scale-105 shadow-lg shadow-red-950/50 uppercase tracking-wider"
+                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs md:text-sm font-bold px-6 py-3 rounded-none transition-transform hover:scale-105 shadow-lg shadow-red-950/50 uppercase tracking-wider"
               >
                 <Play className="w-4 h-4 fill-white" />
                 Watch Live Stream
               </Link>
               <a
                 href="#workflow"
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs md:text-sm font-semibold px-5 py-2.5 rounded-full transition-colors"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs md:text-sm font-semibold px-5 py-3 rounded-none transition-colors"
               >
                 <Cpu className="w-4 h-4" />
                 Our Technical Workflow
@@ -1186,14 +1186,14 @@ function LandingPage() {
             </div>
 
             {/* ── CONTINUOUS 35MM HORIZONTAL FILM STRIP CHASSIS ── */}
-            <div className="rounded-2xl overflow-hidden border border-white/20 bg-[#07070b] shadow-2xl mb-12">
+            <div className="w-full overflow-hidden border-y border-white/20 bg-[#07070b] shadow-2xl mb-12 rounded-none">
               {/* Top Film Sprocket Row: High-Contrast Cinema Celluloid */}
               <div className="bg-[#050508] border-b border-white/10 px-4 py-2.5 flex items-center justify-between overflow-hidden select-none relative">
                 <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 <div className="flex items-center gap-3 w-full justify-between">
                   {Array.from({ length: 32 }).map((_, i) => (
                     <div key={i} className="flex items-center gap-1.5 shrink-0">
-                      <div className="w-4 h-2.5 rounded-[2px] bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
+                      <div className="w-4 h-2.5 bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
                       {i % 4 === 0 && (
                         <span className="text-[7px] font-mono text-white/35 font-bold uppercase tracking-wider hidden sm:inline">
                           NRIM 5219
@@ -1205,8 +1205,8 @@ function LandingPage() {
               </div>
 
               {/* 3 Film Frames Side-by-Side Grid with Authentic Celluloid Border */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 bg-[#0a0a0e]">
-                {WORKFLOW_STEPS.map((step) => {
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-0 bg-[#0a0a0e]">
+                {WORKFLOW_STEPS.map((step, idx) => {
                   const isHovered = hoveredStrip === step.id;
                   return (
                     <div
@@ -1214,8 +1214,10 @@ function LandingPage() {
                       onClick={() => setActiveReadingStep(step)}
                       onMouseEnter={() => setHoveredStrip(step.id)}
                       onMouseLeave={() => setHoveredStrip(null)}
-                      className={`group relative flex flex-col rounded-lg overflow-hidden border transition-all duration-300 bg-black shadow-xl cursor-pointer ${
-                        isHovered ? "border-[#A11C28] ring-1 ring-[#A11C28]/40" : "border-white/15 hover:border-white/35"
+                      className={`group relative flex flex-col rounded-none overflow-hidden border-b md:border-b-0 ${
+                        idx < WORKFLOW_STEPS.length - 1 ? "md:border-r" : ""
+                      } transition-all duration-300 bg-black cursor-pointer ${
+                        isHovered ? "border-[#A11C28]" : "border-white/15"
                       }`}
                       role="button"
                       tabIndex={0}
@@ -1246,12 +1248,12 @@ function LandingPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-20" />
 
                         {/* Default Visible Badge (slides away on hover) */}
-                        <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-sm bg-black/85 backdrop-blur-md text-[10px] font-mono font-bold text-white/95 border border-white/15 shadow transition-all duration-300 group-hover:opacity-0 group-hover:-translate-x-2">
+                        <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-none bg-black/85 backdrop-blur-md text-[10px] font-mono font-bold text-white/95 border border-white/15 shadow transition-all duration-300 group-hover:opacity-0 group-hover:-translate-x-2">
                           {step.stepNumber} // {step.badge}
                         </div>
 
                         {/* ── HOVER SLIDE REVEAL OVERLAY (Left-to-Right Slide Animation) ── */}
-                        <div className="absolute inset-0 bg-[#07070bee] backdrop-blur-md p-4 md:p-5 flex flex-col justify-between text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 z-10">
+                        <div className="absolute inset-0 bg-[#07070bee] backdrop-blur-md p-4 md:p-5 flex flex-col justify-between text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 z-10 rounded-none">
                           <div>
                             <span className="text-[10px] font-semibold tracking-widest text-[#ff6b78] uppercase block mb-1">
                               {step.stepNumber} · {step.pillarLabel}
@@ -1274,7 +1276,7 @@ function LandingPage() {
                                 e.stopPropagation();
                                 setActiveReadingStep(step);
                               }}
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#A11C28] hover:bg-[#7F151F] px-3 py-1 rounded-full shadow-lg transition-transform hover:scale-105 cursor-pointer uppercase tracking-wider"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#A11C28] hover:bg-[#7F151F] px-3.5 py-1.5 shadow-lg transition-transform hover:scale-105 cursor-pointer uppercase tracking-wider rounded-none"
                             >
                               <span>Read More</span>
                               <BookOpen className="w-3.5 h-3.5" />
@@ -1299,7 +1301,7 @@ function LandingPage() {
                 <div className="flex items-center gap-3 w-full justify-between">
                   {Array.from({ length: 32 }).map((_, i) => (
                     <div key={i} className="flex items-center gap-1.5 shrink-0">
-                      <div className="w-4 h-2.5 rounded-[2px] bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
+                      <div className="w-4 h-2.5 bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
                       {i % 4 === 2 && (
                         <span className="text-[7px] font-mono text-white/35 font-bold uppercase tracking-wider hidden sm:inline">
                           SAFETY FILM
@@ -1321,7 +1323,7 @@ function LandingPage() {
                 onClick={() => setActiveReadingStep(null)}
               >
                 <div
-                  className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-[#08080c] border border-white/20 rounded-2xl shadow-2xl overflow-hidden text-left"
+                  className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-[#08080c] border border-white/20 shadow-2xl overflow-hidden text-left rounded-none"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Modal Header Bar with Cinema Slate */}
@@ -1330,14 +1332,14 @@ function LandingPage() {
                       <span className="text-xs font-mono font-bold text-white/80 tracking-wider">
                         {activeReadingStep.code} · {activeReadingStep.frameCode}
                       </span>
-                      <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white/10 text-white/90">
+                      <span className="text-xs font-semibold px-2.5 py-0.5 border border-white/15 bg-white/10 text-white/90 rounded-none">
                         {activeReadingStep.badge}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => setActiveReadingStep(null)}
-                      className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                      className="p-1.5 text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer rounded-none"
                       aria-label="Close reader"
                     >
                       <X className="w-5 h-5" />
@@ -1347,7 +1349,7 @@ function LandingPage() {
                   {/* Modal Scrollable Body */}
                   <div className="overflow-y-auto p-6 md:p-8 space-y-8">
                     {/* Hero Visual & Headline */}
-                    <div className="relative rounded-xl overflow-hidden aspect-[21/9] border border-white/15 bg-black">
+                    <div className="relative overflow-hidden aspect-[21/9] border border-white/15 bg-black rounded-none">
                       <img
                         src={activeReadingStep.image}
                         alt={activeReadingStep.title}
@@ -1378,11 +1380,11 @@ function LandingPage() {
                     </div>
 
                     {/* Deep Dive Sections Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 border border-white/15">
                       {activeReadingStep.readingNotes.sections.map((sec, idx) => (
                         <div
                           key={idx}
-                          className="p-5 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col justify-between"
+                          className="p-5 bg-[#08080c] flex flex-col justify-between rounded-none"
                         >
                           <div>
                             <span className="text-[11px] font-mono text-white/40 block mb-2 font-bold">
@@ -1400,7 +1402,7 @@ function LandingPage() {
                     </div>
 
                     {/* Theological Scripture Mandate Callout */}
-                    <div className="p-6 rounded-xl bg-white/[0.04] border border-white/15 text-left">
+                    <div className="p-6 bg-[#0c0c12] border border-white/15 text-left rounded-none">
                       <div className="flex items-center gap-2 mb-2 text-xs font-semibold tracking-wider uppercase text-white/50">
                         <Sparkles className="w-4 h-4 text-amber-400" />
                         <span>Scriptural Foundation</span>
@@ -1414,9 +1416,9 @@ function LandingPage() {
                     </div>
 
                     {/* Production Metrics Row */}
-                    <div className="grid grid-cols-3 gap-3 p-4 rounded-xl bg-black border border-white/10 text-center">
+                    <div className="grid grid-cols-3 gap-px bg-white/10 border border-white/15 text-center">
                       {activeReadingStep.readingNotes.productionMetrics.map((met, i) => (
-                        <div key={i} className={i > 0 ? "border-l border-white/10" : ""}>
+                        <div key={i} className="p-4 bg-[#08080c] rounded-none">
                           <span className="text-[10px] uppercase tracking-wider text-white/40 block mb-1">
                             {met.label}
                           </span>
@@ -1437,7 +1439,7 @@ function LandingPage() {
                         const nextIdx = (currIdx + 1) % WORKFLOW_STEPS.length;
                         setActiveReadingStep(WORKFLOW_STEPS[nextIdx]);
                       }}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-white/80 transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-white/80 transition-colors cursor-pointer rounded-none"
                     >
                       <span>Next Pillar</span>
                       <ChevronRight className="w-4 h-4" />
@@ -1446,7 +1448,7 @@ function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setActiveReadingStep(null)}
-                      className="bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-5 py-2 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+                      className="bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-5 py-2 transition-colors cursor-pointer uppercase tracking-wider rounded-none"
                     >
                       Close Reader
                     </button>
@@ -1456,7 +1458,7 @@ function LandingPage() {
             )}
 
             {/* ── BEHIND THE SCENES VIDEO SHOWCASE ── */}
-            <div className="rounded-xl overflow-hidden border border-white/15 bg-[#07070b] p-6 md:p-8 shadow-2xl text-left">
+            <div className="w-full overflow-hidden border-y border-white/15 bg-[#07070b] p-6 md:p-10 lg:p-12 text-left rounded-none">
               <div className="mb-6">
                 <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">
                   Inside the Technology & Calling
@@ -1467,7 +1469,7 @@ function LandingPage() {
               </div>
 
               {/* 16:9 Cinema Frame Embed */}
-              <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-white/20 bg-black shadow-2xl">
+              <div className="relative aspect-video w-full rounded-none overflow-hidden border border-white/20 bg-black shadow-2xl">
                 <iframe
                   src="https://www.youtube-nocookie.com/embed/3DULIG3sDS8?rel=0&modestbranding=1"
                   title="Visual Bible Studio Production Reel"
@@ -1487,7 +1489,7 @@ function LandingPage() {
                   href="https://www.youtube.com/watch?v=3DULIG3sDS8"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-white hover:text-[#ff4d5e] transition-colors font-medium"
+                  className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-white hover:text-[#ff4d5e] transition-colors font-medium rounded-none"
                 >
                   <span>Open in YouTube</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -1521,18 +1523,18 @@ function LandingPage() {
                   <Link
                     to="/admin"
                     search={{ tab: "archive" }}
-                    className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
+                    className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded-none transition-colors"
                   >
                     <Edit3 className="w-3.5 h-3.5" /> Edit Canvas in Studio
                   </Link>
                 )}
-                <div className="hidden sm:flex items-center gap-2 text-xs font-sans text-white/50 bg-white/[0.04] border border-white/[0.08] px-3.5 py-2 rounded-full">
+                <div className="hidden sm:flex items-center gap-2 text-xs font-sans text-white/50 bg-white/[0.04] border border-white/[0.08] px-3.5 py-2 rounded-none">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Drag canvas in any direction · Click poster to open</span>
                 </div>
                 <Link
                   to="/watch"
-                  className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 rounded transition-colors uppercase tracking-wider"
+                  className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 rounded-none transition-colors uppercase tracking-wider"
                 >
                   <Play className="w-3.5 h-3.5 fill-white" />
                   Watch Full Catalog
@@ -1541,8 +1543,8 @@ function LandingPage() {
             </div>
           </div>
 
-          {/* Infinite Canvas Frame */}
-          <div className="relative max-w-7xl mx-auto w-full h-[620px] md:h-[680px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#070709] shadow-2xl select-none">
+          {/* Infinite Canvas Frame - Straight Bleed Into Frame */}
+          <div className="relative w-full h-[640px] md:h-[720px] rounded-none overflow-hidden border-y border-white/15 bg-[#070709] select-none">
             {mounted && (
               <InfiniteGrid
                 items={
@@ -1552,7 +1554,7 @@ function LandingPage() {
                 }
                 columns={5}
                 cardWidth={200}
-                radius={8}
+                radius={0}
                 gap={28}
                 background="#070709"
                 textColor="#ffffff"
@@ -1586,7 +1588,7 @@ function LandingPage() {
             <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#070709] to-transparent z-10" />
 
             {/* Bottom Floating Pill */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex items-center gap-2 bg-black/80 backdrop-blur-md border border-white/15 px-4 py-1.5 rounded-full text-[11px] text-white/70 shadow-lg">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex items-center gap-2 bg-black/90 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-none text-[11px] text-white/80 shadow-lg">
               <span className="w-1.5 h-1.5 rounded-full bg-[#A11C28]" />
               <span>16 Productions & Regional Editions Loaded · Click any poster to watch</span>
             </div>
@@ -1618,14 +1620,14 @@ function LandingPage() {
                 <Link
                   to="/admin"
                   search={{ tab: "projects" }}
-                  className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
+                  className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded-none transition-colors"
                 >
                   <Edit3 className="w-3.5 h-3.5" /> Edit Slate in Studio
                 </Link>
               )}
               <a
                 href="#waitlist"
-                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 rounded transition-colors uppercase tracking-wider shadow-lg shadow-red-950/40"
+                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 rounded-none transition-colors uppercase tracking-wider shadow-lg shadow-red-950/40"
               >
                 <Plus className="w-4 h-4" />
                 Join Premiere Waitlist
@@ -1633,8 +1635,8 @@ function LandingPage() {
             </div>
           </div>
 
-          {/* Originkit AccordionOS Interactive Canvas Frame */}
-          <div className="relative w-full h-[520px] md:h-[580px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#09090d] shadow-2xl">
+          {/* Originkit AccordionOS Interactive Canvas Frame - Straight Bleed Into Frame */}
+          <div className="relative w-full h-[540px] md:h-[620px] rounded-none overflow-hidden border-y border-white/15 bg-[#09090d]">
             {mounted && (
               <AccordionOS
                 items={cmsData.upcomingProjects}
@@ -1642,7 +1644,7 @@ function LandingPage() {
                 autoplay={true}
                 interval={4.5}
                 pauseOnHover={true}
-                radius={16}
+                radius={0}
                 scale={100}
                 background="#09090d"
                 font={{ fontSize: 12, fontWeight: 600, letterSpacing: "-0.01em" }}
@@ -1655,27 +1657,27 @@ function LandingPage() {
         {/* ── 6. GLOBAL LANGUAGES REACHED (ORIGINKIT 3D GLOBE) ─────────── */}
         <section
           id="languages"
-          className="py-20 px-4 md:px-8 lg:px-12 w-full bg-gradient-to-b from-black via-[#08080c] to-black border-t border-white/[0.08]"
+          className="py-16 md:py-24 w-full bg-black border-t border-white/15 overflow-hidden rounded-none"
         >
           <div className="w-full">
-            {/* Header */}
-            <div className="text-center max-w-4xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-white/80 text-xs font-semibold tracking-wider uppercase mb-3">
-                Global Network · 88 Nations
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
+            {/* Header: Clean Cinema Framing */}
+            <div className="w-full px-6 md:px-12 lg:px-16 text-left mb-10">
+              <span className="text-[11px] font-semibold tracking-[0.25em] text-white/50 uppercase block mb-2 font-sans">
+                Global Geospatial Telemetry · 88 Nations Reached
+              </span>
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-2 tracking-tight">
                 Languages Reached Across the Earth
               </h2>
-              <p className="text-white/65 text-sm md:text-base leading-relaxed">
+              <p className="text-white/65 text-sm md:text-base leading-relaxed max-w-4xl">
                 Scripture released and streaming in 8 major native languages across Asia, the Middle
                 East, the Pacific, and the Americas — advancing toward our goal of 100 languages.
               </p>
             </div>
 
-            {/* Split Grid: 3D Globe on Left, Architectural Demographic Dossier on Right */}
-            <div className="grid lg:grid-cols-12 gap-6 items-stretch bg-[#08080c] border border-white/10 rounded-2xl p-4 md:p-6 lg:p-8 shadow-2xl w-full">
-              {/* Left Column: Originkit Interactive 3D Globe */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[640px] md:min-h-[720px] h-[640px] md:h-[720px] w-full overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
+            {/* Split Grid: Bleeds edge-to-edge into frame, straight borders, zero rounded corners */}
+            <div className="w-full grid lg:grid-cols-12 border-y border-white/15 bg-black rounded-none">
+              {/* Left Column: Originkit Interactive 3D Globe - Full Flush Bleed */}
+              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[640px] md:min-h-[720px] h-[640px] md:h-[720px] w-full overflow-hidden bg-[#050508] border-b lg:border-b-0 lg:border-r border-white/15 rounded-none">
                 {mounted ? (
                   <Globe
                     focusCountry={selectedRegionKey}
@@ -1704,31 +1706,31 @@ function LandingPage() {
                   </div>
                 )}
 
-                {/* Globe Caption / Control Tip */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs tracking-wider uppercase text-white/60 pointer-events-none px-3.5 py-2 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 font-sans">
+                {/* Flush Straight Caption Bar */}
+                <div className="absolute bottom-0 inset-x-0 flex items-center justify-between text-xs tracking-wider uppercase text-white/60 pointer-events-none px-6 py-3 bg-black/90 backdrop-blur-md border-t border-white/10 font-sans rounded-none">
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-white" />
+                    <span className="w-2 h-2 bg-white" />
                     Highlighted Territorials: Active Linguistic Productions
                   </span>
                   <span className="hidden sm:inline text-white/40">Drag to Orbit</span>
                 </div>
               </div>
 
-              {/* Right Column: Architectural Demographic Dossier */}
-              <div className="lg:col-span-5 flex flex-col justify-between border border-white/10 rounded-xl bg-[#06060a] p-5 md:p-6 lg:p-8 text-left min-h-[640px] md:min-h-[720px] h-[640px] md:h-[720px] overflow-hidden">
+              {/* Right Column: Architectural Demographic Dossier - Straight & Flush */}
+              <div className="lg:col-span-5 flex flex-col justify-between bg-[#08080c] p-6 md:p-8 lg:p-10 text-left min-h-[640px] md:min-h-[720px] h-[640px] md:h-[720px] overflow-hidden rounded-none">
                 {/* Dossier Header */}
                 <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-                    <span className="text-xs font-semibold tracking-widest text-white/60 uppercase">
+                  <div className="flex items-center justify-between pb-3 border-b border-white/15 mb-6">
+                    <span className="text-xs font-semibold tracking-widest text-white/60 uppercase font-sans">
                       Demographic Reach Analysis
                     </span>
-                    <span className="text-xs text-white/40">
+                    <span className="text-xs text-white/40 uppercase tracking-wider font-sans">
                       Select or Hover Region
                     </span>
                   </div>
 
-                  {/* Territory Selector Grid: Clean Technical Segmented Bar */}
-                  <div className="grid grid-cols-4 gap-1.5 mb-5">
+                  {/* Territory Selector Grid: Clean Technical Segmented Bar (Straight Flush Cuts) */}
+                  <div className="grid grid-cols-4 gap-px bg-white/10 border border-white/15 mb-6 rounded-none">
                     {[
                       { key: "Nigeria", label: "Yorùbá", code: "47M" },
                       { key: "India", label: "India", code: "728M" },
@@ -1744,10 +1746,10 @@ function LandingPage() {
                           key={item.key}
                           type="button"
                           onClick={() => setSelectedRegionKey(item.key)}
-                          className={`px-2.5 py-2 text-left rounded-lg transition-all cursor-pointer ${
+                          className={`px-3 py-2.5 text-left transition-all cursor-pointer rounded-none ${
                             isSelected
-                              ? "bg-white text-black font-bold shadow-md"
-                              : "bg-white/[0.05] text-white/70 hover:text-white hover:bg-white/[0.09]"
+                              ? "bg-white text-black font-bold"
+                              : "bg-[#0b0b10] text-white/70 hover:text-white hover:bg-white/[0.06]"
                           }`}
                         >
                           <div className="text-xs font-semibold truncate font-sans">
@@ -1764,7 +1766,7 @@ function LandingPage() {
                       );
                     })}
                     {/* 8th Slot: 100 Languages Global Goal */}
-                    <div className="px-2.5 py-2 text-left rounded-lg bg-white/[0.03] border border-white/10 flex flex-col justify-center">
+                    <div className="px-3 py-2.5 text-left bg-[#0b0b10] flex flex-col justify-center rounded-none">
                       <div className="text-[10px] uppercase tracking-wider text-white/40 font-sans">
                         Target
                       </div>
@@ -1788,14 +1790,14 @@ function LandingPage() {
                             {reg.nativeName}
                           </span>
                         </div>
-                        <p className="text-xs text-white/50 tracking-wide uppercase mb-4 font-sans">
+                        <p className="text-xs text-white/50 tracking-wider uppercase mb-5 font-sans">
                           {reg.territory}
                         </p>
 
-                        {/* Dual Data Terminal Cells */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4 font-sans">
+                        {/* Dual Data Terminal Cells: Pure Sharp Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/15 mb-5 font-sans rounded-none">
                           {/* Cell 1: Total Territory Population */}
-                          <div className="p-3 bg-white/[0.03] border border-white/10 rounded-lg">
+                          <div className="p-4 bg-[#0b0b10] rounded-none">
                             <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase block mb-1">
                               Territory Population
                             </span>
@@ -1808,7 +1810,7 @@ function LandingPage() {
                           </div>
 
                           {/* Cell 2: Potential Linguistic Reach */}
-                          <div className="p-3 bg-white/[0.03] border border-white/10 rounded-lg">
+                          <div className="p-4 bg-[#0b0b10] rounded-none">
                             <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase block mb-1">
                               Potential Scripture Reach
                             </span>
@@ -1821,8 +1823,8 @@ function LandingPage() {
                           </div>
                         </div>
 
-                        {/* Editorial / Orality Breakdown (Clean box, NO red lines) */}
-                        <div className="bg-white/[0.03] border border-white/10 rounded-lg p-3.5 mb-4">
+                        {/* Editorial / Orality Breakdown (Straight Clean Box) */}
+                        <div className="bg-[#0b0b10] border border-white/15 p-4 mb-5 rounded-none">
                           <span className="text-[11px] font-semibold text-white/50 uppercase tracking-wider block mb-1 font-sans">
                             Orality & Visual Scripture Mission
                           </span>
@@ -1839,7 +1841,7 @@ function LandingPage() {
                           {reg.languages.map((l) => (
                             <span
                               key={l}
-                              className="text-xs px-2.5 py-0.5 rounded-md bg-white/[0.06] border border-white/10 text-white/90 font-medium font-sans"
+                              className="text-xs px-2.5 py-1 bg-white/[0.04] border border-white/15 text-white/90 font-medium font-sans rounded-none"
                             >
                               {l}
                             </span>
@@ -1854,7 +1856,7 @@ function LandingPage() {
                 {(() => {
                   const reg = getRegionAnalysis(selectedRegionKey);
                   return (
-                    <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="pt-4 border-t border-white/15 flex items-center justify-between gap-4 flex-wrap">
                       <div className="min-w-0">
                         <span className="text-[10px] text-white/40 uppercase tracking-wider block font-sans">
                           Current Production
@@ -1869,7 +1871,7 @@ function LandingPage() {
                           href={reg.releaseUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 uppercase tracking-wider transition-colors inline-flex items-center gap-2 rounded shadow-lg shadow-red-950/40"
+                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 uppercase tracking-wider transition-colors inline-flex items-center gap-2 rounded-none shadow-lg shadow-red-950/40"
                         >
                           <Play className="w-3.5 h-3.5 fill-white" />
                           Watch Preview
@@ -1878,7 +1880,7 @@ function LandingPage() {
                       ) : (
                         <Link
                           to={reg.releaseUrl as any}
-                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 uppercase tracking-wider transition-colors inline-flex items-center gap-2 rounded shadow-lg shadow-red-950/40"
+                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 uppercase tracking-wider transition-colors inline-flex items-center gap-2 rounded-none shadow-lg shadow-red-950/40"
                         >
                           <Play className="w-3.5 h-3.5 fill-white" />
                           Watch Edition
@@ -1890,11 +1892,11 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* ── SNEAK PEEK OF GENESIS IN THE YORUBA LANGUAGE SHOWCASE ── */}
-            <div className="mt-8 rounded-2xl border border-[#A11C28]/40 bg-gradient-to-r from-red-950/40 via-[#0e0e16] to-[#07070a] p-6 md:p-8 shadow-2xl relative overflow-hidden">
-              <div className="grid md:grid-cols-12 gap-6 items-center">
-                {/* Left: Video Preview & Thumbnail */}
-                <div className="md:col-span-5 relative rounded-xl overflow-hidden aspect-video border border-white/15 bg-black group shadow-xl">
+            {/* ── SNEAK PEEK OF GENESIS IN THE YORUBA LANGUAGE SHOWCASE (Bleed Frame) ── */}
+            <div className="w-full border-b border-white/15 bg-gradient-to-r from-red-950/30 via-[#0a0a10] to-[#050508] p-6 md:p-10 lg:p-12 relative overflow-hidden rounded-none">
+              <div className="grid md:grid-cols-12 gap-8 items-center">
+                {/* Left: Video Preview & Thumbnail - Straight Flush Frame */}
+                <div className="md:col-span-5 relative overflow-hidden aspect-video border border-white/20 bg-black group shadow-2xl rounded-none">
                   <img
                     src="/assets/genesis-shepherds-poster.jpg"
                     alt="Sneak peek of Genesis in the Yoruba language"
@@ -1909,12 +1911,12 @@ function LandingPage() {
                     rel="noopener noreferrer"
                     className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors"
                   >
-                    <div className="w-14 h-14 rounded-full bg-[#A11C28] text-white flex items-center justify-center shadow-2xl shadow-red-950/80 group-hover:scale-110 transition-transform">
+                    <div className="w-14 h-14 bg-[#A11C28] text-white flex items-center justify-center shadow-2xl shadow-red-950/80 group-hover:scale-110 transition-transform rounded-none">
                       <Play className="w-6 h-6 fill-white ml-0.5" />
                     </div>
                   </a>
 
-                  <div className="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/80 backdrop-blur-sm text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider border border-amber-500/30">
+                  <div className="absolute top-3 left-3 px-2 py-0.5 bg-black/90 text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider border border-amber-500/40 rounded-none">
                     SNEAK PEEK LIVE
                   </div>
 
@@ -1925,28 +1927,25 @@ function LandingPage() {
                 </div>
 
                 {/* Right: Description & Links */}
-                <div className="md:col-span-7 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-                    <span className="text-[11px] font-bold tracking-[0.25em] text-[#C4A468] uppercase">
-                      New Language Premiere · West Africa
-                    </span>
-                  </div>
+                <div className="md:col-span-7 flex flex-col justify-center text-left">
+                  <span className="text-[11px] font-semibold tracking-[0.25em] text-[#C4A468] uppercase block mb-2 font-sans">
+                    New Language Premiere · West Africa
+                  </span>
 
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white leading-tight mb-2">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white leading-tight mb-3">
                     Sneak peek of Genesis in the Yoruba language
                   </h3>
 
-                  <p className="text-xs md:text-sm text-white/75 leading-relaxed mb-4">
+                  <p className="text-xs md:text-sm text-white/75 leading-relaxed mb-6 max-w-3xl">
                     <strong className="text-white">The Yoruba Language (Èdè Yorùbá):</strong> Spoken by over 45 million native speakers primarily in southwestern and central Nigeria, southern Benin, and across the African diaspora in Brazil and the Caribbean. Yoruba is a musical, pluricentric Niger-Congo tonal language renowned for its vivid oral literature, poetry, and proverb traditions. This historic visual release translates the ancient creation account into the authentic cadence and acoustic depth of Yoruba storytelling.
                   </p>
 
-                  <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-3.5 flex-wrap">
                     <a
                       href="https://www.youtube.com/watch?v=DxNeDE-9J8A"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 rounded uppercase tracking-wider transition-all shadow-lg shadow-red-950/50 hover:scale-[1.02]"
+                      className="inline-flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-6 py-3 uppercase tracking-wider transition-all shadow-lg shadow-red-950/50 hover:scale-[1.02] rounded-none"
                     >
                       <Play className="w-3.5 h-3.5 fill-white" />
                       Watch Yoruba Sneak Peek
@@ -1956,7 +1955,7 @@ function LandingPage() {
                     <Link
                       to="/watch"
                       search={{ episode: "genesis-yoruba-sneak-peek" }}
-                      className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded transition-colors"
+                      className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-5 py-3 transition-colors rounded-none"
                     >
                       <span>Stream in Episode Player</span>
                     </Link>
@@ -1992,12 +1991,11 @@ function LandingPage() {
             />
           </div>
 
-          {/* Centered Frosted Glass Waitlist Card */}
-          <div className="relative z-10 max-w-xl w-full mx-auto bg-black/85 backdrop-blur-xl border border-white/20 p-8 md:p-12 rounded-3xl shadow-2xl shadow-black text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#A11C28]/25 border border-[#A11C28]/50 text-white text-[11px] font-bold tracking-widest uppercase mb-4 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-              Be First to Watch
-            </div>
+          {/* Centered Frosted Glass Waitlist Card - Straight Cinema Frame */}
+          <div className="relative z-10 max-w-xl w-full mx-auto bg-black/90 backdrop-blur-xl border border-white/20 p-8 md:p-12 rounded-none shadow-2xl shadow-black text-center">
+            <span className="text-[11px] font-semibold tracking-[0.25em] text-white/50 uppercase block mb-3 font-sans">
+              Be First to Watch · Official Broadcast Network
+            </span>
             <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
               Join the Exclusive Premiere Waitlist
             </h2>
@@ -2007,7 +2005,7 @@ function LandingPage() {
             </p>
 
             {status === "success" ? (
-              <div className="flex items-center justify-center gap-2 bg-[#141419]/90 backdrop-blur-md border border-emerald-500/40 rounded-lg p-5 text-emerald-400">
+              <div className="flex items-center justify-center gap-2 bg-[#141419]/90 backdrop-blur-md border border-emerald-500/40 rounded-none p-5 text-emerald-400">
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
                 <span className="text-sm font-semibold">
                   You're on the premiere list! We'll notify you as soon as YAHWEH drops.
@@ -2026,12 +2024,12 @@ function LandingPage() {
                   required
                   disabled={status === "loading"}
                   aria-label="Email for waitlist"
-                  className="flex-1 bg-black/80 backdrop-blur-md border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded focus:outline-none focus:border-[#A11C28] transition-colors shadow-inner"
+                  className="flex-1 bg-black/80 backdrop-blur-md border border-white/20 text-white text-sm placeholder:text-white/40 px-4 py-3 rounded-none focus:outline-none focus:border-[#A11C28] transition-colors shadow-inner"
                 />
                 <button
                   type="submit"
                   disabled={status === "loading"}
-                  className="bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-3 rounded transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap shadow-lg shadow-red-950/50"
+                  className="bg-[#A11C28] hover:bg-[#7F151F] text-white text-sm font-bold px-6 py-3 rounded-none transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap shadow-lg shadow-red-950/50"
                 >
                   {status === "loading" ? "Joining…" : "Get Early Access"}
                 </button>
