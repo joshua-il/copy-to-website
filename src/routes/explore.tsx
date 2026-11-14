@@ -205,7 +205,7 @@ function ExploreWaitlistPage() {
                 </div>
                 <div className="vb-modal-stat-pill">
                   <Globe2 className="w-3 h-3 text-white" />
-                  <span>Multi-Audio Track Release</span>
+                  <span>Multi-Language Release</span>
                 </div>
               </div>
             </div>

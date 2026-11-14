@@ -153,6 +153,21 @@ export const DEFAULT_BROADCAST_EPISODES: BroadcastEpisodeItem[] = [
     language: "English",
   },
   {
+    id: "genesis-yoruba-sneak-peek",
+    title: "Genesis in the Yoruba Language · Sneak Peek",
+    subtitle: "Èdè Yorùbá · Nigeria, West Africa & Global Diaspora",
+    book: "Book of Genesis",
+    chapter: "Èdè Yorùbá Premiere",
+    durationSeconds: 180, // 3m 00s
+    durationFormatted: "3m 00s",
+    videoId: "DxNeDE-9J8A",
+    synopsis:
+      "Experience the beginning of scripture rendered in the vibrant tonal rhythm of Èdè Yorùbá. Spoken by over 45 million people across West Africa and the global diaspora.",
+    poster: "/assets/genesis-shepherds-poster.jpg",
+    tag: "SNEAK PEEK",
+    language: "Yoruba",
+  },
+  {
     id: "yahweh-premiere-trailer",
     title: "YAHWEH — The God Who Reveals His Power",
     subtitle: "Official Theatrical & Streaming Trailer (Book of Exodus)",
@@ -309,7 +324,7 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
       "Following the monumental completion of Genesis, the visual saga advances to Exodus. Witness the clash of gods, the ten plagues of Egypt, the roaring waters of the Red Sea divided, and the law delivered in fire atop Mount Sinai.",
     heroImage: "/assets/yahweh-hero-mount-sinai.jpg",
     videoUrl:
-      "https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=1&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60",
+      "https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=0&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60",
     videoDelaySeconds: 2.5,
   },
   vaultProductions: [
@@ -334,9 +349,9 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
     {
       id: "genesis-hindi",
       title: "उत्पत्ति (Genesis)",
-      subtitle: "Hindi Edition · Full Audio & Subtitles",
+      subtitle: "Hindi Edition · Complete Release",
       image: "/assets/genesis-hindi-campfire-poster.jpg",
-      badge: "Hindi Audio",
+      badge: "Hindi",
       language: "Hindi",
       episode: "genesis-42-fire",
     },
@@ -345,7 +360,7 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
       title: "ஆதியாகமம் (Genesis)",
       subtitle: "Tamil Edition · Complete Season",
       image: "/assets/genesis-tamil-poster.jpg",
-      badge: "Tamil Audio",
+      badge: "Tamil",
       language: "Tamil",
       episode: "genesis-45-reconciliation",
     },
@@ -354,9 +369,18 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
       title: "ഉദ്ഭവം (Genesis)",
       subtitle: "Malayalam Edition · Complete Season",
       image: "/assets/genesis-malayalam-poster.jpg",
-      badge: "Malayalam Audio",
+      badge: "Malayalam",
       language: "Malayalam",
       episode: "genesis-30-32-dreamer",
+    },
+    {
+      id: "genesis-yoruba-vault",
+      title: "Ìbẹ̀rẹ̀pẹ̀pẹ́ (Genesis)",
+      subtitle: "Yoruba Edition · Nigeria & West Africa",
+      image: "/assets/genesis-shepherds-poster.jpg",
+      badge: "Yoruba",
+      language: "Yoruba",
+      episode: "genesis-yoruba-sneak-peek",
     },
     {
       id: "genesis-persian",
@@ -423,7 +447,7 @@ export const DEFAULT_CMS_DATA: SiteCmsData = {
   archiveItems: DEFAULT_ARCHIVE_ITEMS,
 };
 
-const CMS_STORAGE_KEY = "vb_cms_data_v4";
+const CMS_STORAGE_KEY = "vb_cms_data_v5";
 
 export function getStoredCmsData(): SiteCmsData {
   if (typeof window === "undefined") return DEFAULT_CMS_DATA;

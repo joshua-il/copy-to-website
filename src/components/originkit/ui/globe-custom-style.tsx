@@ -21,7 +21,7 @@ import {
     Vector3,
     CanvasTexture,
 } from "three";
-import { geoEquirectangular, geoPath } from "d3-geo";
+import { geoEquirectangular, geoPath, geoContains } from "d3-geo";
 
 type Rgba = { r: number; g: number; b: number; a: number };
 
@@ -176,6 +176,78 @@ export interface CoveredRegionConfig {
     indiaColor?: string;
 }
 
+export interface HoveredCountryData {
+    name: string;
+    nativeName?: string;
+    languages: string[];
+    status: string;
+    isCovered: boolean;
+    x: number;
+    y: number;
+}
+
+export const COVERED_COUNTRY_DETAILS: Record<
+    string,
+    { name: string; nativeName?: string; languages: string[]; status: string }
+> = {
+    India: {
+        name: "India",
+        nativeName: "भारत",
+        languages: ["Hindi", "Tamil", "Malayalam"],
+        status: "3 Full Editions Live",
+    },
+    Nigeria: {
+        name: "Nigeria",
+        nativeName: "Nàìjíríà",
+        languages: ["Yoruba (Èdè Yorùbá)"],
+        status: "Genesis Sneak Peek Available",
+    },
+    Iran: {
+        name: "Iran (Persia)",
+        nativeName: "ایران",
+        languages: ["Persian / Farsi"],
+        status: "Judah (Gen 38) Edition Live",
+    },
+    Philippines: {
+        name: "Philippines",
+        nativeName: "Pilipinas",
+        languages: ["Tagalog (Wikang Tagalog)"],
+        status: "Genesis Series Live",
+    },
+    Egypt: {
+        name: "Egypt (Middle East)",
+        nativeName: "مصر",
+        languages: ["Arabic / Biblical Semitic"],
+        status: "Exodus & Patriarch Sagas",
+    },
+    China: {
+        name: "China",
+        nativeName: "中国",
+        languages: ["Mandarin Chinese (中文)"],
+        status: "Joseph in Egypt Live",
+    },
+    "United States of America": {
+        name: "United States",
+        languages: ["English (Native 5.1 Audio)"],
+        status: "Master 4K Catalog Live",
+    },
+    "United Kingdom": {
+        name: "United Kingdom",
+        languages: ["English (Native 5.1 Audio)"],
+        status: "Master 4K Catalog Live",
+    },
+    Canada: {
+        name: "Canada",
+        languages: ["English (Native 5.1 Audio)"],
+        status: "Master 4K Catalog Live",
+    },
+    Australia: {
+        name: "Australia",
+        languages: ["English (Native 5.1 Audio)"],
+        status: "Master 4K Catalog Live",
+    },
+};
+
 interface GlobeProps {
     speed?: number;
     smoothing?: number;
@@ -241,6 +313,7 @@ function __OriginkitBase_Globe({
     const containerRef = useRef<HTMLDivElement>(null);
     const [, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [hoveredCountry, setHoveredCountry] = useState<HoveredCountryData | null>(null);
 
     const dotColor = dots.color;
     const dotSize = dots.size;
@@ -464,6 +537,8 @@ function __OriginkitBase_Globe({
 
         let dotInstances: InstancedMesh | Mesh | null = null;
         let markerMeshes: Mesh[] = [];
+        let loadedCountryFeatures: any[] = [];
+        let loadedCoveredFeatures: any[] = [];
 
         const loadWorldData = async () => {
             try {
@@ -486,6 +561,28 @@ function __OriginkitBase_Globe({
                     countriesRes && countriesRes.ok
                         ? await countriesRes.json()
                         : null;
+
+                if (countryFeatures && countryFeatures.features) {
+                    loadedCountryFeatures = countryFeatures.features;
+                    const coveredSet = new Set(
+                        coveredRegions?.countries || [
+                            "India",
+                            "Iran",
+                            "Philippines",
+                            "Egypt",
+                            "China",
+                            "United States of America",
+                            "United Kingdom",
+                            "Canada",
+                            "Australia",
+                            "Nigeria",
+                        ]
+                    );
+                    loadedCoveredFeatures = countryFeatures.features.filter((f: any) => {
+                        const name = f.properties?.NAME || f.properties?.ADMIN;
+                        return coveredSet.has(name);
+                    });
+                }
 
                 while (continentOutlineGroup.children.length > 0) {
                     continentOutlineGroup.remove(
@@ -961,6 +1058,7 @@ function __OriginkitBase_Globe({
 
         const handleMouseDown = (event: MouseEvent) => {
             isDragging = true;
+            setHoveredCountry(null);
             velocity.x = 0;
             velocity.y = 0;
             lastMouseX = event.clientX;
@@ -994,15 +1092,78 @@ function __OriginkitBase_Globe({
         const raycaster = new Raycaster();
         const mouse = new Vector2();
         const handleMouseMove = (event: MouseEvent) => {
-            if (!stopOnHover) return;
             const rect = canvas.getBoundingClientRect();
             mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
             mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObject(oceanMesh);
             isHovering = intersects.length > 0;
+
+            if (isDragging || intersects.length === 0) {
+                setHoveredCountry(null);
+                return;
+            }
+
+            const localPoint = intersects[0].point.clone();
+            globeGroup.worldToLocal(localPoint);
+            localPoint.normalize();
+
+            const lat =
+                Math.asin(Math.max(-1, Math.min(1, localPoint.y))) *
+                (180 / Math.PI);
+            const lng =
+                Math.atan2(localPoint.x, localPoint.z) * (180 / Math.PI);
+
+            let matched: HoveredCountryData | null = null;
+            if (loadedCoveredFeatures.length > 0) {
+                for (const feat of loadedCoveredFeatures) {
+                    if (geoContains(feat, [lng, lat])) {
+                        const cName =
+                            feat.properties?.NAME || feat.properties?.ADMIN;
+                        const info = COVERED_COUNTRY_DETAILS[cName];
+                        matched = {
+                            name: info?.name || cName,
+                            nativeName: info?.nativeName,
+                            languages:
+                                info?.languages || ["Regional Territory"],
+                            status: info?.status || "Live Production",
+                            isCovered: true,
+                            x: event.clientX - rect.left,
+                            y: event.clientY - rect.top,
+                        };
+                        break;
+                    }
+                }
+            }
+
+            if (!matched && loadedCountryFeatures.length > 0) {
+                for (const feat of loadedCountryFeatures) {
+                    if (geoContains(feat, [lng, lat])) {
+                        const cName =
+                            feat.properties?.NAME || feat.properties?.ADMIN;
+                        matched = {
+                            name: cName,
+                            languages: [
+                                "Target: Reaching 100 Languages Initiative",
+                            ],
+                            status: "Expansion Pipeline",
+                            isCovered: false,
+                            x: event.clientX - rect.left,
+                            y: event.clientY - rect.top,
+                        };
+                        break;
+                    }
+                }
+            }
+
+            setHoveredCountry(matched);
+        };
+        const handleMouseLeave = () => {
+            isHovering = false;
+            setHoveredCountry(null);
         };
         canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("mouseleave", handleMouseLeave);
 
         const resizeObserver = new ResizeObserver(() => {
             const newWidth =
@@ -1026,6 +1187,7 @@ function __OriginkitBase_Globe({
                 cancelAnimationFrame(animationFrameId);
             canvas.removeEventListener("mousedown", handleMouseDown);
             canvas.removeEventListener("mousemove", handleMouseMove);
+            canvas.removeEventListener("mouseleave", handleMouseLeave);
             resizeObserver.disconnect();
             renderer.dispose();
             container.removeChild(canvas);
@@ -1103,7 +1265,76 @@ function __OriginkitBase_Globe({
         );
     }
 
-    return <div ref={containerRef} style={containerStyle} />;
+    return (
+        <div ref={containerRef} style={containerStyle}>
+            {hoveredCountry && (
+                <div
+                    className="pointer-events-none absolute z-40 transition-transform duration-75 select-none"
+                    style={{
+                        left: Math.min(
+                            Math.max(12, hoveredCountry.x + 14),
+                            (containerRef.current?.clientWidth || 600) - 260
+                        ),
+                        top: Math.max(
+                            12,
+                            Math.min(
+                                hoveredCountry.y - 30,
+                                (containerRef.current?.clientHeight || 450) - 140
+                            )
+                        ),
+                    }}
+                >
+                    <div className="bg-[#0b0b12]/95 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 shadow-2xl min-w-[210px] max-w-[280px] text-left ring-1 ring-white/10">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                            <div className="flex items-center gap-1.5 truncate">
+                                <span
+                                    className={`w-2 h-2 rounded-full shrink-0 ${
+                                        hoveredCountry.isCovered
+                                            ? "bg-white shadow-[0_0_8px_#ffffff]"
+                                            : "bg-amber-400"
+                                    }`}
+                                />
+                                <span className="text-sm font-black text-white tracking-wide truncate">
+                                    {hoveredCountry.name}
+                                </span>
+                            </div>
+                            {hoveredCountry.nativeName && (
+                                <span className="text-xs text-white/50 font-normal shrink-0">
+                                    ({hoveredCountry.nativeName})
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400 mb-2">
+                            {hoveredCountry.status}
+                        </div>
+
+                        <div className="border-t border-white/10 pt-2">
+                            <span className="text-white/40 block text-[9px] uppercase tracking-wider font-mono mb-1">
+                                {hoveredCountry.isCovered
+                                    ? "Languages Covered:"
+                                    : "Global Initiative:"}
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                                {hoveredCountry.languages.map((lang) => (
+                                    <span
+                                        key={lang}
+                                        className={`px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide ${
+                                            hoveredCountry.isCovered
+                                                ? "bg-white/15 text-white border border-white/20"
+                                                : "bg-white/5 text-white/70"
+                                        }`}
+                                    >
+                                        {lang}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
 
 const __originkitPresetProps = {

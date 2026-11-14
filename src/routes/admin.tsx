@@ -1213,7 +1213,7 @@ function AdminDashboardPage() {
                         subtitle: "Book of Scripture · Premier Edition",
                         image: "/assets/yahweh-hero-mount-sinai.jpg",
                         badge: "New Release",
-                        language: "English Audio",
+                        language: "English",
                         episode: firstEpId,
                       },
                       ...vaultForm,

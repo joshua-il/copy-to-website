@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useState, useEffect, useRef, useMemo, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Play,
@@ -81,9 +81,9 @@ const EXISTING_PRODUCTIONS = [
   {
     id: "genesis-hindi",
     title: "उत्पत्ति (Genesis)",
-    subtitle: "Hindi Edition · Full Audio & Subtitles",
+    subtitle: "Hindi Edition · Complete Release",
     image: "/assets/genesis-hindi-campfire-poster.jpg",
-    badge: "Hindi Audio",
+    badge: "Hindi",
     language: "Hindi",
     episode: "genesis",
   },
@@ -92,7 +92,7 @@ const EXISTING_PRODUCTIONS = [
     title: "ஆதியாகமம் (Genesis)",
     subtitle: "Tamil Edition · Complete Season",
     image: "/assets/genesis-tamil-poster.jpg",
-    badge: "Tamil Audio",
+    badge: "Tamil",
     language: "Tamil",
     episode: "genesis",
   },
@@ -103,6 +103,15 @@ const EXISTING_PRODUCTIONS = [
     image: "/assets/genesis-malayalam-poster.jpg",
     badge: "Malayalam",
     language: "Malayalam",
+    episode: "genesis",
+  },
+  {
+    id: "genesis-yoruba",
+    title: "Ìbẹ̀rẹ̀pẹ̀pẹ́ (Genesis)",
+    subtitle: "Yoruba Edition · Sneak Peek Release",
+    image: "/assets/genesis-shepherds-poster.jpg",
+    badge: "Yoruba",
+    language: "Yoruba",
     episode: "genesis",
   },
   {
@@ -426,9 +435,9 @@ const REACHED_LANGUAGES: ReachedLanguage[] = [
     id: "yoruba",
     name: "Yoruba",
     nativeName: "Èdè Yorùbá",
-    regions: "Nigeria & West Africa",
-    badge: "In Production",
-    isUpcoming: true,
+    regions: "Nigeria, West Africa & Global Diaspora (45M+ speakers)",
+    badge: "Sneak Peek Live",
+    isUpcoming: false,
     lat: 6.52,
     lng: 3.37,
   },
@@ -467,7 +476,7 @@ function LandingPage() {
   const { isAdmin } = useAdminAuth();
   const { cmsData } = useCmsContent();
   const [mounted, setMounted] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [hoveredStrip, setHoveredStrip] = useState<string | null>(null);
 
@@ -476,6 +485,21 @@ function LandingPage() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const heroIframeSrc = useMemo(() => {
+    let url =
+      cmsData.hero.videoUrl ||
+      "https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=0&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60";
+    if (isMuted) {
+      url = url.replace(/mute=0/g, "mute=1");
+    } else {
+      url = url.replace(/mute=1/g, "mute=0");
+    }
+    if (!url.includes("enablejsapi=1")) {
+      url += (url.includes("?") ? "&" : "?") + "enablejsapi=1";
+    }
+    return url;
+  }, [cmsData.hero.videoUrl, isMuted]);
 
   useEffect(() => {
     setMounted(true);
@@ -553,8 +577,8 @@ function LandingPage() {
             >
               <iframe
                 ref={iframeRef}
-                src={cmsData.hero.videoUrl}
-                allow="autoplay; fullscreen"
+                src={heroIframeSrc}
+                allow="autoplay; fullscreen; encrypted-media"
                 allowFullScreen
                 className="absolute w-[177.78%] h-[177.78%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
                 style={{ border: "none" }}
@@ -653,16 +677,17 @@ function LandingPage() {
               {/* Sound toggle — only visible after video loads */}
               {videoReady && (
                 <button
+                  type="button"
                   onClick={toggleSound}
-                  className="flex items-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/20 text-white/80 hover:text-white text-xs font-semibold px-3 py-2.5 rounded transition-colors"
-                  aria-label={isMuted ? "Unmute video" : "Mute video"}
+                  className="flex items-center gap-1.5 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 hover:border-white/40 text-white text-xs font-semibold px-3 py-2.5 rounded transition-all shadow-md"
+                  aria-label={isMuted ? "Unmute video banner" : "Mute video banner"}
                 >
                   {isMuted ? (
-                    <VolumeX className="w-3.5 h-3.5" />
+                    <VolumeX className="w-3.5 h-3.5 text-white/70" />
                   ) : (
-                    <Volume2 className="w-3.5 h-3.5" />
+                    <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
                   )}
-                  {isMuted ? "Unmute" : "Mute"}
+                  <span>{isMuted ? "Unmute Audio" : "Mute Audio"}</span>
                 </button>
               )}
             </div>
@@ -731,7 +756,7 @@ function LandingPage() {
 
                   {/* Bottom Banner */}
                   <div className="absolute bottom-0 left-0 right-0 bg-[#A11C28] text-white text-center py-1 font-bold text-[10px] tracking-wider uppercase shadow-md truncate px-1">
-                    {card.badge}
+                    {(card.badge || "").replace(/\s*audio\s*/gi, "").trim()}
                   </div>
 
                   {/* Hover Overlay */}
@@ -747,7 +772,9 @@ function LandingPage() {
                 </div>
 
                 <p className="mt-1.5 text-xs font-semibold text-white/90 truncate">{card.title}</p>
-                <p className="text-[10px] text-white/50 truncate">{card.language}</p>
+                <p className="text-[10px] text-white/50 truncate">
+                  {(card.language || "").replace(/\s*audio\s*/gi, "").trim()}
+                </p>
               </Link>
             ))}
           </div>
@@ -1234,6 +1261,29 @@ function LandingPage() {
 
               {/* Right Column: Cards of Languages & Regions */}
               <div className="lg:col-span-5 flex flex-col gap-2.5 max-h-[500px] overflow-y-auto pr-1 scrollbar-none">
+                {/* Yoruba Sneak Peek Spotlight Card in Languages Column */}
+                <a
+                  href="https://www.youtube.com/watch?v=DxNeDE-9J8A"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-xl bg-gradient-to-r from-red-950/40 via-red-900/20 to-black border border-[#A11C28]/60 hover:border-[#ff4d5e] transition-all flex items-center justify-between gap-3 group shadow-lg"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-[#A11C28] text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Play className="w-4 h-4 fill-white ml-0.5" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-white group-hover:text-[#ff4d5e] transition-colors truncate">
+                        Sneak peak of Genesis in the Yoruba language
+                      </span>
+                      <span className="text-[10px] text-white/60 truncate">
+                        Èdè Yorùbá · Nigeria, West Africa & Global Diaspora
+                      </span>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-3.5 h-3.5 text-white/50 group-hover:text-white shrink-0" />
+                </a>
+
                 {REACHED_LANGUAGES.map((lang) => (
                   <div
                     key={lang.id}
@@ -1284,6 +1334,81 @@ function LandingPage() {
                   >
                     Watch All
                   </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* ── SNEAK PEEK OF GENESIS IN THE YORUBA LANGUAGE SHOWCASE ── */}
+            <div className="mt-8 rounded-2xl border border-[#A11C28]/40 bg-gradient-to-r from-red-950/40 via-[#0e0e16] to-[#07070a] p-6 md:p-8 shadow-2xl relative overflow-hidden">
+              <div className="grid md:grid-cols-12 gap-6 items-center">
+                {/* Left: Video Preview & Thumbnail */}
+                <div className="md:col-span-5 relative rounded-xl overflow-hidden aspect-video border border-white/15 bg-black group shadow-xl">
+                  <img
+                    src="/assets/genesis-shepherds-poster.jpg"
+                    alt="Sneak peek of Genesis in the Yoruba language"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+
+                  {/* Play Button Overlay linking to YouTube */}
+                  <a
+                    href="https://www.youtube.com/watch?v=DxNeDE-9J8A"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors"
+                  >
+                    <div className="w-14 h-14 rounded-full bg-[#A11C28] text-white flex items-center justify-center shadow-2xl shadow-red-950/80 group-hover:scale-110 transition-transform">
+                      <Play className="w-6 h-6 fill-white ml-0.5" />
+                    </div>
+                  </a>
+
+                  <div className="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/80 backdrop-blur-sm text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider border border-amber-500/30">
+                    SNEAK PEEK LIVE
+                  </div>
+
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/80">
+                    <span className="font-semibold">Èdè Yorùbá · Nigeria</span>
+                    <span className="font-mono text-white/50">YouTube 4K</span>
+                  </div>
+                </div>
+
+                {/* Right: Description & Links */}
+                <div className="md:col-span-7 flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
+                    <span className="text-[11px] font-bold tracking-[0.25em] text-[#C4A468] uppercase">
+                      New Language Premiere · West Africa
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white leading-tight mb-2">
+                    Sneak peek of Genesis in the Yoruba language
+                  </h3>
+
+                  <p className="text-xs md:text-sm text-white/75 leading-relaxed mb-4">
+                    <strong className="text-white">The Yoruba Language (Èdè Yorùbá):</strong> Spoken by over 45 million native speakers primarily in southwestern and central Nigeria, southern Benin, and across the African diaspora in Brazil and the Caribbean. Yoruba is a musical, pluricentric Niger-Congo tonal language renowned for its vivid oral literature, poetry, and proverb traditions. This historic visual release translates the ancient creation account into the authentic cadence and acoustic depth of Yoruba storytelling.
+                  </p>
+
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <a
+                      href="https://www.youtube.com/watch?v=DxNeDE-9J8A"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-5 py-2.5 rounded uppercase tracking-wider transition-all shadow-lg shadow-red-950/50 hover:scale-[1.02]"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-white" />
+                      Watch Yoruba Sneak Peek
+                      <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
+                    </a>
+
+                    <Link
+                      to="/watch"
+                      search={{ episode: "genesis-yoruba-sneak-peek" }}
+                      className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded transition-colors"
+                    >
+                      <span>Stream in Episode Player</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
