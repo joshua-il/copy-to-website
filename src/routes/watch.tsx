@@ -15,6 +15,12 @@ import {
   Edit3,
   Plus,
   Sparkles,
+  CalendarDays,
+  ListFilter,
+  Bell,
+  Eye,
+  Volume2,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlobalSidebar } from "@/components/global-sidebar";
@@ -190,6 +196,216 @@ function formatClockTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true });
 }
 
+// Helper: Format clock time with seconds
+function formatClockTimeWithSeconds(date: Date): string {
+  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true });
+}
+
+// ─── Continuous 24/7 Linear TV Schedule & Wall-Clock Synchronization ──────────
+
+export interface ScheduleSlot {
+  slotId: string;
+  episode: BroadcastEpisodeItem;
+  startTime: Date;
+  endTime: Date;
+  startSec: number;
+  endSec: number;
+  dayPart: "morning" | "afternoon" | "primetime" | "night";
+  isLiveNow: boolean;
+  isUpNext: boolean;
+  isPast: boolean;
+}
+
+export interface WeeklyThemeDay {
+  dayName: string;
+  theme: string;
+  focus: string;
+  highlightText: string;
+  featuredEpId: string;
+  badge: string;
+}
+
+export const WEEKLY_NETWORK_SLATE: WeeklyThemeDay[] = [
+  {
+    dayName: "Monday",
+    theme: "Genesis Foundations",
+    focus: "Creation, Eden & The Abrahamic Covenant",
+    featuredEpId: "genesis-46-50",
+    badge: "FOUNDATIONS",
+    highlightText:
+      "The 50-chapter saga begins with the creation of the cosmos, the fall, and the calling of Abraham out of Ur to possess the land of promise.",
+  },
+  {
+    dayName: "Tuesday",
+    theme: "Patriarchal Chronicles",
+    focus: "Isaac, Jacob at Peniel & The Twelve Tribes",
+    featuredEpId: "genesis-30-32-dreamer",
+    badge: "PATRIARCHS",
+    highlightText:
+      "Witness Jacob's nocturnal wrestling with the angel of God until daybreak at Peniel and the sacred covenant passed down to the twelve tribes.",
+  },
+  {
+    dayName: "Wednesday",
+    theme: "The Sovereign Purpose of God",
+    focus: "The Complete Story of Joseph in Egypt",
+    featuredEpId: "genesis-37-44-joseph",
+    badge: "JOSEPH SAGA",
+    highlightText:
+      "From the pit of Dothan and Potiphar's prison to the right hand of Pharaoh's throne. A masterclass in divine providence and sovereign salvation.",
+  },
+  {
+    dayName: "Thursday",
+    theme: "Global Multi-Language Cinema",
+    focus: "Hindi, Tamil, Malayalam, Yoruba, Persian & Tagalog",
+    featuredEpId: "genesis-yoruba-sneak-peek",
+    badge: "100 LANGUAGES",
+    highlightText:
+      "Experience scripture spoken in authentic native mother tongues across West Africa, South Asia, the Middle East, and Southeast Asia.",
+  },
+  {
+    dayName: "Friday",
+    theme: "The Passover & The Prophetic Arc",
+    focus: "From the Passover Lamb in Egypt to Calvary",
+    featuredEpId: "yahweh-exodus-theatrical",
+    badge: "PROPHETIC ARC",
+    highlightText:
+      "Connecting the blood on the doorposts of Goshen to the ultimate redemption of mankind through visual biblical typology.",
+  },
+  {
+    dayName: "Saturday",
+    theme: "YAHWEH Premiere Marathon",
+    focus: "Exodus Chapters 1–20 & Mount Sinai in Fire",
+    featuredEpId: "yahweh-premiere-trailer",
+    badge: "THEATRICAL EVENT",
+    highlightText:
+      "The ten plagues of Egypt, the roaring waters of the Red Sea divided, and the Law delivered in thunder and lightning atop Mount Sinai.",
+  },
+  {
+    dayName: "Sunday",
+    theme: "Global Sabbath Scripture & Worship",
+    focus: "The Climactic Patriarchal Finale & 24/7 Scripture Cycle",
+    featuredEpId: "genesis-46-50",
+    badge: "SABBATH BROADCAST",
+    highlightText:
+      "Jacob's final blessing to the twelve tribes of Israel, the prophetic hope of the coming Deliverer, and continuous 24-hour scripture meditation.",
+  },
+];
+
+// Helper: Calculate current live episode & exact elapsed position from real wall clock
+export function calculateLiveBroadcastAtTime(
+  currentTimeSec: number,
+  episodes: BroadcastEpisodeItem[],
+) {
+  const fallbackList = episodes && episodes.length ? episodes : DEFAULT_BROADCAST_EPISODES;
+  const totalCycleSeconds =
+    fallbackList.reduce((acc, ep) => acc + (ep.durationSeconds || 600), 0) || 3600;
+
+  // Local midnight today in seconds (ensures predictable, scheduled day parts)
+  const todayMidnightSec = Math.floor(new Date().setHours(0, 0, 0, 0) / 1000);
+  const secondsIntoDay = Math.max(0, currentTimeSec - todayMidnightSec);
+  const cycleOffset = secondsIntoDay % totalCycleSeconds;
+
+  let accumulated = 0;
+  let activeIndex = 0;
+  let elapsedInEpisode = 0;
+
+  for (let i = 0; i < fallbackList.length; i++) {
+    const ep = fallbackList[i];
+    const dur = ep.durationSeconds || 600;
+    if (accumulated + dur > cycleOffset) {
+      activeIndex = i;
+      elapsedInEpisode = cycleOffset - accumulated;
+      break;
+    }
+    accumulated += dur;
+  }
+
+  const currentLiveEpisode = fallbackList[activeIndex] || fallbackList[0];
+  const duration = currentLiveEpisode.durationSeconds || 600;
+  const remainingInEpisode = Math.max(0, duration - elapsedInEpisode);
+  const progressPercent = Math.min(100, Math.max(0, (elapsedInEpisode / duration) * 100));
+
+  const currentEpisodeStartTime = new Date((currentTimeSec - elapsedInEpisode) * 1000);
+  const currentEpisodeEndTime = new Date((currentTimeSec + remainingInEpisode) * 1000);
+
+  return {
+    activeIndex,
+    currentLiveEpisode,
+    elapsedInEpisode: Math.floor(elapsedInEpisode),
+    remainingInEpisode: Math.floor(remainingInEpisode),
+    progressPercent,
+    currentEpisodeStartTime,
+    currentEpisodeEndTime,
+    totalCycleSeconds,
+    todayMidnightSec,
+  };
+}
+
+// Generate full 24-hour day broadcast guide (from 12:00 AM to 11:59 PM today)
+export function generateFullDaySchedule(
+  todayMidnightSec: number,
+  episodes: BroadcastEpisodeItem[],
+  currentTimeSec: number,
+) {
+  const fallbackList = episodes && episodes.length ? episodes : DEFAULT_BROADCAST_EPISODES;
+  const slots: ScheduleSlot[] = [];
+
+  let cursorSec = todayMidnightSec;
+  const endOfDaySec = todayMidnightSec + 86400; // 24 hours
+  let epIdx = 0;
+  let liveIndex = -1;
+
+  while (cursorSec < endOfDaySec) {
+    const ep = fallbackList[epIdx % fallbackList.length];
+    const duration = ep.durationSeconds || 600;
+    const startSec = cursorSec;
+    const endSec = cursorSec + duration;
+    const startTime = new Date(startSec * 1000);
+    const endTime = new Date(endSec * 1000);
+
+    const hour = startTime.getHours();
+    let dayPart: "morning" | "afternoon" | "primetime" | "night" = "night";
+    if (hour >= 6 && hour < 12) {
+      dayPart = "morning";
+    } else if (hour >= 12 && hour < 17) {
+      dayPart = "afternoon";
+    } else if (hour >= 17 && hour < 22) {
+      dayPart = "primetime";
+    } else {
+      dayPart = "night";
+    }
+
+    const isLiveNow = currentTimeSec >= startSec && currentTimeSec < endSec;
+    const isPast = currentTimeSec >= endSec;
+
+    if (isLiveNow) {
+      liveIndex = slots.length;
+    }
+
+    slots.push({
+      slotId: `slot-${startSec}-${ep.id}`,
+      episode: ep,
+      startTime,
+      endTime,
+      startSec,
+      endSec,
+      dayPart,
+      isLiveNow,
+      isUpNext: false,
+      isPast,
+    });
+
+    cursorSec = endSec;
+    epIdx++;
+  }
+
+  if (liveIndex >= 0 && liveIndex + 1 < slots.length) {
+    slots[liveIndex + 1].isUpNext = true;
+  }
+
+  return { slots, liveIndex };
+}
+
 export const Route = createFileRoute("/watch")({
   validateSearch: (search: Record<string, unknown>) => ({
     episode: typeof search["episode"] === "string" ? search["episode"] : undefined,
@@ -223,6 +439,9 @@ function LiveTvPage() {
   const [copied, setCopied] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState("en-live");
   const [currentTimeSec, setCurrentTimeSec] = useState(() => Math.floor(Date.now() / 1000));
+  const [scheduleFilter, setScheduleFilter] = useState<
+    "upcoming" | "all" | "morning" | "afternoon" | "primetime" | "night" | "weekly"
+  >("upcoming");
   const { isAdmin } = useAdminAuth();
   const { cmsData } = useCmsContent();
 
@@ -233,11 +452,6 @@ function LiveTvPage() {
       : DEFAULT_BROADCAST_EPISODES;
   }, [cmsData.broadcastEpisodes]);
 
-  // Total loop cycle in seconds
-  const totalCycleSeconds = useMemo(() => {
-    return episodesList.reduce((acc, ep) => acc + (ep.durationSeconds || 600), 0) || 3600;
-  }, [episodesList]);
-
   // 1-second interval to drive the 24/7 broadcast clock
   useEffect(() => {
     const timer = setInterval(() => {
@@ -246,84 +460,61 @@ function LiveTvPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Compute live broadcast state based on wall-clock time
+  // Compute live broadcast state based on real wall-clock time
   const liveBroadcastState = useMemo(() => {
-    const cycleOffset = currentTimeSec % totalCycleSeconds;
-    let accumulated = 0;
-    let activeIndex = 0;
-    let elapsedInEpisode = 0;
+    return calculateLiveBroadcastAtTime(currentTimeSec, episodesList);
+  }, [currentTimeSec, episodesList]);
 
-    for (let i = 0; i < episodesList.length; i++) {
-      const ep = episodesList[i];
-      const duration = ep.durationSeconds || 600;
-      if (accumulated + duration > cycleOffset) {
-        activeIndex = i;
-        elapsedInEpisode = cycleOffset - accumulated;
-        break;
-      }
-      accumulated += duration;
-    }
+  // Generate full 24-hour broadcast schedule for the complete day
+  const { slots: fullDaySchedule, liveIndex } = useMemo(() => {
+    return generateFullDaySchedule(
+      liveBroadcastState.todayMidnightSec,
+      episodesList,
+      currentTimeSec,
+    );
+  }, [liveBroadcastState.todayMidnightSec, episodesList, currentTimeSec]);
 
-    const currentLiveEpisode = episodesList[activeIndex] || episodesList[0];
-    const duration = currentLiveEpisode.durationSeconds || 600;
-    const remainingInEpisode = Math.max(0, duration - elapsedInEpisode);
-    const progressPercent = Math.min(100, Math.max(0, (elapsedInEpisode / duration) * 100));
+  // Filtered schedule based on active tab
+  const displayedScheduleSlots = useMemo(() => {
+    if (scheduleFilter === "all") return fullDaySchedule;
+    if (scheduleFilter === "morning") return fullDaySchedule.filter((s) => s.dayPart === "morning");
+    if (scheduleFilter === "afternoon")
+      return fullDaySchedule.filter((s) => s.dayPart === "afternoon");
+    if (scheduleFilter === "primetime")
+      return fullDaySchedule.filter((s) => s.dayPart === "primetime");
+    if (scheduleFilter === "night") return fullDaySchedule.filter((s) => s.dayPart === "night");
 
-    // Compute upcoming program schedule for the next 12 hours
-    const currentEpisodeStartTimestamp = (currentTimeSec - elapsedInEpisode) * 1000;
-    let scheduleCursor = currentEpisodeStartTimestamp;
-    const scheduleGrid: Array<{
-      episode: BroadcastEpisodeItem;
-      indexInSchedule: number;
-      startTime: Date;
-      endTime: Date;
-      isLiveNow: boolean;
-      isUpNext: boolean;
-    }> = [];
+    // "upcoming" default: shows the current live episode + next 8 upcoming slots
+    const startIdx = Math.max(0, liveIndex >= 0 ? liveIndex : 0);
+    return fullDaySchedule.slice(startIdx, startIdx + 9);
+  }, [scheduleFilter, fullDaySchedule, liveIndex]);
 
-    // Build next 10 consecutive broadcast slots
-    for (let slot = 0; slot < 10; slot++) {
-      const epIndex = (activeIndex + slot) % episodesList.length;
-      const ep = episodesList[epIndex];
-      const epDuration = ep.durationSeconds || 600;
-      const slotStart = new Date(scheduleCursor);
-      const slotEnd = new Date(scheduleCursor + epDuration * 1000);
-
-      scheduleGrid.push({
-        episode: ep,
-        indexInSchedule: slot,
-        startTime: slotStart,
-        endTime: slotEnd,
-        isLiveNow: slot === 0,
-        isUpNext: slot === 1,
-      });
-
-      scheduleCursor += epDuration * 1000;
-    }
-
-    return {
-      activeIndex,
-      currentLiveEpisode,
-      elapsedInEpisode,
-      remainingInEpisode,
-      progressPercent,
-      scheduleGrid,
-    };
-  }, [currentTimeSec, episodesList, totalCycleSeconds]);
-
-  // STABLE PLAYBACK STATE: Only updates when switching episode or explicitly syncing
+  // STABLE PLAYBACK STATE: Synced to wall clock when live
   const [activePlayback, setActivePlayback] = useState<{
     episodeId: string;
     videoId: string;
     isLive: boolean;
     startSeconds: number;
+    syncKey: number;
   }>(() => {
-    const ep = matchEpisode(searchedEpisodeId, episodesList);
+    if (searchedEpisodeId) {
+      const ep = matchEpisode(searchedEpisodeId, episodesList);
+      return {
+        episodeId: ep.id,
+        videoId: ep.videoId,
+        isLive: false,
+        startSeconds: 0,
+        syncKey: Date.now(),
+      };
+    }
+    const initialNow = Math.floor(Date.now() / 1000);
+    const live = calculateLiveBroadcastAtTime(initialNow, episodesList);
     return {
-      episodeId: ep.id,
-      videoId: ep.videoId,
-      isLive: !searchedEpisodeId && initialMode === "live",
-      startSeconds: 0,
+      episodeId: live.currentLiveEpisode.id,
+      videoId: live.currentLiveEpisode.videoId,
+      isLive: true,
+      startSeconds: live.elapsedInEpisode,
+      syncKey: Date.now(),
     };
   });
 
@@ -337,22 +528,22 @@ function LiveTvPage() {
         videoId: matched.videoId,
         isLive: false,
         startSeconds: 0,
+        syncKey: Date.now(),
       });
     }
   }, [searchedEpisodeId, episodesList]);
 
-  // When explicitly in Live 24/7 mode (and not on-demand), advance when on-air program naturally loops
+  // When explicitly in Live 24/7 mode, automatically advance when on-air program naturally loops
   useEffect(() => {
-    if (
-      activePlayback.isLive &&
-      !searchedEpisodeId &&
-      liveBroadcastState.currentLiveEpisode.id !== activePlayback.episodeId
-    ) {
+    if (!activePlayback.isLive || searchedEpisodeId) return;
+
+    if (liveBroadcastState.currentLiveEpisode.id !== activePlayback.episodeId) {
       setActivePlayback({
         episodeId: liveBroadcastState.currentLiveEpisode.id,
         videoId: liveBroadcastState.currentLiveEpisode.videoId,
         isLive: true,
-        startSeconds: 0,
+        startSeconds: Math.floor(liveBroadcastState.elapsedInEpisode),
+        syncKey: Date.now(),
       });
     }
   }, [
@@ -361,7 +552,27 @@ function LiveTvPage() {
     searchedEpisodeId,
     liveBroadcastState.currentLiveEpisode.id,
     liveBroadcastState.currentLiveEpisode.videoId,
+    liveBroadcastState.elapsedInEpisode,
   ]);
+
+  // Listen for YouTube API player state ENDED message to advance to on-air live program
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (typeof event.data !== "string") return;
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload?.event === "infoDelivery" && payload?.info?.playerState === 0) {
+          if (activePlayback.isLive) {
+            syncToLiveBroadcast();
+          }
+        }
+      } catch {
+        // ignore non-json messages
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [activePlayback.isLive]);
 
   // The episode metadata currently shown on screen
   const displayedEpisode = useMemo(() => {
@@ -380,12 +591,14 @@ function LiveTvPage() {
   };
 
   const syncToLiveBroadcast = () => {
-    const currentLive = liveBroadcastState.currentLiveEpisode;
+    const now = Math.floor(Date.now() / 1000);
+    const live = calculateLiveBroadcastAtTime(now, episodesList);
     setActivePlayback({
-      episodeId: currentLive.id,
-      videoId: currentLive.videoId,
-      startSeconds: Math.floor(liveBroadcastState.elapsedInEpisode),
+      episodeId: live.currentLiveEpisode.id,
+      videoId: live.currentLiveEpisode.videoId,
+      startSeconds: live.elapsedInEpisode,
       isLive: true,
+      syncKey: Date.now(),
     });
   };
 
@@ -396,6 +609,7 @@ function LiveTvPage() {
       videoId: found.videoId,
       startSeconds: 0,
       isLive: false,
+      syncKey: Date.now(),
     });
   };
 
@@ -572,9 +786,9 @@ function LiveTvPage() {
 
               {/* YouTube Embed Player — Smooth & Continuous (Never resets or reloads on second ticks) */}
               <iframe
-                key={activePlayback.videoId}
+                key={`${activePlayback.episodeId}-${activePlayback.syncKey}`}
                 className="absolute inset-0 h-full w-full border-0 z-10"
-                src={`https://www.youtube.com/embed/${activePlayback.videoId}?autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1${
+                src={`https://www.youtube.com/embed/${activePlayback.videoId}?autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1${
                   activePlayback.startSeconds > 0 ? `&start=${activePlayback.startSeconds}` : ""
                 }`}
                 title={displayedEpisode.title}
@@ -710,120 +924,374 @@ function LiveTvPage() {
 
           {/* ── 24/7 ELECTRONIC PROGRAM GUIDE (EPG / LIVE TV SCHEDULE) ── */}
           <div className="py-10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Calendar className="w-4 h-4 text-[#A11C28]" />
-                  <h2 className="text-lg md:text-xl font-black text-white tracking-wide uppercase">
-                    Linear TV Program Guide (EPG)
+                  <Calendar className="w-5 h-5 text-[#A11C28]" />
+                  <h2 className="text-xl md:text-2xl font-black text-white tracking-wide uppercase">
+                    Linear TV Broadcast Schedule (24/7 EPG)
                   </h2>
                 </div>
-                <p className="text-xs text-white/50">
-                  Continuous 24/7 synchronized broadcast schedule for Channel 01. All times shown in
-                  your local timezone.
+                <p className="text-xs md:text-sm text-white/50 max-w-2xl">
+                  Synchronized global broadcast schedule for Channel 01. All programs air continuously
+                  according to real-time wall-clock schedule across all 24 hours of the day.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs text-white/60 font-mono bg-white/[0.04] border border-white/[0.08] px-3 py-1.5 rounded-full flex items-center gap-1.5">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="text-xs text-white/80 font-mono bg-white/[0.06] border border-white/[0.1] px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <Clock className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Next Loop: ~1h 37m</span>
+                  <span>
+                    {formatClockTimeWithSeconds(new Date(currentTimeSec * 1000))} (
+                    {typeof Intl !== "undefined"
+                      ? Intl.DateTimeFormat().resolvedOptions().timeZone.replace("_", " ")
+                      : "Local Time"}
+                    )
+                  </span>
+                </span>
+                <span className="text-xs text-white/50 font-mono bg-white/[0.03] border border-white/[0.06] px-3 py-1.5 rounded-full hidden sm:inline-block">
+                  Loop: ~1h 42m · Repeating 24/7
                 </span>
               </div>
             </div>
 
-            {/* Schedule Timeline Cards */}
-            <div className="space-y-3">
-              {liveBroadcastState.scheduleGrid.map((item, idx) => {
-                const isCurrentPlaying = item.isLiveNow && activePlayback.isLive;
-                const isSelectedManual =
-                  !activePlayback.isLive && item.episode.id === activePlayback.episodeId;
-                return (
-                  <div
-                    key={`${item.episode.id}-${idx}`}
-                    className={`flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border transition-all ${
-                      isCurrentPlaying
-                        ? "bg-red-950/20 border-red-600/50 shadow-lg shadow-red-950/20"
-                        : isSelectedManual
-                          ? "bg-white/[0.06] border-white/30"
-                          : "bg-[#0b0b10] border-white/[0.06] hover:border-white/[0.15] hover:bg-[#101016]"
-                    }`}
+            {/* Current On-Air Live Dashboard Banner */}
+            <div className="mb-6 rounded-xl border border-red-600/30 bg-gradient-to-r from-red-950/40 via-[#101018] to-[#0a0a0f] p-4 md:p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="relative shrink-0 w-20 h-14 rounded-lg overflow-hidden border border-white/20 bg-black">
+                  <img
+                    src={liveBroadcastState.currentLiveEpisode.poster}
+                    alt={liveBroadcastState.currentLiveEpisode.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <Radio className="w-4 h-4 text-red-500 animate-pulse" />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-600 text-white text-[9px] font-black tracking-widest uppercase shadow">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                      LIVE ON AIR NOW
+                    </span>
+                    <span className="text-[10px] font-mono text-amber-400 font-bold">
+                      {liveBroadcastState.currentLiveEpisode.chapter}
+                    </span>
+                    <span className="text-white/40 text-[10px]">·</span>
+                    <span className="text-[10px] font-mono text-white/50">
+                      {liveBroadcastState.currentLiveEpisode.language}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm md:text-base font-bold text-white line-clamp-1">
+                    {liveBroadcastState.currentLiveEpisode.title}
+                  </h3>
+
+                  <div className="flex items-center gap-3 text-xs text-white/60 font-mono mt-1">
+                    <span>
+                      {formatDuration(liveBroadcastState.elapsedInEpisode)} /{" "}
+                      {formatDuration(liveBroadcastState.currentLiveEpisode.durationSeconds)}
+                    </span>
+                    <span>·</span>
+                    <span className="text-amber-400 font-semibold">
+                      {formatDuration(liveBroadcastState.remainingInEpisode)} remaining
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {activePlayback.isLive ? (
+                  <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold px-3.5 py-2 rounded-lg">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Synchronized Live Feed</span>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={syncToLiveBroadcast}
+                    className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider transition-all shadow-md shadow-red-950/50"
                   >
-                    {/* Left: Time & Slot Badge */}
-                    <div className="flex items-center gap-4 mb-2 md:mb-0 md:w-56 shrink-0">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-mono font-bold text-white">
-                          {formatClockTime(item.startTime)}
+                    <Play className="w-3 h-3 fill-white" />
+                    <span>Tune In Live (Seek to Real-Time)</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Schedule Filter Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none">
+              <button
+                type="button"
+                onClick={() => setScheduleFilter("upcoming")}
+                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  scheduleFilter === "upcoming"
+                    ? "bg-[#A11C28] text-white shadow-md shadow-red-950/40"
+                    : "bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08]"
+                }`}
+              >
+                <Radio className="w-3 h-3 text-red-400" />
+                <span>Upcoming & Live Now</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScheduleFilter("all")}
+                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  scheduleFilter === "all"
+                    ? "bg-[#A11C28] text-white shadow-md shadow-red-950/40"
+                    : "bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08]"
+                }`}
+              >
+                <CalendarDays className="w-3 h-3" />
+                <span>Today Full Day Guide (24H)</span>
+                <span className="text-[10px] opacity-75 font-mono">({fullDaySchedule.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScheduleFilter("morning")}
+                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  scheduleFilter === "morning"
+                    ? "bg-[#A11C28] text-white shadow-md shadow-red-950/40"
+                    : "bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08]"
+                }`}
+              >
+                Morning Watch (6 AM – 12 PM)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScheduleFilter("afternoon")}
+                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  scheduleFilter === "afternoon"
+                    ? "bg-[#A11C28] text-white shadow-md shadow-red-950/40"
+                    : "bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08]"
+                }`}
+              >
+                Afternoon Study (12 PM – 5 PM)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScheduleFilter("primetime")}
+                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  scheduleFilter === "primetime"
+                    ? "bg-[#A11C28] text-white shadow-md shadow-red-950/40"
+                    : "bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08]"
+                }`}
+              >
+                Prime Time Cinema (5 PM – 10 PM)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScheduleFilter("night")}
+                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  scheduleFilter === "night"
+                    ? "bg-[#A11C28] text-white shadow-md shadow-red-950/40"
+                    : "bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08]"
+                }`}
+              >
+                Night Vigil (10 PM – 6 AM)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScheduleFilter("weekly")}
+                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  scheduleFilter === "weekly"
+                    ? "bg-[#A11C28] text-white shadow-md shadow-red-950/40"
+                    : "bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08]"
+                }`}
+              >
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>7-Day Weekly Theme Lineup</span>
+              </button>
+            </div>
+
+            {/* Weekly Theme Slate View */}
+            {scheduleFilter === "weekly" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {WEEKLY_NETWORK_SLATE.map((day) => (
+                  <div
+                    key={day.dayName}
+                    className="rounded-xl border border-white/[0.08] bg-[#0c0c12] p-5 flex flex-col justify-between hover:border-white/20 transition-all group"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-black text-white group-hover:text-[#A11C28] transition-colors">
+                          {day.dayName}
                         </span>
-                        <span className="text-[10px] font-mono text-white/40">
-                          Until {formatClockTime(item.endTime)}
+                        <span className="px-2 py-0.5 rounded bg-white/10 text-white/80 text-[9px] font-mono font-bold uppercase tracking-wider">
+                          {day.badge}
                         </span>
                       </div>
 
-                      {item.isLiveNow ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black tracking-wider uppercase shadow">
-                          <Radio className="w-2.5 h-2.5 animate-pulse" /> LIVE
-                        </span>
-                      ) : item.isUpNext ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-bold tracking-wider uppercase">
-                          UP NEXT
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono text-white/30 uppercase">
-                          SCHEDULED
-                        </span>
-                      )}
+                      <h4 className="text-base font-bold text-white mb-1 leading-snug">
+                        {day.theme}
+                      </h4>
+                      <p className="text-xs text-amber-400 font-semibold mb-2">{day.focus}</p>
+                      <p className="text-xs text-white/60 leading-relaxed">{day.highlightText}</p>
                     </div>
 
-                    {/* Center: Episode Title & Chapter */}
-                    <div className="flex-1 md:px-4">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[10px] font-mono font-semibold text-white/40 uppercase">
-                          {item.episode.chapter}
-                        </span>
-                        <span className="text-white/20">·</span>
-                        <span className="text-[10px] font-mono text-white/40">
-                          {item.episode.durationFormatted}
-                        </span>
-                      </div>
-                      <h3 className="text-sm md:text-base font-bold text-white leading-snug">
-                        {item.episode.title}
-                      </h3>
-                      <p className="text-xs text-white/50 line-clamp-1 mt-0.5">
-                        {item.episode.subtitle}
-                      </p>
-                    </div>
-
-                    {/* Right: Action Button */}
-                    <div className="mt-3 md:mt-0 flex items-center gap-2 shrink-0 justify-end">
-                      {item.isLiveNow ? (
-                        <button
-                          type="button"
-                          onClick={syncToLiveBroadcast}
-                          className={`text-xs font-bold px-4 py-2 rounded uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                            activePlayback.isLive
-                              ? "bg-red-600 text-white shadow-md shadow-red-950/60"
-                              : "bg-[#A11C28] hover:bg-[#7F151F] text-white"
-                          }`}
-                        >
-                          <Play className="w-3 h-3 fill-white" />
-                          <span>{activePlayback.isLive ? "Watching Live" : "Tune In Live"}</span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => playEpisodeOnDemand(item.episode.id)}
-                          className="text-xs font-semibold px-3 py-1.5 rounded border border-white/20 text-white/80 hover:text-white hover:border-white/40 hover:bg-white/[0.04] transition-colors flex items-center gap-1"
-                        >
-                          <span>Preview Episode</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      )}
+                    <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => playEpisodeOnDemand(day.featuredEpId)}
+                        className="text-xs font-semibold text-white/80 hover:text-white flex items-center gap-1 transition-colors"
+                      >
+                        <span>Preview Episode</span>
+                        <ChevronRight className="w-3 h-3" />
+                      </button>
+                      <a
+                        href="/#waitlist"
+                        className="text-[11px] font-bold text-[#A11C28] hover:text-red-400 transition-colors uppercase tracking-wider"
+                      >
+                        Set Alert
+                      </a>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : (
+              /* Schedule Timeline Slots */
+              <div className="space-y-3">
+                {displayedScheduleSlots.map((item) => {
+                  const isCurrentPlaying = item.isLiveNow && activePlayback.isLive;
+                  const isSelectedManual =
+                    !activePlayback.isLive && item.episode.id === activePlayback.episodeId;
+
+                  return (
+                    <div
+                      key={item.slotId}
+                      className={`flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border transition-all ${
+                        item.isLiveNow
+                          ? "bg-red-950/25 border-red-600/60 shadow-xl shadow-red-950/30 ring-1 ring-red-600/40"
+                          : isSelectedManual
+                            ? "bg-white/[0.06] border-white/30"
+                            : item.isPast
+                              ? "bg-[#08080c]/60 border-white/[0.03] opacity-60 hover:opacity-100 hover:bg-[#0b0b10]"
+                              : "bg-[#0b0b10] border-white/[0.06] hover:border-white/[0.15] hover:bg-[#101016]"
+                      }`}
+                    >
+                      {/* Left: Time & Slot Badge */}
+                      <div className="flex items-center gap-4 mb-2 md:mb-0 md:w-64 shrink-0">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-mono font-bold text-white">
+                            {formatClockTime(item.startTime)}
+                          </span>
+                          <span className="text-[10px] font-mono text-white/40">
+                            Until {formatClockTime(item.endTime)}
+                          </span>
+                        </div>
+
+                        {item.isLiveNow ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-600 text-white text-[10px] font-black tracking-wider uppercase shadow-md animate-pulse">
+                            <Radio className="w-3 h-3" /> LIVE NOW
+                          </span>
+                        ) : item.isUpNext ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-bold tracking-wider uppercase">
+                            UP NEXT
+                          </span>
+                        ) : item.isPast ? (
+                          <span className="text-[9px] font-mono text-white/30 uppercase px-2 py-0.5 rounded bg-white/[0.03]">
+                            COMPLETED
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-mono text-white/40 uppercase px-2 py-0.5 rounded bg-white/[0.04]">
+                            SCHEDULED
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Center: Episode Title, Chapter & Live Progress */}
+                      <div className="flex-1 md:px-4">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-[10px] font-mono font-semibold text-white/50 uppercase">
+                            {item.episode.chapter}
+                          </span>
+                          <span className="text-white/20">·</span>
+                          <span className="text-[10px] font-mono text-white/40">
+                            {item.episode.durationFormatted}
+                          </span>
+                          <span className="text-white/20">·</span>
+                          <span className="text-[10px] font-mono text-[#A11C28] uppercase font-bold">
+                            {item.episode.language}
+                          </span>
+                        </div>
+
+                        <h3 className="text-sm md:text-base font-bold text-white leading-snug">
+                          {item.episode.title}
+                        </h3>
+                        <p className="text-xs text-white/50 line-clamp-1 mt-0.5">
+                          {item.episode.subtitle}
+                        </p>
+
+                        {/* If Live, display live progress scrubber inside the card */}
+                        {item.isLiveNow && (
+                          <div className="mt-2.5 max-w-md">
+                            <div className="flex items-center justify-between text-[10px] font-mono text-white/60 mb-1">
+                              <span>
+                                Airing: {formatDuration(liveBroadcastState.elapsedInEpisode)} /{" "}
+                                {formatDuration(item.episode.durationSeconds)}
+                              </span>
+                              <span className="text-amber-400 font-semibold">
+                                {formatDuration(liveBroadcastState.remainingInEpisode)} left
+                              </span>
+                            </div>
+                            <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-[#A11C28] to-red-500 rounded-full transition-all duration-1000 ease-linear"
+                                style={{ width: `${liveBroadcastState.progressPercent}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right: Action Buttons */}
+                      <div className="mt-3 md:mt-0 flex items-center gap-2 shrink-0 justify-end">
+                        {item.isLiveNow ? (
+                          <button
+                            type="button"
+                            onClick={syncToLiveBroadcast}
+                            className={`text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                              activePlayback.isLive
+                                ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/60"
+                                : "bg-[#A11C28] hover:bg-[#7F151F] text-white shadow-lg shadow-red-950/50"
+                            }`}
+                          >
+                            {activePlayback.isLive ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Watching Live</span>
+                              </>
+                            ) : (
+                              <>
+                                <Play className="w-3 h-3 fill-white" />
+                                <span>Tune In Live</span>
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => playEpisodeOnDemand(item.episode.id)}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/20 text-white/80 hover:text-white hover:border-white/40 hover:bg-white/[0.04] transition-colors flex items-center gap-1"
+                          >
+                            <span>Preview</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* ── ON-DEMAND ARCHIVE (PLAY ANY EPISODE FROM BEGINNING) ── */}
