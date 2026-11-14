@@ -180,72 +180,86 @@ export interface HoveredCountryData {
     name: string;
     rawCountryName?: string;
     nativeName?: string;
-    languages: string[];
-    status: string;
+    language: string;
+    population: string;
     isCovered: boolean;
     x: number;
     y: number;
 }
 
+export const COUNTRY_COORDINATES: Record<string, { lat: number; lng: number }> = {
+    Nigeria: { lat: 9.08, lng: 7.5 },
+    India: { lat: 20.59, lng: 78.96 },
+    China: { lat: 35.86, lng: 104.19 },
+    Iran: { lat: 32.42, lng: 53.68 },
+    Philippines: { lat: 12.87, lng: 121.77 },
+    Egypt: { lat: 26.82, lng: 30.8 },
+    "United States of America": { lat: 37.09, lng: -95.71 },
+    "United States": { lat: 37.09, lng: -95.71 },
+    "United Kingdom": { lat: 55.37, lng: -3.43 },
+    Canada: { lat: 56.13, lng: -106.34 },
+    Australia: { lat: -25.27, lng: 133.77 },
+};
+
 export const COVERED_COUNTRY_DETAILS: Record<
     string,
-    { name: string; nativeName?: string; languages: string[]; status: string }
+    { name: string; nativeName?: string; language: string; population: string }
 > = {
     India: {
         name: "India",
         nativeName: "भारत",
-        languages: ["Hindi", "Tamil", "Malayalam"],
-        status: "3 Full Editions Live",
+        language: "Hindi · Tamil · Malayalam",
+        population: "1.43 Billion (728M+ Target Reach)",
     },
     Nigeria: {
         name: "Nigeria",
         nativeName: "Nàìjíríà",
-        languages: ["Yoruba (Èdè Yorùbá)"],
-        status: "Genesis Sneak Peek Available",
+        language: "Yoruba (Èdè Yorùbá)",
+        population: "225 Million (47 Million Yoruba speakers)",
     },
     Iran: {
         name: "Iran (Persia)",
         nativeName: "ایران",
-        languages: ["Persian / Farsi"],
-        status: "Judah (Gen 38) Edition Live",
+        language: "Persian / Farsi (فارسی)",
+        population: "89 Million (127M+ Farsi speakers)",
     },
     Philippines: {
         name: "Philippines",
         nativeName: "Pilipinas",
-        languages: ["Tagalog (Wikang Tagalog)"],
-        status: "Genesis Series Live",
+        language: "Tagalog (Wikang Tagalog)",
+        population: "117 Million (87M+ Tagalog speakers)",
     },
     Egypt: {
-        name: "Egypt (Middle East)",
+        name: "Egypt",
         nativeName: "مصر",
-        languages: ["Arabic / Biblical Semitic"],
-        status: "Exodus & Patriarch Sagas",
+        language: "Arabic (العربية)",
+        population: "112 Million (400M+ Arabic speakers)",
     },
     China: {
         name: "China",
         nativeName: "中国",
-        languages: ["Mandarin Chinese (中文)"],
-        status: "Joseph in Egypt Live",
+        language: "Mandarin Chinese (中文)",
+        population: "1.41 Billion (1.18B Mandarin speakers)",
     },
     "United States of America": {
         name: "United States",
-        languages: ["English (Native 5.1 Audio)"],
-        status: "Master 4K Catalog Live",
+        language: "English (Native Master 5.1)",
+        population: "340 Million (1.5B Global English)",
     },
     "United Kingdom": {
         name: "United Kingdom",
-        languages: ["English (Native 5.1 Audio)"],
-        status: "Master 4K Catalog Live",
+        language: "English (Native Master 5.1)",
+        population: "68 Million (1.5B Global English)",
     },
     Canada: {
         name: "Canada",
-        languages: ["English (Native 5.1 Audio)"],
-        status: "Master 4K Catalog Live",
+        language: "English (Native Master 5.1)",
+        population: "40 Million (1.5B Global English)",
     },
     Australia: {
         name: "Australia",
-        languages: ["English (Native 5.1 Audio)"],
-        status: "Master 4K Catalog Live",
+        language: "English (Native Master 5.1)",
+        population: "27 Million (1.5B Global English)",
     },
 };
 
@@ -272,6 +286,7 @@ interface GlobeProps {
     detail?: number;
     style?: CSSProperties;
     onHoverCountry?: (countryName: string | null) => void;
+    focusCountry?: string | null;
 }
 
 let cachedLandFeatures: any = null;
@@ -315,6 +330,7 @@ function __OriginkitBase_Globe({
     detail = 5,
     style,
     onHoverCountry,
+    focusCountry,
 }: GlobeProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [, setIsLoading] = useState(true);
@@ -325,6 +341,22 @@ function __OriginkitBase_Globe({
     useEffect(() => {
         onHoverCountryRef.current = onHoverCountry;
     }, [onHoverCountry]);
+
+    const setTargetRotationFnRef = useRef<((newX: number, newY: number) => void) | null>(null);
+
+    useEffect(() => {
+        if (focusCountry && COUNTRY_COORDINATES[focusCountry]) {
+            const coords = COUNTRY_COORDINATES[focusCountry];
+            const targetLngRad = -(coords.lng * Math.PI) / 180;
+            const targetLatRad = Math.max(
+                -Math.PI / 3,
+                Math.min(Math.PI / 3, (coords.lat * Math.PI) / 180)
+            );
+            if (setTargetRotationFnRef.current) {
+                setTargetRotationFnRef.current(targetLngRad, targetLatRad);
+            }
+        }
+    }, [focusCountry]);
 
     const dotColor = dots.color;
     const dotSize = dots.size;
@@ -1005,6 +1037,17 @@ function __OriginkitBase_Globe({
         globeGroup.add(continentOutlineGroup);
         markerMeshes.forEach((mesh) => globeGroup.add(mesh));
 
+        setTargetRotationFnRef.current = (newX: number, newY: number) => {
+            let diffX = newX - (targetRotation.x % (Math.PI * 2));
+            while (diffX > Math.PI) diffX -= Math.PI * 2;
+            while (diffX < -Math.PI) diffX += Math.PI * 2;
+            targetRotation.x += diffX;
+            targetRotation.y = newY;
+            velocity.x = 0;
+            velocity.y = 0;
+            startAnimation();
+        };
+
         const animate = () => {
             let needsRender = false;
             const threshold = 0.01;
@@ -1153,9 +1196,8 @@ function __OriginkitBase_Globe({
                             name: info?.name || cName,
                             rawCountryName: cName,
                             nativeName: info?.nativeName,
-                            languages:
-                                info?.languages || ["Regional Territory"],
-                            status: info?.status || "Live Production",
+                            language: info?.language || "Regional Native Language",
+                            population: info?.population || "Resident Population",
                             isCovered: true,
                             x: event.clientX - rect.left,
                             y: event.clientY - rect.top,
@@ -1173,10 +1215,8 @@ function __OriginkitBase_Globe({
                         matched = {
                             name: cName,
                             rawCountryName: cName,
-                            languages: [
-                                "Target: Reaching 100 Languages Initiative",
-                            ],
-                            status: "Expansion Pipeline",
+                            language: "Target: 100 Languages Initiative",
+                            population: "Unreached Oral Population",
                             isCovered: false,
                             x: event.clientX - rect.left,
                             y: event.clientY - rect.top,
@@ -1216,6 +1256,7 @@ function __OriginkitBase_Globe({
         loadWorldData();
 
         return () => {
+            setTargetRotationFnRef.current = null;
             if (animationFrameId !== null)
                 cancelAnimationFrame(animationFrameId);
             canvas.removeEventListener("mousedown", handleMouseDown);
@@ -1312,46 +1353,34 @@ function __OriginkitBase_Globe({
                         ),
                     }}
                 >
-                    <div className="bg-[#050508]/95 backdrop-blur-md border border-white/20 p-3 shadow-2xl min-w-[200px] max-w-[260px] text-left">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                            <div className="flex items-center gap-1.5 truncate">
-                                <span
-                                    className={`w-1.5 h-1.5 shrink-0 ${
-                                        hoveredCountry.isCovered
-                                            ? "bg-white"
-                                            : "bg-white/40"
-                                    }`}
-                                />
-                                <span className="text-xs font-black text-white tracking-tight uppercase truncate">
-                                    {hoveredCountry.name}
-                                </span>
-                            </div>
+                    <div className="bg-[#07070b]/95 backdrop-blur-md border border-white/20 p-3.5 shadow-2xl min-w-[220px] max-w-[280px] text-left">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                            <span className="text-sm font-black text-white tracking-tight uppercase">
+                                {hoveredCountry.name}
+                            </span>
                             {hoveredCountry.nativeName && (
-                                <span className="text-[10px] text-white/40 font-mono shrink-0">
+                                <span className="text-xs text-white/40">
                                     {hoveredCountry.nativeName}
                                 </span>
                             )}
                         </div>
 
-                        <div className="text-[9px] font-mono font-bold uppercase tracking-[0.15em] text-[#A11C28] mb-2">
-                            {hoveredCountry.status}
-                        </div>
-
-                        <div className="border-t border-white/10 pt-1.5">
-                            <span className="text-white/40 block text-[8px] uppercase tracking-[0.2em] font-mono mb-1">
-                                {hoveredCountry.isCovered
-                                    ? "Linguistic Tracks:"
-                                    : "Global Initiative:"}
-                            </span>
-                            <div className="flex flex-wrap gap-1">
-                                {hoveredCountry.languages.map((lang) => (
-                                    <span
-                                        key={lang}
-                                        className="px-1.5 py-0.5 text-[9px] font-mono tracking-wide bg-white/[0.06] text-white/80 border border-white/10"
-                                    >
-                                        {lang}
-                                    </span>
-                                ))}
+                        <div className="space-y-1.5 border-t border-white/10 pt-2 text-xs">
+                            <div>
+                                <span className="text-[10px] text-white/45 uppercase tracking-wider block font-sans">
+                                    Language
+                                </span>
+                                <span className="text-white font-medium block">
+                                    {hoveredCountry.language}
+                                </span>
+                            </div>
+                            <div>
+                                <span className="text-[10px] text-white/45 uppercase tracking-wider block font-sans">
+                                    Population
+                                </span>
+                                <span className="text-white font-medium block">
+                                    {hoveredCountry.population}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -1396,6 +1425,7 @@ const __originkitPresetProps = {
 export default function Globe(
     props: Record<string, unknown> & {
         onHoverCountry?: (countryName: string | null) => void;
+        focusCountry?: string | null;
     }
 ) {
   return <__OriginkitBase_Globe {...(__originkitPresetProps as Record<string, unknown>)} {...props} />;

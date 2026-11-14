@@ -847,7 +847,6 @@ function LandingPage() {
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
               <h2 className="text-base md:text-lg font-bold text-white tracking-wide">
                 Existing Productions · The Genesis Vault & Languages
               </h2>
@@ -1034,12 +1033,9 @@ function LandingPage() {
           <div className="max-w-6xl mx-auto">
             {/* Section Header */}
             <div className="mb-10 text-left">
-              <div className="flex items-center gap-2 mb-2.5">
-                <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-                <span className="text-[11px] font-bold tracking-[0.25em] text-white/60 uppercase">
-                  Production Methodology · 35mm Film Archive
-                </span>
-              </div>
+              <span className="text-xs font-semibold tracking-widest text-white/50 uppercase block mb-2">
+                Production Methodology · 35mm Film Archive
+              </span>
               <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.08] tracking-tight mb-3">
                 The Message is the Same.
                 <br />
@@ -1051,7 +1047,7 @@ function LandingPage() {
             </div>
 
             {/* ── CONTINUOUS 35MM HORIZONTAL FILM STRIP CHASSIS ── */}
-            <div className="rounded-2xl overflow-hidden border border-white/20 bg-[#07070b] shadow-2xl mb-8">
+            <div className="rounded-2xl overflow-hidden border border-white/20 bg-[#07070b] shadow-2xl mb-12">
               {/* Top Film Sprocket Row: High-Contrast Cinema Celluloid */}
               <div className="bg-[#050508] border-b border-white/10 px-4 py-2.5 flex items-center justify-between overflow-hidden select-none relative">
                 <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
@@ -1095,36 +1091,33 @@ function LandingPage() {
                         <img
                           src={step.image}
                           alt={step.title}
-                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                           loading="lazy"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-40" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-20" />
 
                         {/* Default Visible Badge (slides away on hover) */}
-                        <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-sm bg-black/85 backdrop-blur-md text-[10px] font-mono font-bold text-white/95 border border-white/15 shadow transition-all duration-300 group-hover:opacity-0 group-hover:translate-y-2">
+                        <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-sm bg-black/85 backdrop-blur-md text-[10px] font-mono font-bold text-white/95 border border-white/15 shadow transition-all duration-300 group-hover:opacity-0 group-hover:-translate-x-2">
                           {step.stepNumber} // {step.badge}
                         </div>
 
-                        {/* ── HOVER SLIDE REVEAL OVERLAY (Premium Slide-Up Animation) ── */}
-                        <div className="absolute inset-0 bg-[#06060bd9] backdrop-blur-md p-4 md:p-5 flex flex-col justify-between text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 z-10 border-t border-[#A11C28]/80">
+                        {/* ── HOVER SLIDE REVEAL OVERLAY (Left-to-Right Slide Animation) ── */}
+                        <div className="absolute inset-0 bg-[#07070bee] backdrop-blur-md p-4 md:p-5 flex flex-col justify-between text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 z-10">
                           <div>
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <span className="w-1.5 h-3 bg-[#A11C28]" />
-                              <span className="text-[9px] font-mono tracking-[0.2em] text-[#ff4d5e] uppercase font-bold">
-                                {step.stepNumber} · {step.pillarLabel}
-                              </span>
-                            </div>
-                            <h4 className="text-sm md:text-base font-black text-white tracking-tight uppercase leading-snug mb-2">
+                            <span className="text-[10px] font-semibold tracking-widest text-[#ff6b78] uppercase block mb-1">
+                              {step.stepNumber} · {step.pillarLabel}
+                            </span>
+                            <h4 className="text-sm md:text-base font-black text-white tracking-tight leading-snug mb-2">
                               {step.title}
                             </h4>
-                            <p className="text-[11px] md:text-xs text-white/85 leading-relaxed font-sans line-clamp-4">
+                            <p className="text-xs text-white/80 leading-relaxed font-sans line-clamp-4">
                               {step.extendedDesc}
                             </p>
                           </div>
 
-                          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-white/50">
-                            <span className="tracking-widest uppercase text-white/40">HOLLYWOOD VFX · MISSION CALLING</span>
-                            <span className="text-[#ff4d5e] font-bold group-hover:translate-x-1 transition-transform">DETAILS ↓</span>
+                          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-white/50">
+                            <span className="tracking-wider uppercase">Visual Bible Pipeline</span>
+                            <span className="text-white/80 font-medium">NRIM Studio</span>
                           </div>
                         </div>
                       </div>
@@ -1157,62 +1150,13 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* ── 3 HORIZONTAL PILLAR CARDS WITH HIGH-CONTRAST EDITORIAL STYLING ── */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left mb-10">
-              {WORKFLOW_STEPS.map((step) => {
-                const isHovered = hoveredStrip === step.id;
-                return (
-                  <div
-                    key={step.id}
-                    onMouseEnter={() => setHoveredStrip(step.id)}
-                    onMouseLeave={() => setHoveredStrip(null)}
-                    className={`p-5 rounded-lg border transition-all duration-300 flex flex-col justify-between ${
-                      isHovered
-                        ? "border-[#A11C28] bg-white/[0.04] shadow-2xl shadow-red-950/20"
-                        : "border-white/10 bg-[#07070b] hover:border-white/25"
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-baseline gap-2.5 mb-2.5">
-                        <span className="text-base font-mono font-black text-[#A11C28]">
-                          {step.stepNumber}
-                        </span>
-                        <h3 className="text-base md:text-lg font-black text-white tracking-tight uppercase leading-snug">
-                          {step.title}
-                        </h3>
-                      </div>
-
-                      <p className="text-xs text-white/80 leading-relaxed font-sans font-medium mb-3">
-                        {step.shortDesc}
-                      </p>
-
-                      <p className="text-xs text-white/55 leading-relaxed font-sans border-t border-white/10 pt-3">
-                        {step.extendedDesc}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/40">
-                      <span>{step.code}</span>
-                      <span className="text-[#A11C28] font-bold">24 FPS EMBODIMENT</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
             {/* ── BEHIND THE SCENES VIDEO SHOWCASE ── */}
             <div className="rounded-xl overflow-hidden border border-white/15 bg-[#07070b] p-6 md:p-8 shadow-2xl text-left">
               <div className="max-w-3xl mb-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-1.5 h-3 bg-[#A11C28]" />
-                  <span className="text-[10px] font-mono tracking-[0.25em] text-[#ff4d5e] uppercase font-bold">
-                    Studio Production Reel · Behind the Scenes
-                  </span>
-                </div>
-                <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight uppercase mb-2">
+                <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">
                   Inside the Technology & Calling
                 </h3>
-                <p className="text-xs md:text-sm text-white/70 leading-relaxed font-sans">
+                <p className="text-sm text-white/70 leading-relaxed font-sans">
                   Witness how real human actors, photorealistic virtual sets, and neural multilingual vocalization converge to bring Scripture to life across 100 languages.
                 </p>
               </div>
@@ -1231,15 +1175,14 @@ function LandingPage() {
 
               {/* Video Footer Metadata */}
               <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between flex-wrap gap-3 text-xs">
-                <div className="flex items-center gap-2 text-white/50 font-mono text-[11px]">
-                  <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
-                  <span>Official Workflow Featurette · 4K HDR Broadcast Master</span>
+                <div className="text-white/50 text-xs font-sans">
+                  Official Workflow Featurette · 4K HDR Broadcast Master
                 </div>
                 <a
                   href="https://www.youtube.com/watch?v=3DULIG3sDS8"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-white hover:text-[#ff4d5e] transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-white hover:text-[#ff4d5e] transition-colors font-medium"
                 >
                   <span>Open in YouTube</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -1254,49 +1197,47 @@ function LandingPage() {
           id="archive"
           className="py-24 px-6 md:px-12 bg-black border-t border-white/[0.08] relative overflow-hidden"
         >
-          <div className="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row md:items-end justify-between gap-5">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
-                <span className="text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
+          <div className="max-w-7xl mx-auto mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-2">
+              <div>
+                <span className="text-xs font-semibold tracking-widest text-white/50 uppercase block mb-2">
                   The Living Universe · Infinite Canvas
                 </span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight mb-3">
+                  Explore the Universe of the Visual Bible
+                </h2>
+                <p className="text-white/70 text-sm md:text-base max-w-4xl leading-relaxed">
+                  An unbounded canvas of scripture. Drag in any direction to explore completed Genesis chapters, patriarch character studies, and upcoming releases across all languages.
+                </p>
               </div>
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-2">
-                Explore the Universe of the Visual Bible
-              </h2>
-              <p className="text-white/65 text-xs md:text-sm max-w-xl">
-                An unbounded canvas of scripture. Drag in any direction to explore completed Genesis
-                chapters, patriarch character studies, and upcoming releases across all languages.
-              </p>
-            </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              {isAdmin && (
+              <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    search={{ tab: "archive" }}
+                    className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" /> Edit Canvas in Studio
+                  </Link>
+                )}
+                <div className="hidden sm:flex items-center gap-2 text-xs font-sans text-white/50 bg-white/[0.04] border border-white/[0.08] px-3.5 py-2 rounded-full">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Drag canvas in any direction · Click poster to open</span>
+                </div>
                 <Link
-                  to="/admin"
-                  search={{ tab: "archive" }}
-                  className="flex items-center gap-1.5 bg-[#A11C28]/25 hover:bg-[#A11C28] text-white border border-[#A11C28]/40 text-xs font-bold px-3 py-2 rounded transition-colors"
+                  to="/watch"
+                  className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 rounded transition-colors uppercase tracking-wider"
                 >
-                  <Edit3 className="w-3.5 h-3.5" /> Edit Canvas in Studio
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  Watch Full Catalog
                 </Link>
-              )}
-              <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-white/50 bg-white/[0.04] border border-white/[0.08] px-3.5 py-2 rounded-full">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Drag canvas in any direction · Click poster to open</span>
               </div>
-              <Link
-                to="/watch"
-                className="flex items-center gap-2 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 rounded transition-colors uppercase tracking-wider"
-              >
-                <Play className="w-3.5 h-3.5 fill-white" />
-                Watch Full Catalog
-              </Link>
             </div>
           </div>
 
           {/* Infinite Canvas Frame */}
-          <div className="relative w-full h-[620px] md:h-[680px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#070709] shadow-2xl select-none">
+          <div className="relative max-w-7xl mx-auto w-full h-[620px] md:h-[680px] rounded-2xl overflow-hidden border border-white/[0.1] bg-[#070709] shadow-2xl select-none">
             {mounted && (
               <InfiniteGrid
                 items={
@@ -1352,14 +1293,11 @@ function LandingPage() {
           id="upcoming-projects"
           className="py-24 px-6 md:px-12 bg-black border-t border-white/[0.08] relative overflow-hidden"
         >
-          <div className="max-w-6xl mx-auto mb-10 flex flex-col md:flex-row md:items-end justify-between gap-5">
+          <div className="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row md:items-end justify-between gap-5">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-1.5 h-4 bg-[#A11C28] rounded-sm" />
-                <span className="text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
-                  Production Slate · What's Ahead
-                </span>
-              </div>
+              <span className="text-xs font-semibold tracking-widest text-white/50 uppercase block mb-2">
+                Production Slate · What's Ahead
+              </span>
               <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-2">
                 Upcoming Projects
               </h2>
@@ -1414,10 +1352,10 @@ function LandingPage() {
           id="languages"
           className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#08080c] to-black border-t border-white/[0.08]"
         >
-          <div className="max-w-6xl mx-auto">
+          <div className="w-full max-w-7xl mx-auto">
             {/* Header */}
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#A11C28]/20 border border-[#A11C28]/40 text-[#A11C28] text-[11px] font-bold tracking-widest uppercase mb-3">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-white/80 text-xs font-semibold tracking-wider uppercase mb-3">
                 Global Network · 88 Nations
               </div>
               <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
@@ -1430,11 +1368,12 @@ function LandingPage() {
             </div>
 
             {/* Split Grid: 3D Globe on Left, Architectural Demographic Dossier on Right */}
-            <div className="grid lg:grid-cols-12 gap-6 items-stretch bg-[#08080c] border border-white/10 rounded-xl p-6 md:p-8 shadow-2xl overflow-hidden">
+            <div className="grid lg:grid-cols-12 gap-6 items-stretch bg-[#08080c] border border-white/10 rounded-2xl p-4 md:p-6 shadow-2xl">
               {/* Left Column: Originkit Interactive 3D Globe */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[460px] md:min-h-[520px] w-full overflow-hidden border border-white/10 bg-[#050508]">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[580px] md:min-h-[640px] h-[580px] md:h-[640px] w-full overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
                 {mounted ? (
                   <Globe
+                    focusCountry={selectedRegionKey}
                     style={GLOBE_STYLE_CONFIG}
                     direction="right"
                     speed={1.4}
@@ -1455,39 +1394,36 @@ function LandingPage() {
                     initialLongitude={40}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/30 text-xs font-mono uppercase tracking-widest">
+                  <div className="w-full h-full flex items-center justify-center text-white/30 text-xs font-sans uppercase tracking-widest">
                     Initializing Global Geospatial Telemetry...
                   </div>
                 )}
 
-                {/* Globe Caption / Control Tip: Cinema Film Format */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[10px] font-mono tracking-wider uppercase text-white/50 pointer-events-none px-3 py-1.5 bg-[#050508]/90 backdrop-blur-md border border-white/10">
+                {/* Globe Caption / Control Tip */}
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs tracking-wider uppercase text-white/60 pointer-events-none px-3.5 py-2 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 font-sans">
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-white" />
-                    White Territorials: Active Linguistic Productions
+                    <span className="w-2 h-2 rounded-full bg-white" />
+                    Highlighted Territorials: Active Linguistic Productions
                   </span>
-                  <span className="hidden sm:inline text-white/35">Drag to Orbit</span>
+                  <span className="hidden sm:inline text-white/40">Drag to Orbit</span>
                 </div>
               </div>
 
               {/* Right Column: Architectural Demographic Dossier */}
-              <div className="lg:col-span-5 flex flex-col justify-between border border-white/10 bg-[#06060a] p-5 md:p-6 text-left">
+              <div className="lg:col-span-5 flex flex-col justify-between border border-white/10 rounded-xl bg-[#06060a] p-5 md:p-6 text-left min-h-[580px] md:min-h-[640px] h-[580px] md:h-[640px] overflow-hidden">
                 {/* Dossier Header */}
                 <div>
                   <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-3 bg-[#A11C28]" />
-                      <span className="text-[10px] font-mono tracking-[0.25em] text-white/60 uppercase font-bold">
-                        Demographic Reach Dossier
-                      </span>
-                    </div>
-                    <span className="text-[9px] font-mono text-white/35 uppercase tracking-widest">
-                      NRIM · 5219
+                    <span className="text-xs font-semibold tracking-widest text-white/60 uppercase">
+                      Demographic Reach Analysis
+                    </span>
+                    <span className="text-xs text-white/40">
+                      Select or Hover Region
                     </span>
                   </div>
 
                   {/* Territory Selector Grid: Clean Technical Segmented Bar */}
-                  <div className="grid grid-cols-4 gap-px bg-white/10 border border-white/10 mb-5">
+                  <div className="grid grid-cols-4 gap-1.5 mb-5">
                     {[
                       { key: "Nigeria", label: "Yorùbá", code: "47M" },
                       { key: "India", label: "India", code: "728M" },
@@ -1503,34 +1439,31 @@ function LandingPage() {
                           key={item.key}
                           type="button"
                           onClick={() => setSelectedRegionKey(item.key)}
-                          className={`px-2 py-2 text-left transition-colors relative cursor-pointer ${
+                          className={`px-2.5 py-2 text-left rounded-lg transition-all cursor-pointer ${
                             isSelected
-                              ? "bg-white text-black font-bold"
-                              : "bg-[#09090e] text-white/55 hover:text-white hover:bg-white/[0.04]"
+                              ? "bg-white text-black font-bold shadow-md"
+                              : "bg-white/[0.05] text-white/70 hover:text-white hover:bg-white/[0.09]"
                           }`}
                         >
-                          <div className="text-[10px] font-mono tracking-tight uppercase truncate">
+                          <div className="text-xs font-semibold truncate font-sans">
                             {item.label}
                           </div>
                           <div
-                            className={`text-[9px] font-mono ${
-                              isSelected ? "text-black/60 font-semibold" : "text-white/30"
+                            className={`text-[11px] font-sans ${
+                              isSelected ? "text-black/70 font-medium" : "text-white/40"
                             }`}
                           >
                             {item.code}
                           </div>
-                          {isSelected && (
-                            <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-[#A11C28]" />
-                          )}
                         </button>
                       );
                     })}
                     {/* 8th Slot: 100 Languages Global Goal */}
-                    <div className="px-2 py-2 text-left bg-[#09090e] border-l border-white/10 flex flex-col justify-center">
-                      <div className="text-[9px] font-mono tracking-tight uppercase text-white/35">
+                    <div className="px-2.5 py-2 text-left rounded-lg bg-white/[0.03] border border-white/10 flex flex-col justify-center">
+                      <div className="text-[10px] uppercase tracking-wider text-white/40 font-sans">
                         Target
                       </div>
-                      <div className="text-[9px] font-mono text-[#A11C28] font-bold">
+                      <div className="text-xs text-white/90 font-bold font-sans">
                         100 Lang
                       </div>
                     </div>
@@ -1543,65 +1476,65 @@ function LandingPage() {
                       <div>
                         {/* Territory Title & Native Script */}
                         <div className="flex items-baseline justify-between gap-3 mb-1">
-                          <h3 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase">
+                          <h3 className="text-xl md:text-2xl font-black text-white tracking-tight">
                             {reg.name}
                           </h3>
-                          <span className="text-xs font-mono text-white/40 shrink-0">
+                          <span className="text-xs text-white/40 shrink-0 font-sans">
                             {reg.nativeName}
                           </span>
                         </div>
-                        <p className="text-[11px] font-mono text-white/45 tracking-wider uppercase mb-5">
+                        <p className="text-xs text-white/50 tracking-wide uppercase mb-4 font-sans">
                           {reg.territory}
                         </p>
 
                         {/* Dual Data Terminal Cells */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 border border-white/10 mb-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4 font-sans">
                           {/* Cell 1: Total Territory Population */}
-                          <div className="p-3.5 bg-[#09090e]">
-                            <span className="text-[9px] font-mono tracking-[0.2em] text-white/40 uppercase block mb-1">
+                          <div className="p-3 bg-white/[0.03] border border-white/10 rounded-lg">
+                            <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase block mb-1">
                               Territory Population
                             </span>
                             <div className="text-base md:text-lg font-black text-white tracking-tight">
                               {reg.totalPopulation}
                             </div>
-                            <span className="text-[10px] text-white/40 block mt-1">
+                            <span className="text-[11px] text-white/40 block mt-0.5">
                               Resident demographic base
                             </span>
                           </div>
 
                           {/* Cell 2: Potential Linguistic Reach */}
-                          <div className="p-3.5 bg-[#09090e] border-t sm:border-t-0 sm:border-l border-white/10">
-                            <span className="text-[9px] font-mono tracking-[0.2em] text-white/40 uppercase block mb-1">
+                          <div className="p-3 bg-white/[0.03] border border-white/10 rounded-lg">
+                            <span className="text-[10px] font-semibold tracking-wider text-white/50 uppercase block mb-1">
                               Potential Scripture Reach
                             </span>
                             <div className="text-base md:text-lg font-black text-white tracking-tight">
                               {reg.highlightStat}
                             </div>
-                            <span className="text-[10px] text-white/40 block mt-1">
+                            <span className="text-[11px] text-white/40 block mt-0.5">
                               {reg.subStat}
                             </span>
                           </div>
                         </div>
 
-                        {/* Editorial / Orality Breakdown */}
-                        <div className="border-l-2 border-[#A11C28] pl-3.5 py-1 mb-5">
-                          <span className="text-[9px] font-mono tracking-[0.2em] text-white/40 uppercase block mb-1">
+                        {/* Editorial / Orality Breakdown (Clean box, NO red lines) */}
+                        <div className="bg-white/[0.03] border border-white/10 rounded-lg p-3.5 mb-4">
+                          <span className="text-[11px] font-semibold text-white/50 uppercase tracking-wider block mb-1 font-sans">
                             Orality & Visual Scripture Mission
                           </span>
-                          <p className="text-xs text-white/70 leading-relaxed font-sans">
+                          <p className="text-xs text-white/80 leading-relaxed font-sans">
                             {reg.oralityInsight}
                           </p>
                         </div>
 
                         {/* Languages Covered Tags */}
                         <div className="flex items-center gap-2 flex-wrap mb-4">
-                          <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest">
+                          <span className="text-xs text-white/40 font-sans">
                             Linguistic Tracks:
                           </span>
                           {reg.languages.map((l) => (
                             <span
                               key={l}
-                              className="text-[10px] font-mono px-2 py-0.5 border border-white/15 bg-white/[0.04] text-white/80"
+                              className="text-xs px-2.5 py-0.5 rounded-md bg-white/[0.06] border border-white/10 text-white/90 font-medium font-sans"
                             >
                               {l}
                             </span>
@@ -1616,12 +1549,12 @@ function LandingPage() {
                 {(() => {
                   const reg = getRegionAnalysis(selectedRegionKey);
                   return (
-                    <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-4 flex-wrap">
                       <div className="min-w-0">
-                        <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest block">
+                        <span className="text-[10px] text-white/40 uppercase tracking-wider block font-sans">
                           Current Production
                         </span>
-                        <span className="text-xs font-bold text-white block truncate">
+                        <span className="text-xs font-bold text-white block truncate font-sans">
                           {reg.activeRelease}
                         </span>
                       </div>
@@ -1631,7 +1564,7 @@ function LandingPage() {
                           href={reg.releaseUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 uppercase tracking-wider transition-colors inline-flex items-center gap-2 shadow-lg shadow-red-950/40"
+                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 uppercase tracking-wider transition-colors inline-flex items-center gap-2 rounded shadow-lg shadow-red-950/40"
                         >
                           <Play className="w-3.5 h-3.5 fill-white" />
                           Watch Preview
@@ -1640,7 +1573,7 @@ function LandingPage() {
                       ) : (
                         <Link
                           to={reg.releaseUrl as any}
-                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 uppercase tracking-wider transition-colors inline-flex items-center gap-2 shadow-lg shadow-red-950/40"
+                          className="shrink-0 bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold px-4 py-2 uppercase tracking-wider transition-colors inline-flex items-center gap-2 rounded shadow-lg shadow-red-950/40"
                         >
                           <Play className="w-3.5 h-3.5 fill-white" />
                           Watch Edition
