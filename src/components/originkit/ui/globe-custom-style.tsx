@@ -274,6 +274,9 @@ interface GlobeProps {
     onHoverCountry?: (countryName: string | null) => void;
 }
 
+let cachedLandFeatures: any = null;
+let cachedCountryFeatures: any = null;
+
 function __OriginkitBase_Globe({
     speed = 2,
     smoothing = 8,
@@ -318,12 +321,20 @@ function __OriginkitBase_Globe({
     const [error, setError] = useState<string | null>(null);
     const [hoveredCountry, setHoveredCountry] = useState<HoveredCountryData | null>(null);
 
+    const onHoverCountryRef = useRef(onHoverCountry);
+    useEffect(() => {
+        onHoverCountryRef.current = onHoverCountry;
+    }, [onHoverCountry]);
+
     const dotColor = dots.color;
     const dotSize = dots.size;
     const density = dots.density;
     const allDots = dots.allDots;
     const gridWidth = 1;
     const smoothingN = normalizeSmoothing(smoothing);
+
+    const coveredKey = (coveredRegions?.countries || []).join(",");
+    const markerKey = (markerConfig?.markers || []).length;
 
     const baseRotationSpeed = mapSpeedUiToInternal(speed);
     const rotationSpeed =
@@ -546,24 +557,31 @@ function __OriginkitBase_Globe({
         const loadWorldData = async () => {
             try {
                 setIsLoading(true);
-                const [landRes, countriesRes] = await Promise.all([
-                    fetch("/originkit/ne_50m_land.json").catch(() =>
-                        fetch(
-                            "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/50m/physical/ne_50m_land.json"
-                        )
-                    ),
-                    fetch("/originkit/ne_110m_admin_0_countries.json").catch(() =>
-                        fetch(
-                            "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/cultural/ne_110m_admin_0_countries.json"
-                        )
-                    ),
-                ]);
-                if (!landRes.ok) throw new Error("Failed to load land data");
-                const landFeatures = await landRes.json();
-                const countryFeatures =
-                    countriesRes && countriesRes.ok
-                        ? await countriesRes.json()
-                        : null;
+                let landFeatures = cachedLandFeatures;
+                let countryFeatures = cachedCountryFeatures;
+
+                if (!landFeatures) {
+                    const [landRes, countriesRes] = await Promise.all([
+                        fetch("/originkit/ne_50m_land.json").catch(() =>
+                            fetch(
+                                "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/50m/physical/ne_50m_land.json"
+                            )
+                        ),
+                        fetch("/originkit/ne_110m_admin_0_countries.json").catch(() =>
+                            fetch(
+                                "https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/cultural/ne_110m_admin_0_countries.json"
+                            )
+                        ),
+                    ]);
+                    if (!landRes.ok) throw new Error("Failed to load land data");
+                    landFeatures = await landRes.json();
+                    countryFeatures =
+                        countriesRes && countriesRes.ok
+                            ? await countriesRes.json()
+                            : null;
+                    cachedLandFeatures = landFeatures;
+                    cachedCountryFeatures = countryFeatures;
+                }
 
                 if (countryFeatures && countryFeatures.features) {
                     loadedCountryFeatures = countryFeatures.features;
@@ -1062,7 +1080,6 @@ function __OriginkitBase_Globe({
         const handleMouseDown = (event: MouseEvent) => {
             isDragging = true;
             setHoveredCountry(null);
-            onHoverCountry?.(null);
             velocity.x = 0;
             velocity.y = 0;
             lastMouseX = event.clientX;
@@ -1086,7 +1103,9 @@ function __OriginkitBase_Globe({
             const handleMouseUp = () => {
                 document.removeEventListener("mousemove", handleMouseMoveDrag);
                 document.removeEventListener("mouseup", handleMouseUp);
-                isDragging = false;
+                setTimeout(() => {
+                    isDragging = false;
+                }, 100);
             };
             document.addEventListener("mousemove", handleMouseMoveDrag);
             document.addEventListener("mouseup", handleMouseUp);
@@ -1096,6 +1115,11 @@ function __OriginkitBase_Globe({
         const raycaster = new Raycaster();
         const mouse = new Vector2();
         const handleMouseMove = (event: MouseEvent) => {
+            if (isDragging) {
+                setHoveredCountry(null);
+                return;
+            }
+
             const rect = canvas.getBoundingClientRect();
             mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
             mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -1103,9 +1127,8 @@ function __OriginkitBase_Globe({
             const intersects = raycaster.intersectObject(oceanMesh);
             isHovering = intersects.length > 0;
 
-            if (isDragging || intersects.length === 0) {
+            if (intersects.length === 0) {
                 setHoveredCountry(null);
-                onHoverCountry?.(null);
                 return;
             }
 
@@ -1164,16 +1187,13 @@ function __OriginkitBase_Globe({
             }
 
             setHoveredCountry(matched);
-            if (matched) {
-                onHoverCountry?.(matched.rawCountryName || matched.name);
-            } else {
-                onHoverCountry?.(null);
+            if (matched && matched.isCovered) {
+                onHoverCountryRef.current?.(matched.rawCountryName || matched.name);
             }
         };
         const handleMouseLeave = () => {
             isHovering = false;
             setHoveredCountry(null);
-            onHoverCountry?.(null);
         };
         canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mouseleave", handleMouseLeave);
@@ -1208,16 +1228,16 @@ function __OriginkitBase_Globe({
     }, [
         speed,
         smoothing,
-        dots,
+        dotColor,
+        dotSize,
+        density,
+        allDots,
         fill,
         fillColor,
-        allDots,
-        density,
-        dotSize,
-        dotColor,
         scale,
         stopOnHover,
-        markerConfig,
+        markerKey,
+        coveredKey,
         direction,
         initialLatitude,
         initialLongitude,
@@ -1229,11 +1249,6 @@ function __OriginkitBase_Globe({
         outlineWidth,
         dragSpeed,
         detail,
-        rotationSpeed,
-        dotSpacing,
-        dotSizeMultiplier,
-        markerRadiusMultiplier,
-        scaleMultiplier,
     ]);
 
     const containerStyle: CSSProperties = {
@@ -1297,46 +1312,42 @@ function __OriginkitBase_Globe({
                         ),
                     }}
                 >
-                    <div className="bg-[#0b0b12]/95 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 shadow-2xl min-w-[210px] max-w-[280px] text-left ring-1 ring-white/10">
+                    <div className="bg-[#050508]/95 backdrop-blur-md border border-white/20 p-3 shadow-2xl min-w-[200px] max-w-[260px] text-left">
                         <div className="flex items-center justify-between gap-2 mb-1">
                             <div className="flex items-center gap-1.5 truncate">
                                 <span
-                                    className={`w-2 h-2 rounded-full shrink-0 ${
+                                    className={`w-1.5 h-1.5 shrink-0 ${
                                         hoveredCountry.isCovered
-                                            ? "bg-white shadow-[0_0_8px_#ffffff]"
-                                            : "bg-amber-400"
+                                            ? "bg-white"
+                                            : "bg-white/40"
                                     }`}
                                 />
-                                <span className="text-sm font-black text-white tracking-wide truncate">
+                                <span className="text-xs font-black text-white tracking-tight uppercase truncate">
                                     {hoveredCountry.name}
                                 </span>
                             </div>
                             {hoveredCountry.nativeName && (
-                                <span className="text-xs text-white/50 font-normal shrink-0">
-                                    ({hoveredCountry.nativeName})
+                                <span className="text-[10px] text-white/40 font-mono shrink-0">
+                                    {hoveredCountry.nativeName}
                                 </span>
                             )}
                         </div>
 
-                        <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400 mb-2">
+                        <div className="text-[9px] font-mono font-bold uppercase tracking-[0.15em] text-[#A11C28] mb-2">
                             {hoveredCountry.status}
                         </div>
 
-                        <div className="border-t border-white/10 pt-2">
-                            <span className="text-white/40 block text-[9px] uppercase tracking-wider font-mono mb-1">
+                        <div className="border-t border-white/10 pt-1.5">
+                            <span className="text-white/40 block text-[8px] uppercase tracking-[0.2em] font-mono mb-1">
                                 {hoveredCountry.isCovered
-                                    ? "Languages Covered:"
+                                    ? "Linguistic Tracks:"
                                     : "Global Initiative:"}
                             </span>
                             <div className="flex flex-wrap gap-1">
                                 {hoveredCountry.languages.map((lang) => (
                                     <span
                                         key={lang}
-                                        className={`px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide ${
-                                            hoveredCountry.isCovered
-                                                ? "bg-white/15 text-white border border-white/20"
-                                                : "bg-white/5 text-white/70"
-                                        }`}
+                                        className="px-1.5 py-0.5 text-[9px] font-mono tracking-wide bg-white/[0.06] text-white/80 border border-white/10"
                                     >
                                         {lang}
                                     </span>
