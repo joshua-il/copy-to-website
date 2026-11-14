@@ -24,6 +24,8 @@ import {
   Users,
   TrendingUp,
   Sparkles,
+  BookOpen,
+  X,
 } from "lucide-react";
 import { GlobalSidebar } from "@/components/global-sidebar";
 import { RegionalSelector } from "@/components/site-header";
@@ -277,6 +279,14 @@ interface WorkflowStep {
   shortDesc: string;
   extendedDesc: string;
   image: string;
+  readingNotes: {
+    subtitle: string;
+    overview: string;
+    sections: { heading: string; body: string }[];
+    theologicalMandate: string;
+    scriptureReference: string;
+    productionMetrics: { label: string; value: string }[];
+  };
 }
 
 const WORKFLOW_STEPS: WorkflowStep[] = [
@@ -293,6 +303,33 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
     extendedDesc:
       "No artificial CGI mannequins. No sterile digital puppets. We cast living actors—capturing the raw tremor in a father's eye, the weathered dust upon real skin, and the authentic tears of sacred sacrifice. Through state-of-the-art cinematic neural performance capture, living human likeness is woven directly into biblical history. When you look into the eyes of Abraham, Isaac, or Jacob, you witness the genuine weight of living souls wrestling with God.",
     image: "/assets/genesis-shepherds-poster.jpg",
+    readingNotes: {
+      subtitle: "The Philosophy of Embodied Scripture: Resurrecting Humanity, Not Artificial Puppets",
+      overview:
+        "At the core of the Visual Bible is an uncompromising conviction: Scripture was lived by flesh-and-blood men and women who grieved, trembled, prayed, and bled. We refuse to settle for sterile CGI mannequins or soulless digital avatars. We cast living actors—capturing the raw tremor in a father's eye, the weathered dust upon real skin, and the authentic tears of sacred sacrifice.",
+      sections: [
+        {
+          heading: "Neural Volumetric Performance Capture",
+          body: "Using high-resolution multi-angle photogrammetry and neural volumetric tracking, our pipeline captures micro-expressions, breathing cadences, and emotional weight without artificial smoothing. When Abraham gazes toward the altar or Isaac carries the wood, viewers witness real human tears and tremulous faith.",
+        },
+        {
+          heading: "Authentic Heritage & Countenance Casting",
+          body: "We deliberately avoid stylized Hollywood archetypes. Our casting directors recruit living men and women with authentic Semitic, Middle Eastern, and regional lineage. Their bone structures, skin textures, and natural gaze bring historical truth and reverent authenticity back to the sacred text.",
+        },
+        {
+          heading: "The Theological Incarnational Mandate",
+          body: "God did not communicate redemption through synthetic abstraction; He revealed Himself through living persons and ultimate incarnation. By preserving genuine human soul and vulnerability on screen, viewers across every culture experience biblical truth with visceral spiritual conviction.",
+        },
+      ],
+      theologicalMandate:
+        "By faith Abraham, when he was tested, offered up Isaac... He considered that God was able even to raise him from the dead.",
+      scriptureReference: "Hebrews 11:8, 17–19 · Genesis 22:1–14",
+      productionMetrics: [
+        { label: "Capture Method", value: "Neural Volumetric 4K" },
+        { label: "Cinematic Standard", value: "24 FPS Raw Embodiment" },
+        { label: "Casting Principle", value: "Living Human Heritage" },
+      ],
+    },
   },
   {
     id: "worldbuilding",
@@ -307,6 +344,33 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
     extendedDesc:
       "We refuse to settle for soundstage green screens or generic desert hills. Harnessing the same cutting-edge virtual production pipelines that power blockbuster cinema, we architect the ancient Near East with uncompromising archaeological fidelity. From the colossal, shadow-drenched throne rooms of Egyptian Pharaohs to the roaring, parted abyss of the Red Sea and the lightning-riven crags of Mount Sinai—we build living, immersive worlds so the awe-inspiring majesty of Scripture is felt in your bones.",
     image: "/assets/yahweh-hero-mount-sinai.jpg",
+    readingNotes: {
+      subtitle: "Archaeological Precision Meets Hollywood Real-Time Virtual Production",
+      overview:
+        "We reject generic desert dunes and low-budget greenscreens. Harnessing the same real-time virtual production soundstages used in groundbreaking cinema, our team reconstructs the sacred geography, monumental architecture, and atmospheric scale of Genesis and Exodus with uncompromising historical fidelity.",
+      sections: [
+        {
+          heading: "Real-Time LED Volume Soundstages",
+          body: "Actors perform inside massive curved LED volume soundstages where photorealistic environments rendered in Unreal Engine 5 project real physical light onto ancient linen, wool, and bronze armor. Camera tracking synchronizes parallax in real time, erasing the seam between physical actors and colossal biblical landscapes.",
+        },
+        {
+          heading: "Rigorous Archaeological & Historical Restoration",
+          body: "Our art department collaborates with Near Eastern historians and biblical archaeologists to resurrect lost monumental architecture: the tiered mudbrick ziggurats of Ur, the soaring lotus columns of Goshen, and the exact geological elevations of the Sinai wilderness. Every hieroglyph, pottery fragment, and architectural proportion is archaeologically verified.",
+        },
+        {
+          heading: "Atmospheric Scale & Biblical Majesty",
+          body: "Worldbuilding is never a visual gimmick—it is an amplifier of sacred truth. When the waters of the Red Sea divide or the cloud of glory descends atop Mount Sinai, the atmospheric scale, volumetric dust storms, and photorealistic physics convey the sheer, terrifying holiness of the living God.",
+        },
+      ],
+      theologicalMandate:
+        "And Moses stretched out his hand over the sea; and the Lord caused the sea to go back by a strong east wind all that night, and made the sea dry land, and the waters were divided.",
+      scriptureReference: "Exodus 14:21–22 · Exodus 19:16–20",
+      productionMetrics: [
+        { label: "Engine", value: "Unreal Engine 5 Lumen/Nanite" },
+        { label: "Color Science", value: "ACEScg Cinematic Pipeline" },
+        { label: "Historical Scale", value: "1:1 Archaeological Fidelity" },
+      ],
+    },
   },
   {
     id: "languages",
@@ -321,6 +385,33 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
     extendedDesc:
       "Over one billion souls on Earth belong to oral traditions and regional dialects without a written Bible they can read. We are driven by an apostolic mandate: producing the Visual Bible in 100 regional and indigenous languages to truly reach the unreached. By fusing photorealistic cinematic dramatization with authentic native voice acting and cultural acoustic cadence, we bypass literacy barriers completely. Every tribe, every language, and every isolated village will witness and hear the living Word of God in their heart tongue.",
     image: "/assets/genesis-hindi-campfire-poster.jpg",
+    readingNotes: {
+      subtitle: "Shattering Orality & Literacy Barriers for Every Tribe & Nation",
+      overview:
+        "Over one billion souls on Earth belong to oral traditions and regional dialects without a written Bible they can read. We are driven by an apostolic mandate: producing the Visual Bible in 100 regional and indigenous languages to truly reach the unreached. By fusing photorealistic cinematic dramatization with authentic native voice acting and cultural acoustic cadence, we bypass literacy barriers completely.",
+      sections: [
+        {
+          heading: "Native Heart-Language Voice Acting",
+          body: "We strictly reject automated text-to-speech. We cast native voice actors in their home countries—recording the authentic cadence, poetic timbre, and musical intonation of languages like Yoruba, Hindi, Mandarin, Tamil, Malayalam, Tagalog, Farsi, and Arabic. Scripture penetrates deepest when spoken in the acoustic cadence of childhood and homeland.",
+        },
+        {
+          heading: "Overcoming Orality & Illiteracy",
+          body: "More than 70% of the unreached world cannot read or relies primarily on oral storytelling. By delivering Scripture as a cinematic, chapter-by-chapter audiovisual experience, illiterate and oral communities bypass written linguistic hurdles entirely. A village elder or a child can watch and understand redemption instantly.",
+        },
+        {
+          heading: "Open Broadcast & Village Projector Distribution",
+          body: "Every language master is engineered with 5.1 spatial audio and optimized for low-bandwidth mobile streaming, satellite broadcast, and offline micro-SD distribution for portable solar village projectors. Our mission will not stop until the full 100-language target is achieved across every continent.",
+        },
+      ],
+      theologicalMandate:
+        "After this I looked, and behold, a great multitude that no one could number, from every nation, from all tribes and peoples and languages, standing before the throne...",
+      scriptureReference: "Revelation 7:9–10 · Matthew 24:14",
+      productionMetrics: [
+        { label: "Language Target", value: "100 Spoken Tongues" },
+        { label: "Active Viewership", value: "88 Countries Worldwide" },
+        { label: "Acoustic Standard", value: "5.1 Native Spatial Voice" },
+      ],
+    },
   },
 ];
 
@@ -624,6 +715,7 @@ function LandingPage() {
   }, []);
   const [isMuted, setIsMuted] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
+  const [activeReadingStep, setActiveReadingStep] = useState<WorkflowStep | null>(null);
   const [hoveredStrip, setHoveredStrip] = useState<string | null>(null);
 
   const [email, setEmail] = useState("");
@@ -635,34 +727,81 @@ function LandingPage() {
   const heroIframeSrc = useMemo(() => {
     let url =
       cmsData.hero.videoUrl ||
-      "https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=0&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60";
-    if (isMuted) {
+      "https://www.youtube-nocookie.com/embed/PD9gqRc8VTU?autoplay=1&mute=1&loop=1&playlist=PD9gqRc8VTU&controls=0&showinfo=0&rel=0&playsinline=1&enablejsapi=1&modestbranding=1&start=60";
+    // Always start with mute=1 in initial src so browser autoplay policy NEVER blocks video or shows the YouTube play button!
+    if (url.includes("mute=0")) {
       url = url.replace(/mute=0/g, "mute=1");
-    } else {
-      url = url.replace(/mute=1/g, "mute=0");
+    } else if (!url.includes("mute=1")) {
+      url += (url.includes("?") ? "&" : "?") + "mute=1";
+    }
+    if (!url.includes("autoplay=1")) {
+      url += (url.includes("?") ? "&" : "?") + "autoplay=1";
+    }
+    if (!url.includes("playsinline=1")) {
+      url += (url.includes("?") ? "&" : "?") + "playsinline=1";
     }
     if (!url.includes("enablejsapi=1")) {
       url += (url.includes("?") ? "&" : "?") + "enablejsapi=1";
     }
     return url;
-  }, [cmsData.hero.videoUrl, isMuted]);
+  }, [cmsData.hero.videoUrl]);
 
   useEffect(() => {
     setMounted(true);
     const delay = (cmsData.hero.videoDelaySeconds || 2.5) * 1000;
     const timer = setTimeout(() => {
       setVideoReady(true);
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*");
+        if (!isMuted) {
+          iframeRef.current.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', "*");
+        }
+      }
     }, delay);
-    return () => clearTimeout(timer);
-  }, [cmsData.hero.videoDelaySeconds]);
+
+    // On user's first interaction anywhere on page, guarantee play and unmute if unmuted mode is active
+    const handleFirstInteraction = () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*");
+        if (!isMuted) {
+          iframeRef.current.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', "*");
+        }
+      }
+    };
+    window.addEventListener("click", handleFirstInteraction, { passive: true });
+    window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
+    window.addEventListener("keydown", handleFirstInteraction, { passive: true });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", handleFirstInteraction);
+      window.removeEventListener("touchstart", handleFirstInteraction);
+      window.removeEventListener("keydown", handleFirstInteraction);
+    };
+  }, [cmsData.hero.videoDelaySeconds, isMuted]);
+
+  // Close reader modal on Escape key
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveReadingStep(null);
+      }
+    };
+    if (activeReadingStep) {
+      window.addEventListener("keydown", handleEsc);
+    }
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [activeReadingStep]);
 
   const toggleSound = () => {
     if (!iframeRef.current?.contentWindow) return;
-    const command = isMuted
-      ? '{"event":"command","func":"unMute","args":""}'
-      : '{"event":"command","func":"mute","args":""}';
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    const command = nextMuted
+      ? '{"event":"command","func":"mute","args":""}'
+      : '{"event":"command","func":"unMute","args":""}';
     iframeRef.current.contentWindow.postMessage(command, "*");
-    setIsMuted(!isMuted);
+    iframeRef.current.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*");
   };
 
   async function handleWaitlist(e: FormEvent) {
@@ -724,7 +863,7 @@ function LandingPage() {
               <iframe
                 ref={iframeRef}
                 src={heroIframeSrc}
-                allow="autoplay; fullscreen; encrypted-media"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 className="absolute w-[177.78%] h-[177.78%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
                 style={{ border: "none" }}
@@ -1028,9 +1167,9 @@ function LandingPage() {
         {/* ── 4. TECHNICAL WORKFLOW: HORIZONTAL 35MM FILM STRIP ───────── */}
         <section
           id="workflow"
-          className="py-20 px-6 md:px-12 bg-[#08080c] border-t border-white/[0.08] relative overflow-hidden"
+          className="py-20 px-4 md:px-8 lg:px-12 w-full bg-[#08080c] border-t border-white/[0.08] relative overflow-hidden"
         >
-          <div className="max-w-6xl mx-auto">
+          <div className="w-full">
             {/* Section Header */}
             <div className="mb-10 text-left">
               <span className="text-xs font-semibold tracking-widest text-white/50 uppercase block mb-2">
@@ -1041,8 +1180,8 @@ function LandingPage() {
                 <br />
                 <span className="text-white/40">The Medium is Different.</span>
               </h2>
-              <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl">
-                Hollywood virtual production horsepower meets relentless apostolic passion. Hover over any celluloid frame below to reveal how we resurrect Scripture for the unreached.
+              <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-3xl">
+                Hollywood virtual production horsepower meets relentless apostolic passion. Hover over any celluloid frame below to reveal the methodology, or click to open full production notes.
               </p>
             </div>
 
@@ -1052,7 +1191,7 @@ function LandingPage() {
               <div className="bg-[#050508] border-b border-white/10 px-4 py-2.5 flex items-center justify-between overflow-hidden select-none relative">
                 <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 <div className="flex items-center gap-3 w-full justify-between">
-                  {Array.from({ length: 26 }).map((_, i) => (
+                  {Array.from({ length: 32 }).map((_, i) => (
                     <div key={i} className="flex items-center gap-1.5 shrink-0">
                       <div className="w-4 h-2.5 rounded-[2px] bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
                       {i % 4 === 0 && (
@@ -1072,11 +1211,21 @@ function LandingPage() {
                   return (
                     <div
                       key={step.id}
+                      onClick={() => setActiveReadingStep(step)}
                       onMouseEnter={() => setHoveredStrip(step.id)}
                       onMouseLeave={() => setHoveredStrip(null)}
                       className={`group relative flex flex-col rounded-lg overflow-hidden border transition-all duration-300 bg-black shadow-xl cursor-pointer ${
                         isHovered ? "border-[#A11C28] ring-1 ring-[#A11C28]/40" : "border-white/15 hover:border-white/35"
                       }`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Read story and production details for ${step.title}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setActiveReadingStep(step);
+                        }
+                      }}
                     >
                       {/* Frame Header Stamp: Cinema Slate Designation */}
                       <div className="px-3.5 py-1.5 bg-[#09090f] flex items-center justify-between text-[10px] font-mono border-b border-white/10 select-none z-20 relative">
@@ -1110,14 +1259,26 @@ function LandingPage() {
                             <h4 className="text-sm md:text-base font-black text-white tracking-tight leading-snug mb-2">
                               {step.title}
                             </h4>
-                            <p className="text-xs text-white/80 leading-relaxed font-sans line-clamp-4">
+                            <p className="text-xs text-white/80 leading-relaxed font-sans line-clamp-3 md:line-clamp-4">
                               {step.extendedDesc}
                             </p>
                           </div>
 
-                          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-white/50">
-                            <span className="tracking-wider uppercase">Visual Bible Pipeline</span>
-                            <span className="text-white/80 font-medium">NRIM Studio</span>
+                          <div className="pt-2.5 border-t border-white/10 flex items-center justify-between">
+                            <span className="text-[10px] text-white/50 uppercase tracking-wider font-sans">
+                              Visual Bible Pipeline
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveReadingStep(step);
+                              }}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#A11C28] hover:bg-[#7F151F] px-3 py-1 rounded-full shadow-lg transition-transform hover:scale-105 cursor-pointer uppercase tracking-wider"
+                            >
+                              <span>Read More</span>
+                              <BookOpen className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -1136,7 +1297,7 @@ function LandingPage() {
               <div className="bg-[#050508] border-t border-white/10 px-4 py-2.5 flex items-center justify-between overflow-hidden select-none relative">
                 <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 <div className="flex items-center gap-3 w-full justify-between">
-                  {Array.from({ length: 26 }).map((_, i) => (
+                  {Array.from({ length: 32 }).map((_, i) => (
                     <div key={i} className="flex items-center gap-1.5 shrink-0">
                       <div className="w-4 h-2.5 rounded-[2px] bg-black border border-white/50 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_0_2px_rgba(0,0,0,0.9)]" />
                       {i % 4 === 2 && (
@@ -1150,13 +1311,157 @@ function LandingPage() {
               </div>
             </div>
 
+            {/* ── WORKFLOW PILLAR IN-DEPTH READING MODAL ── */}
+            {activeReadingStep && (
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="reading-modal-title"
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200"
+                onClick={() => setActiveReadingStep(null)}
+              >
+                <div
+                  className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-[#08080c] border border-white/20 rounded-2xl shadow-2xl overflow-hidden text-left"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Modal Header Bar with Cinema Slate */}
+                  <div className="flex items-center justify-between px-6 py-4 bg-[#050508] border-b border-white/10 shrink-0">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono font-bold text-white/80 tracking-wider">
+                        {activeReadingStep.code} · {activeReadingStep.frameCode}
+                      </span>
+                      <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white/10 text-white/90">
+                        {activeReadingStep.badge}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveReadingStep(null)}
+                      className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                      aria-label="Close reader"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Modal Scrollable Body */}
+                  <div className="overflow-y-auto p-6 md:p-8 space-y-8">
+                    {/* Hero Visual & Headline */}
+                    <div className="relative rounded-xl overflow-hidden aspect-[21/9] border border-white/15 bg-black">
+                      <img
+                        src={activeReadingStep.image}
+                        alt={activeReadingStep.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#08080c] via-black/40 to-transparent" />
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <span className="text-xs font-semibold tracking-widest text-[#ff6b78] uppercase block mb-1">
+                          {activeReadingStep.stepNumber} · {activeReadingStep.pillarLabel}
+                        </span>
+                        <h2
+                          id="reading-modal-title"
+                          className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight"
+                        >
+                          {activeReadingStep.title}
+                        </h2>
+                      </div>
+                    </div>
+
+                    {/* Subtitle & Theological Overview */}
+                    <div>
+                      <h3 className="text-lg md:text-xl font-bold text-white/90 mb-3 leading-snug">
+                        {activeReadingStep.readingNotes.subtitle}
+                      </h3>
+                      <p className="text-sm md:text-base text-white/80 leading-relaxed font-sans font-normal">
+                        {activeReadingStep.readingNotes.overview}
+                      </p>
+                    </div>
+
+                    {/* Deep Dive Sections Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      {activeReadingStep.readingNotes.sections.map((sec, idx) => (
+                        <div
+                          key={idx}
+                          className="p-5 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col justify-between"
+                        >
+                          <div>
+                            <span className="text-[11px] font-mono text-white/40 block mb-2 font-bold">
+                              0{idx + 1} // ARCHITECTURE
+                            </span>
+                            <h4 className="text-base font-bold text-white mb-2 leading-snug">
+                              {sec.heading}
+                            </h4>
+                            <p className="text-xs md:text-sm text-white/70 leading-relaxed font-sans">
+                              {sec.body}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Theological Scripture Mandate Callout */}
+                    <div className="p-6 rounded-xl bg-white/[0.04] border border-white/15 text-left">
+                      <div className="flex items-center gap-2 mb-2 text-xs font-semibold tracking-wider uppercase text-white/50">
+                        <Sparkles className="w-4 h-4 text-amber-400" />
+                        <span>Scriptural Foundation</span>
+                      </div>
+                      <blockquote className="text-sm md:text-base italic text-white/90 leading-relaxed mb-3">
+                        "{activeReadingStep.readingNotes.theologicalMandate}"
+                      </blockquote>
+                      <span className="text-xs font-bold text-white/60">
+                        {activeReadingStep.readingNotes.scriptureReference}
+                      </span>
+                    </div>
+
+                    {/* Production Metrics Row */}
+                    <div className="grid grid-cols-3 gap-3 p-4 rounded-xl bg-black border border-white/10 text-center">
+                      {activeReadingStep.readingNotes.productionMetrics.map((met, i) => (
+                        <div key={i} className={i > 0 ? "border-l border-white/10" : ""}>
+                          <span className="text-[10px] uppercase tracking-wider text-white/40 block mb-1">
+                            {met.label}
+                          </span>
+                          <span className="text-xs md:text-sm font-bold text-white block">
+                            {met.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Modal Footer Controls */}
+                  <div className="px-6 py-4 bg-[#050508] border-t border-white/10 flex items-center justify-between shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currIdx = WORKFLOW_STEPS.findIndex((s) => s.id === activeReadingStep.id);
+                        const nextIdx = (currIdx + 1) % WORKFLOW_STEPS.length;
+                        setActiveReadingStep(WORKFLOW_STEPS[nextIdx]);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-white/80 transition-colors cursor-pointer"
+                    >
+                      <span>Next Pillar</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveReadingStep(null)}
+                      className="bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-5 py-2 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+                    >
+                      Close Reader
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* ── BEHIND THE SCENES VIDEO SHOWCASE ── */}
             <div className="rounded-xl overflow-hidden border border-white/15 bg-[#07070b] p-6 md:p-8 shadow-2xl text-left">
-              <div className="max-w-3xl mb-6">
+              <div className="mb-6">
                 <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">
                   Inside the Technology & Calling
                 </h3>
-                <p className="text-sm text-white/70 leading-relaxed font-sans">
+                <p className="text-sm text-white/70 leading-relaxed font-sans max-w-4xl">
                   Witness how real human actors, photorealistic virtual sets, and neural multilingual vocalization converge to bring Scripture to life across 100 languages.
                 </p>
               </div>
@@ -1350,11 +1655,11 @@ function LandingPage() {
         {/* ── 6. GLOBAL LANGUAGES REACHED (ORIGINKIT 3D GLOBE) ─────────── */}
         <section
           id="languages"
-          className="py-20 px-6 md:px-12 bg-gradient-to-b from-black via-[#08080c] to-black border-t border-white/[0.08]"
+          className="py-20 px-4 md:px-8 lg:px-12 w-full bg-gradient-to-b from-black via-[#08080c] to-black border-t border-white/[0.08]"
         >
-          <div className="w-full max-w-7xl mx-auto">
+          <div className="w-full">
             {/* Header */}
-            <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="text-center max-w-4xl mx-auto mb-12">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-white/80 text-xs font-semibold tracking-wider uppercase mb-3">
                 Global Network · 88 Nations
               </div>
@@ -1368,9 +1673,9 @@ function LandingPage() {
             </div>
 
             {/* Split Grid: 3D Globe on Left, Architectural Demographic Dossier on Right */}
-            <div className="grid lg:grid-cols-12 gap-6 items-stretch bg-[#08080c] border border-white/10 rounded-2xl p-4 md:p-6 shadow-2xl">
+            <div className="grid lg:grid-cols-12 gap-6 items-stretch bg-[#08080c] border border-white/10 rounded-2xl p-4 md:p-6 lg:p-8 shadow-2xl w-full">
               {/* Left Column: Originkit Interactive 3D Globe */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[580px] md:min-h-[640px] h-[580px] md:h-[640px] w-full overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[640px] md:min-h-[720px] h-[640px] md:h-[720px] w-full overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
                 {mounted ? (
                   <Globe
                     focusCountry={selectedRegionKey}
@@ -1410,7 +1715,7 @@ function LandingPage() {
               </div>
 
               {/* Right Column: Architectural Demographic Dossier */}
-              <div className="lg:col-span-5 flex flex-col justify-between border border-white/10 rounded-xl bg-[#06060a] p-5 md:p-6 text-left min-h-[580px] md:min-h-[640px] h-[580px] md:h-[640px] overflow-hidden">
+              <div className="lg:col-span-5 flex flex-col justify-between border border-white/10 rounded-xl bg-[#06060a] p-5 md:p-6 lg:p-8 text-left min-h-[640px] md:min-h-[720px] h-[640px] md:h-[720px] overflow-hidden">
                 {/* Dossier Header */}
                 <div>
                   <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
