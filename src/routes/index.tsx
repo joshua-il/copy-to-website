@@ -271,6 +271,8 @@ interface WorkflowStep {
   stepNumber: string;
   code: string;
   frameCode: string;
+  badge: string;
+  pillarLabel: string;
   title: string;
   shortDesc: string;
   extendedDesc: string;
@@ -281,25 +283,29 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     id: "avatars",
     stepNumber: "01",
-    code: "NRIM 5219 ▸ 01",
+    code: "NRIM 5219 · 01",
     frameCode: "01A",
+    badge: "AVATARS",
+    pillarLabel: "HUMAN EMBODIMENT",
     title: "Real Humans as Biblical Avatars",
     shortDesc:
-      "We cast real people and translate their living human likeness, emotion, and presence directly into biblical characters.",
+      "We cast living men and women and resurrect their raw human soul, grief, and faith directly into the ancient patriarchs.",
     extendedDesc:
-      "Rather than artificial CGI mannequins or standard Hollywood dramatization, we capture the raw human emotion, facial nuances, and spiritual weight of living individuals. Through our proprietary AI performance pipeline, their physical likeness is transformed into living, historically grounded biblical avatars for the patriarchs, prophets, and witnesses of Scripture.",
+      "No artificial CGI mannequins. No sterile digital puppets. We cast living actors—capturing the raw tremor in a father's eye, the weathered dust upon real skin, and the authentic tears of sacred sacrifice. Through state-of-the-art cinematic neural performance capture, living human likeness is woven directly into biblical history. When you look into the eyes of Abraham, Isaac, or Jacob, you witness the genuine weight of living souls wrestling with God.",
     image: "/assets/genesis-shepherds-poster.jpg",
   },
   {
     id: "worldbuilding",
     stepNumber: "02",
-    code: "NRIM 5219 ▸ 02",
+    code: "NRIM 5219 · 02",
     frameCode: "02A",
-    title: "Building the Ancient Biblical World",
+    badge: "WORLDBUILDING",
+    pillarLabel: "SACRED VIRTUAL SETS",
+    title: "Virtual Sets Created · Epic Worldbuilding",
     shortDesc:
-      "We reconstruct the sacred geography, ancient architecture, and monumental world of Genesis and Exodus.",
+      "Hollywood-grade virtual soundstages resurrecting the lost sacred architecture and colossal landscapes of Genesis and Exodus.",
     extendedDesc:
-      "From the primordial expanse of Eden and Abraham's encampments across Mesopotamia to the colossal courts of Pharaoh, the parted waters of the Red Sea, and the thunderous crags of Mount Sinai. We procedurally and historically reconstruct the sacred geography, architecture, textiles, and atmospheric lighting of antiquity with rigorous archaeological fidelity.",
+      "We refuse to settle for soundstage green screens or generic desert hills. Harnessing the same cutting-edge virtual production pipelines that power blockbuster cinema, we architect the ancient Near East with uncompromising archaeological fidelity. From the colossal, shadow-drenched throne rooms of Egyptian Pharaohs to the roaring, parted abyss of the Red Sea and the lightning-riven crags of Mount Sinai—we build living, immersive worlds so the awe-inspiring majesty of Scripture is felt in your bones.",
     image: "/assets/yahweh-hero-mount-sinai.jpg",
   },
   {
@@ -307,11 +313,13 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
     stepNumber: "03",
     code: "NRIM 5219 ▸ 03",
     frameCode: "03A",
+    badge: "LANGUAGES",
+    pillarLabel: "REACHING THE UNREACHED",
     title: "100 Languages for Every Tribe & Nation",
     shortDesc:
-      "A dedicated global pipeline to produce Visual Bible in 100 spoken languages — reaching oral cultures and unreached communities without written Scripture.",
+      "A relentless global localization engine producing across 100 regional and local languages to shatter illiteracy and reach the unreached.",
     extendedDesc:
-      "Over a billion people belong to oral traditions and regional dialects that lack accessible biblical translations. By pairing neural voice translation with authentic oral delivery, our localization pipeline overcomes the literacy barrier — delivering Scripture visually and acoustically so every people group hears God's Word in the dialect of their heart.",
+      "Over one billion souls on Earth belong to oral traditions and regional dialects without a written Bible they can read. We are driven by an apostolic mandate: producing the Visual Bible in 100 regional and indigenous languages to truly reach the unreached. By fusing photorealistic cinematic dramatization with authentic native voice acting and cultural acoustic cadence, we bypass literacy barriers completely. Every tribe, every language, and every isolated village will witness and hear the living Word of God in their heart tongue.",
     image: "/assets/genesis-hindi-campfire-poster.jpg",
   },
 ];
@@ -1038,9 +1046,7 @@ function LandingPage() {
                 <span className="text-white/40">The Medium is Different.</span>
               </h2>
               <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl">
-                How we combine real human emotion with state-of-the-art AI to create an
-                authoritative, cinematic biblical catalog. Hover over any stage below to inspect our
-                production process.
+                Hollywood virtual production horsepower meets relentless apostolic passion. Hover over any celluloid frame below to reveal how we resurrect Scripture for the unreached.
               </p>
             </div>
 
@@ -1065,40 +1071,72 @@ function LandingPage() {
 
               {/* 3 Film Frames Side-by-Side Grid with Authentic Celluloid Border */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 bg-[#0a0a0e]">
-                {WORKFLOW_STEPS.map((step) => (
-                  <div
-                    key={step.id}
-                    className="group flex flex-col rounded-lg overflow-hidden border border-white/15 bg-black relative shadow-xl hover:border-white/35 transition-colors"
-                  >
-                    {/* Frame Header Stamp: Cinema Slate Designation */}
-                    <div className="px-3.5 py-1.5 bg-[#09090f] flex items-center justify-between text-[10px] font-mono border-b border-white/10 select-none">
-                      <span className="font-bold text-white/80 tracking-wide">{step.code}</span>
-                      <span className="text-[#A11C28] font-black tracking-wider">
-                        {step.frameCode}
-                      </span>
-                    </div>
+                {WORKFLOW_STEPS.map((step) => {
+                  const isHovered = hoveredStrip === step.id;
+                  return (
+                    <div
+                      key={step.id}
+                      onMouseEnter={() => setHoveredStrip(step.id)}
+                      onMouseLeave={() => setHoveredStrip(null)}
+                      className={`group relative flex flex-col rounded-lg overflow-hidden border transition-all duration-300 bg-black shadow-xl cursor-pointer ${
+                        isHovered ? "border-[#A11C28] ring-1 ring-[#A11C28]/40" : "border-white/15 hover:border-white/35"
+                      }`}
+                    >
+                      {/* Frame Header Stamp: Cinema Slate Designation */}
+                      <div className="px-3.5 py-1.5 bg-[#09090f] flex items-center justify-between text-[10px] font-mono border-b border-white/10 select-none z-20 relative">
+                        <span className="font-bold text-white/80 tracking-wide">{step.code}</span>
+                        <span className="text-[#A11C28] font-black tracking-wider">
+                          {step.frameCode}
+                        </span>
+                      </div>
 
-                    {/* Frame Photo with smooth hover zoom */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
-                      <img
-                        src={step.image}
-                        alt={step.title}
-                        className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60" />
-                      <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded bg-black/85 backdrop-blur-md text-[10px] font-mono font-bold text-white/95 border border-white/15 shadow">
-                        {step.stepNumber} // {step.id.toUpperCase()}
+                      {/* Frame Photo with smooth hover zoom & slide reveal overlay */}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
+                        <img
+                          src={step.image}
+                          alt={step.title}
+                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-40" />
+
+                        {/* Default Visible Badge (slides away on hover) */}
+                        <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-sm bg-black/85 backdrop-blur-md text-[10px] font-mono font-bold text-white/95 border border-white/15 shadow transition-all duration-300 group-hover:opacity-0 group-hover:translate-y-2">
+                          {step.stepNumber} // {step.badge}
+                        </div>
+
+                        {/* ── HOVER SLIDE REVEAL OVERLAY (Premium Slide-Up Animation) ── */}
+                        <div className="absolute inset-0 bg-[#06060bd9] backdrop-blur-md p-4 md:p-5 flex flex-col justify-between text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 z-10 border-t border-[#A11C28]/80">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <span className="w-1.5 h-3 bg-[#A11C28]" />
+                              <span className="text-[9px] font-mono tracking-[0.2em] text-[#ff4d5e] uppercase font-bold">
+                                {step.stepNumber} · {step.pillarLabel}
+                              </span>
+                            </div>
+                            <h4 className="text-sm md:text-base font-black text-white tracking-tight uppercase leading-snug mb-2">
+                              {step.title}
+                            </h4>
+                            <p className="text-[11px] md:text-xs text-white/85 leading-relaxed font-sans line-clamp-4">
+                              {step.extendedDesc}
+                            </p>
+                          </div>
+
+                          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-white/50">
+                            <span className="tracking-widest uppercase text-white/40">HOLLYWOOD VFX · MISSION CALLING</span>
+                            <span className="text-[#ff4d5e] font-bold group-hover:translate-x-1 transition-transform">DETAILS ↓</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Frame Footer Stamp: Motion Picture Stock Markings */}
+                      <div className="px-3.5 py-1 bg-[#09090f] flex items-center justify-between text-[9px] font-mono text-white/50 border-t border-white/10 select-none z-20 relative">
+                        <span className="tracking-wider">24 FPS · RAW EMBODIMENT</span>
+                        <span className="font-bold text-white/60">NRIM CINEMA 5219</span>
                       </div>
                     </div>
-
-                    {/* Frame Footer Stamp: Motion Picture Stock Markings */}
-                    <div className="px-3.5 py-1 bg-[#09090f] flex items-center justify-between text-[9px] font-mono text-white/50 border-t border-white/10 select-none">
-                      <span className="tracking-wider">24 FPS · RAW EMBODIMENT</span>
-                      <span className="font-bold text-white/60">NRIM CINEMA 5219</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Bottom Film Sprocket Row: High-Contrast Cinema Celluloid */}
@@ -1119,42 +1157,94 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* ── 3 HORIZONTAL COLUMNS WITH SMOOTH HOVER EXPANSION ── */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-              {WORKFLOW_STEPS.map((step) => (
-                <div
-                  key={step.id}
-                  className="group/col p-5 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-[#A11C28]/40 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-baseline gap-2.5 mb-2">
-                      <span className="text-base font-mono font-black text-[#A11C28]">
-                        {step.stepNumber}
-                      </span>
-                      <h3 className="text-base md:text-lg font-bold text-white group-hover/col:text-[#ff4d5e] transition-colors leading-snug">
-                        {step.title}
-                      </h3>
-                    </div>
+            {/* ── 3 HORIZONTAL PILLAR CARDS WITH HIGH-CONTRAST EDITORIAL STYLING ── */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left mb-10">
+              {WORKFLOW_STEPS.map((step) => {
+                const isHovered = hoveredStrip === step.id;
+                return (
+                  <div
+                    key={step.id}
+                    onMouseEnter={() => setHoveredStrip(step.id)}
+                    onMouseLeave={() => setHoveredStrip(null)}
+                    className={`p-5 rounded-lg border transition-all duration-300 flex flex-col justify-between ${
+                      isHovered
+                        ? "border-[#A11C28] bg-white/[0.04] shadow-2xl shadow-red-950/20"
+                        : "border-white/10 bg-[#07070b] hover:border-white/25"
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-baseline gap-2.5 mb-2.5">
+                        <span className="text-base font-mono font-black text-[#A11C28]">
+                          {step.stepNumber}
+                        </span>
+                        <h3 className="text-base md:text-lg font-black text-white tracking-tight uppercase leading-snug">
+                          {step.title}
+                        </h3>
+                      </div>
 
-                    {/* Short Description (Always Visible) */}
-                    <p className="text-xs md:text-sm text-white/70 leading-relaxed font-sans font-medium mb-2">
-                      {step.shortDesc}
-                    </p>
+                      <p className="text-xs text-white/80 leading-relaxed font-sans font-medium mb-3">
+                        {step.shortDesc}
+                      </p>
 
-                    {/* Extended Description (Smooth Pure CSS Expand on Hover) */}
-                    <div className="overflow-hidden transition-all duration-300 ease-out max-h-0 opacity-0 group-hover/col:max-h-72 group-hover/col:opacity-100 group-hover/col:pt-3 group-hover/col:border-t group-hover/col:border-white/10">
-                      <p className="text-xs text-white/55 leading-relaxed font-sans">
+                      <p className="text-xs text-white/55 leading-relaxed font-sans border-t border-white/10 pt-3">
                         {step.extendedDesc}
                       </p>
                     </div>
-                  </div>
 
-                  <div className="mt-3 pt-2 text-[10px] font-mono text-white/35 flex items-center gap-1 group-hover/col:text-[#A11C28] transition-colors">
-                    <span>Hover to reveal process details</span>
-                    <span className="group-hover/col:translate-x-1 transition-transform">→</span>
+                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/40">
+                      <span>{step.code}</span>
+                      <span className="text-[#A11C28] font-bold">24 FPS EMBODIMENT</span>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* ── BEHIND THE SCENES VIDEO SHOWCASE ── */}
+            <div className="rounded-xl overflow-hidden border border-white/15 bg-[#07070b] p-6 md:p-8 shadow-2xl text-left">
+              <div className="max-w-3xl mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-1.5 h-3 bg-[#A11C28]" />
+                  <span className="text-[10px] font-mono tracking-[0.25em] text-[#ff4d5e] uppercase font-bold">
+                    Studio Production Reel · Behind the Scenes
+                  </span>
                 </div>
-              ))}
+                <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight uppercase mb-2">
+                  Inside the Technology & Calling
+                </h3>
+                <p className="text-xs md:text-sm text-white/70 leading-relaxed font-sans">
+                  Witness how real human actors, photorealistic virtual sets, and neural multilingual vocalization converge to bring Scripture to life across 100 languages.
+                </p>
+              </div>
+
+              {/* 16:9 Cinema Frame Embed */}
+              <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-white/20 bg-black shadow-2xl">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/3DULIG3sDS8?rel=0&modestbranding=1"
+                  title="Visual Bible Studio Production Reel"
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Video Footer Metadata */}
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between flex-wrap gap-3 text-xs">
+                <div className="flex items-center gap-2 text-white/50 font-mono text-[11px]">
+                  <span className="w-2 h-2 rounded-full bg-[#A11C28] animate-pulse" />
+                  <span>Official Workflow Featurette · 4K HDR Broadcast Master</span>
+                </div>
+                <a
+                  href="https://www.youtube.com/watch?v=3DULIG3sDS8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-white hover:text-[#ff4d5e] transition-colors"
+                >
+                  <span>Open in YouTube</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
             </div>
           </div>
         </section>
