@@ -27,6 +27,11 @@ import {
   Search,
   CheckCircle2,
   Globe,
+  Download,
+  FileText,
+  AlertCircle,
+  HelpCircle,
+  Copy,
 } from "lucide-react";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
@@ -437,6 +442,8 @@ function AdminDashboardPage() {
   const {
     cmsData,
     saveAllCmsData,
+    importSnapshot,
+    syncNotice,
     updateHero,
     updateVaultProductions,
     updateUpcomingProjects,
@@ -491,7 +498,14 @@ function AdminDashboardPage() {
   ]);
 
   const [previewVideoId, setPreviewVideoId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveStatusMessage, setSaveStatusMessage] = useState("");
+  const [isCloudSynced, setIsCloudSynced] = useState<boolean | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importError, setImportError] = useState("");
+  const [copiedSnapshot, setCopiedSnapshot] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
 
   // Keep form data synchronized when cmsData updates
@@ -529,16 +543,86 @@ function AdminDashboardPage() {
     }
   };
 
-  const handleSave = () => {
-    saveAllCmsData({
+  const handleSave = async () => {
+    setSaving(true);
+    const updated = {
       hero: heroForm,
       vaultProductions: vaultForm,
       upcomingProjects: projectsForm,
       broadcastEpisodes: episodesForm,
       archiveItems: archiveForm,
-    });
+    };
+    const res = await saveAllCmsData(updated);
+    setSaving(false);
     setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+    setIsCloudSynced(Boolean(res?.cloudSynced));
+    setSaveStatusMessage(res?.message || (res?.cloudSynced ? "Saved to Cloud" : "Saved locally"));
+    setTimeout(() => setSaveSuccess(false), 5000);
+  };
+
+  const handleExportSnapshot = () => {
+    const currentData = {
+      hero: heroForm,
+      vaultProductions: vaultForm,
+      upcomingProjects: projectsForm,
+      broadcastEpisodes: episodesForm,
+      archiveItems: archiveForm,
+    };
+    const blob = new Blob([JSON.stringify(currentData, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `nrim-cms-snapshot-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCopySnapshotToClipboard = () => {
+    const currentData = {
+      hero: heroForm,
+      vaultProductions: vaultForm,
+      upcomingProjects: projectsForm,
+      broadcastEpisodes: episodesForm,
+      archiveItems: archiveForm,
+    };
+    navigator.clipboard?.writeText(JSON.stringify(currentData, null, 2));
+    setCopiedSnapshot(true);
+    setTimeout(() => setCopiedSnapshot(false), 3000);
+  };
+
+  const handleImportSubmit = async (jsonString: string) => {
+    try {
+      setImportError("");
+      const parsed = JSON.parse(jsonString);
+      if (typeof parsed !== "object" || !parsed) {
+        throw new Error("Invalid JSON structure.");
+      }
+      await importSnapshot(parsed);
+      setShowImportModal(false);
+      setImportText("");
+      setSaveSuccess(true);
+      setSaveStatusMessage("Snapshot imported and applied successfully!");
+      setTimeout(() => setSaveSuccess(false), 5000);
+    } catch (e) {
+      setImportError(e instanceof Error ? e.message : "Failed to parse JSON snapshot.");
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result;
+      if (typeof content === "string") {
+        handleImportSubmit(content);
+      }
+    };
+    reader.readAsText(file);
   };
 
   const handleReset = () => {
@@ -857,16 +941,45 @@ function AdminDashboardPage() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             {saveSuccess && (
-              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-bold px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 animate-in fade-in">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Saved & Live Across All Sites
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-none border animate-in fade-in ${
+                  isCloudSynced
+                    ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                    : "text-amber-300 bg-amber-500/10 border-amber-500/30"
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{saveStatusMessage || (isCloudSynced ? "Saved to Cloud" : "Saved Locally")}</span>
               </span>
             )}
 
+            {/* Quick Export Snapshot (Download JSON) */}
+            <button
+              type="button"
+              onClick={handleExportSnapshot}
+              className="inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white px-2.5 py-1.5 rounded-none border border-white/15 bg-white/[0.04] hover:bg-white/10 transition-colors"
+              title="Download full content snapshot as JSON to share with teammates"
+            >
+              <Download className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden lg:inline">Export JSON</span>
+            </button>
+
+            {/* Quick Import Snapshot (Upload/Paste JSON) */}
+            <button
+              type="button"
+              onClick={() => setShowImportModal(true)}
+              className="inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white px-2.5 py-1.5 rounded-none border border-white/15 bg-white/[0.04] hover:bg-white/10 transition-colors"
+              title="Import content snapshot from a teammate (e.g. Rachel)"
+            >
+              <Upload className="w-3.5 h-3.5 text-sky-400" />
+              <span className="hidden lg:inline">Import JSON</span>
+            </button>
+
             <button
               onClick={handleReset}
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-red-400 px-3 py-1.5 rounded transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-red-400 px-2.5 py-1.5 rounded-none transition-colors"
               title="Reset all content to factory original"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Reset
@@ -875,7 +988,7 @@ function AdminDashboardPage() {
             <Link
               to="/"
               target="_blank"
-              className="hidden md:inline-flex items-center gap-1 text-xs text-white/70 hover:text-white px-3 py-1.5 rounded bg-white/10 hover:bg-white/15 transition-colors"
+              className="hidden md:inline-flex items-center gap-1 text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-none bg-white/10 hover:bg-white/15 transition-colors"
             >
               <span>View Site</span>
               <ExternalLink className="w-3 h-3 text-white/50" />
@@ -883,12 +996,126 @@ function AdminDashboardPage() {
 
             <Button
               onClick={handleSave}
-              className="bg-[#A11C28] hover:bg-[#7F151F] text-white font-bold text-xs h-9 px-4 rounded-lg flex items-center gap-1.5 uppercase tracking-wider shadow-lg shadow-red-950/50"
+              disabled={saving}
+              className="bg-[#A11C28] hover:bg-[#7F151F] text-white font-bold text-xs h-9 px-4 rounded-none flex items-center gap-1.5 uppercase tracking-wider shadow-lg shadow-red-950/50"
             >
-              <Save className="w-3.5 h-3.5" /> Save Changes
+              {saving ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" /> Save Changes
+                </>
+              )}
             </Button>
           </div>
         </header>
+
+        {/* ── MULTI-DEVICE CLOUD SYNC NOTICE BANNER ── */}
+        <div className="bg-[#0e0e16] border-b border-white/[0.08] px-6 py-2.5 flex items-center justify-between gap-4 text-xs">
+          <div className="flex items-center gap-2 text-white/80">
+            <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+            <span>
+              <strong>Cross-Device Sync:</strong> Changes are saved locally on this browser. Use <strong>Export JSON</strong> &amp; <strong>Import JSON</strong> to share updates with teammates (e.g. Rachel).
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleCopySnapshotToClipboard}
+              className="px-2.5 py-1 text-[11px] font-semibold text-white/80 hover:text-white bg-white/10 hover:bg-white/15 rounded-none border border-white/15 transition-colors flex items-center gap-1"
+            >
+              <Copy className="w-3 h-3 text-amber-400" />
+              <span>{copiedSnapshot ? "Copied Snapshot!" : "Copy Snapshot Code"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowImportModal(true)}
+              className="px-2.5 py-1 text-[11px] font-semibold text-[#ff4d5e] hover:text-white bg-[#A11C28]/20 hover:bg-[#A11C28]/40 rounded-none border border-[#A11C28]/40 transition-colors"
+            >
+              Import Teammate Edits
+            </button>
+          </div>
+        </div>
+
+        {/* ── IMPORT SNAPSHOT MODAL ── */}
+        {showImportModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+            <div className="relative w-full max-w-lg bg-[#0c0c14] border border-white/20 p-6 shadow-2xl text-white rounded-none">
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <Upload className="w-4 h-4 text-amber-400" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+                    Import Content Snapshot
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowImportModal(false)}
+                  className="text-white/40 hover:text-white text-xs"
+                >
+                  Close
+                </button>
+              </div>
+
+              <p className="text-xs text-white/70 mb-4 leading-relaxed">
+                Import image updates and content changes made by another admin (e.g., Rachel). You can upload a exported JSON file or paste the JSON text directly.
+              </p>
+
+              {importError && (
+                <div className="p-2.5 mb-3 bg-red-950/60 border border-red-500/40 text-xs text-red-200">
+                  {importError}
+                </div>
+              )}
+
+              {/* Upload file option */}
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-white/60 uppercase mb-1">
+                  Upload .json Snapshot File
+                </label>
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleFileUpload}
+                  className="block w-full text-xs text-white/70 file:mr-3 file:py-1.5 file:px-3 file:border file:border-white/20 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer"
+                />
+              </div>
+
+              {/* Paste JSON text option */}
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-white/60 uppercase mb-1">
+                  Or Paste JSON Text
+                </label>
+                <textarea
+                  value={importText}
+                  onChange={(e) => setImportText(e.target.value)}
+                  placeholder="Paste JSON snapshot content here..."
+                  rows={5}
+                  className="w-full p-2.5 bg-black/60 border border-white/20 text-xs font-mono text-white/90 focus:border-[#A11C28] outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowImportModal(false)}
+                  className="px-3 py-1.5 text-xs text-white/60 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <Button
+                  type="button"
+                  onClick={() => handleImportSubmit(importText)}
+                  disabled={!importText.trim()}
+                  className="bg-[#A11C28] hover:bg-[#7F151F] text-white text-xs font-bold rounded-none"
+                >
+                  Apply Snapshot
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Studio Content Container */}
         <div className="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">

@@ -140,3 +140,4 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
     </div>
   );
 }
+

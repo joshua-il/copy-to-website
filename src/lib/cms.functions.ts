@@ -11,74 +11,124 @@ interface UploadMediaInput {
 }
 
 /**
- * Cloud-safe server function to persist CMS content without local disk writes.
- * In serverless cloud runtimes (/var/task), local filesystems are read-only.
+ * Cloud-safe server function to persist CMS content.
+ * When SUPABASE_SERVICE_ROLE_KEY is present in Secrets / Environment,
+ * it saves directly to Supabase Cloud Storage (cms-media bucket) for global multi-device sync.
  */
 export const saveCmsContent = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => data as SaveCmsInput)
   .handler(async ({ data }) => {
     try {
-      // Optional Supabase admin sync if service role credentials are present
-      if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_URL) {
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      const supabaseUrl = process.env.SUPABASE_URL;
+
+      if (serviceKey && supabaseUrl) {
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          // Attempt bucket sync if configured
-          await supabaseAdmin.storage
+
+          // Ensure cms-media bucket exists
+          const { data: buckets } = await supabaseAdmin.storage.listBuckets();
+          if (!buckets?.some((b) => b.name === "cms-media")) {
+            await supabaseAdmin.storage.createBucket("cms-media", { public: true }).catch(() => {});
+          }
+
+          const { error: uploadError } = await supabaseAdmin.storage
             .from("cms-media")
             .upload("cms-content.json", JSON.stringify(data.cmsData), {
               contentType: "application/json",
               upsert: true,
-            })
-            .catch(() => {});
-        } catch {
-          // Non-blocking fallback
+            });
+
+          if (!uploadError) {
+            return {
+              ok: true as const,
+              cloudSynced: true as const,
+              message: "CMS synchronized to Cloud Storage globally.",
+            };
+          } else {
+            console.warn("Supabase storage upload error:", uploadError.message);
+          }
+        } catch (adminErr) {
+          console.warn("Supabase admin storage sync error:", adminErr);
         }
       }
-      return { ok: true as const, message: "CMS cloud sync complete" };
+
+      return {
+        ok: true as const,
+        cloudSynced: false as const,
+        message:
+          "Saved locally. To enable automatic multi-device cloud sync, add SUPABASE_SERVICE_ROLE_KEY to Lovable Secrets.",
+      };
     } catch (err) {
       console.warn("CMS cloud sync notice:", err);
-      return { ok: true as const, message: "CMS saved" };
+      return { ok: true as const, cloudSynced: false as const, message: "Saved locally" };
     }
   });
 
 /**
  * Cloud-safe server function to fetch CMS content.
+ * 1. Checks Supabase cloud storage (if connected)
+ * 2. Falls back to bundled public/cms-content.json
  */
 export const fetchCmsContent = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_URL) {
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = process.env.SUPABASE_URL;
+
+    // 1. Try Supabase cloud bucket
+    if (serviceKey && supabaseUrl) {
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data } = await supabaseAdmin.storage
+        const { data, error } = await supabaseAdmin.storage
           .from("cms-media")
           .download("cms-content.json");
-        if (data) {
+        if (data && !error) {
           const text = await data.text();
-          return { ok: true as const, data: JSON.parse(text) };
+          return { ok: true as const, data: JSON.parse(text), source: "cloud" as const };
         }
-      } catch {
-        // Fallback to client state
+      } catch (cloudErr) {
+        console.warn("Cloud download attempt failed:", cloudErr);
       }
     }
-    return { ok: true as const, data: null };
+
+    // 2. Fallback to bundled static public/cms-content.json
+    try {
+      const bundled = await import("../../public/cms-content.json");
+      if (bundled && bundled.default) {
+        return { ok: true as const, data: bundled.default, source: "bundled" as const };
+      }
+    } catch {
+      // Bundled fallback unavailable
+    }
+
+    return { ok: true as const, data: null, source: "none" as const };
   } catch (err) {
-    return { ok: true as const, data: null };
+    return { ok: true as const, data: null, source: "none" as const };
   }
 });
 
 /**
  * Cloud-safe server function to handle media uploads:
  * In serverless environments, does NOT attempt node:fs writes to /var/task.
- * Returns cloud-safe media data immediately.
+ * Uploads to Supabase Cloud Storage if credentials exist, otherwise returns optimized data URI.
  */
 export const uploadCmsMedia = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => data as UploadMediaInput)
   .handler(async ({ data }) => {
     try {
-      // If Supabase Storage is configured in the environment, upload directly to the cloud bucket
-      if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_URL) {
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      const supabaseUrl = process.env.SUPABASE_URL;
+
+      if (serviceKey && supabaseUrl) {
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+          // Ensure cms-media bucket exists
+          const { data: buckets } = await supabaseAdmin.storage.listBuckets();
+          if (!buckets?.some((b) => b.name === "cms-media")) {
+            await supabaseAdmin.storage.createBucket("cms-media", { public: true }).catch(() => {});
+          }
+
           const cleanBase = data.filename.replace(/[^a-zA-Z0-9.-]/g, "_").toLowerCase();
           const uniqueName = `${Date.now()}-${cleanBase}`;
           const cleanBase64 = data.base64Data.replace(/^data:[^;]+;base64,/, "");
@@ -96,7 +146,12 @@ export const uploadCmsMedia = createServerFn({ method: "POST" })
               .from("cms-media")
               .getPublicUrl(uniqueName);
             if (pubData?.publicUrl) {
-              return { ok: true as const, publicUrl: pubData.publicUrl, filename: uniqueName };
+              return {
+                ok: true as const,
+                publicUrl: pubData.publicUrl,
+                filename: uniqueName,
+                cloud: true as const,
+              };
             }
           }
         } catch (storageErr) {
@@ -113,6 +168,7 @@ export const uploadCmsMedia = createServerFn({ method: "POST" })
         ok: true as const,
         publicUrl: dataUri,
         filename: data.filename,
+        cloud: false as const,
       };
     } catch (err) {
       console.error("Cloud media handler error:", err);

@@ -478,6 +478,10 @@ export function getStoredCmsData(): SiteCmsData {
 
 export function useCmsContent() {
   const [data, setData] = useState<SiteCmsData>(getStoredCmsData);
+  const [syncNotice, setSyncNotice] = useState<{
+    cloudSynced: boolean;
+    message: string;
+  } | null>(null);
 
   // Sync from server on mount
   useEffect(() => {
@@ -513,19 +517,55 @@ export function useCmsContent() {
     };
   }, []);
 
-  const saveCmsData = (newData: SiteCmsData) => {
+  const saveCmsData = async (newData: SiteCmsData) => {
     localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(newData));
     setData(newData);
     window.dispatchEvent(new Event("vb_cms_data_change"));
 
-    // Also persist to server in the background so all visitors and admin teammates see it
-    saveCmsContent({ data: { cmsData: newData } }).catch((err) => {
+    try {
+      const res = await saveCmsContent({ data: { cmsData: newData } });
+      const notice = {
+        cloudSynced: Boolean(res?.cloudSynced),
+        message: res?.message || (res?.cloudSynced ? "Saved to Cloud" : "Saved locally"),
+      };
+      setSyncNotice(notice);
+      return notice;
+    } catch (err) {
       console.warn("Server CMS sync failed (using local storage):", err);
-    });
+      const fallback = {
+        cloudSynced: false,
+        message: "Saved locally (Cloud storage offline)",
+      };
+      setSyncNotice(fallback);
+      return fallback;
+    }
   };
 
-  const saveAllCmsData = (newData: SiteCmsData) => {
-    saveCmsData(newData);
+  const saveAllCmsData = async (newData: SiteCmsData) => {
+    return await saveCmsData(newData);
+  };
+
+  const importSnapshot = async (imported: Partial<SiteCmsData>) => {
+    const next: SiteCmsData = {
+      hero: { ...DEFAULT_CMS_DATA.hero, ...(imported.hero || {}) },
+      vaultProductions:
+        Array.isArray(imported.vaultProductions) && imported.vaultProductions.length
+          ? imported.vaultProductions
+          : data.vaultProductions,
+      upcomingProjects:
+        Array.isArray(imported.upcomingProjects) && imported.upcomingProjects.length
+          ? imported.upcomingProjects
+          : data.upcomingProjects,
+      broadcastEpisodes:
+        Array.isArray(imported.broadcastEpisodes) && imported.broadcastEpisodes.length
+          ? imported.broadcastEpisodes
+          : data.broadcastEpisodes,
+      archiveItems:
+        Array.isArray(imported.archiveItems) && imported.archiveItems.length
+          ? imported.archiveItems
+          : data.archiveItems,
+    };
+    return await saveCmsData(next);
   };
 
   const updateHero = (updates: Partial<HeroContent>) => {
@@ -562,7 +602,9 @@ export function useCmsContent() {
 
   return {
     cmsData: data,
+    syncNotice,
     saveAllCmsData,
+    importSnapshot,
     updateHero,
     updateVaultProductions,
     updateUpcomingProjects,
