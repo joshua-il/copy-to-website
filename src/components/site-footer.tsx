@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, Globe, ExternalLink, Heart, ShieldCheck } from "lucide-react";
+import { Mail, Globe, ExternalLink, Heart, ShieldCheck, Lock } from "lucide-react";
 
 export function SiteFooter() {
   const currentYear = new Date().getFullYear();
@@ -89,6 +89,15 @@ export function SiteFooter() {
                   <ExternalLink className="w-3 h-3 text-white/40" />
                 </a>
               </li>
+              <li className="pt-1">
+                <Link
+                  to="/admin"
+                  className="text-white/50 hover:text-white transition-colors inline-flex items-center gap-1.5 font-medium"
+                >
+                  <Lock className="w-3 h-3 text-amber-400" />
+                  <span>Studio Admin CMS</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -151,6 +160,13 @@ export function SiteFooter() {
             >
               Donate
             </a>
+            <Link
+              to="/admin"
+              className="text-white/40 hover:text-white transition-colors inline-flex items-center gap-1"
+            >
+              <Lock className="w-3 h-3 text-amber-400/80" />
+              <span>Admin Access</span>
+            </Link>
           </div>
         </div>
       </div>

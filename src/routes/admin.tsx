@@ -563,9 +563,7 @@ function AdminDashboardPage() {
   if (!isAdmin || !adminUser) {
     return (
       <div className="min-h-screen bg-[#07070a] text-white flex flex-col justify-center items-center p-6 selection:bg-[#A11C28]">
-        <div className="w-full max-w-md bg-[#0e0e15] border border-white/15 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-          <div className="pointer-events-none absolute -top-12 -right-12 w-48 h-48 bg-[#A11C28]/20 rounded-full blur-3xl" />
-
+        <div className="w-full max-w-md bg-[#0c0c12] border border-white/20 rounded-none p-8 shadow-2xl relative overflow-hidden">
           <div className="flex items-center gap-3 mb-6">
             <img
               src="/assets/nrim-logo-white.png"
@@ -581,7 +579,7 @@ function AdminDashboardPage() {
           </div>
 
           {loginError && (
-            <div className="mb-4 p-3 rounded-lg bg-red-950/50 border border-red-500/40 text-xs text-red-200">
+            <div className="mb-4 p-3 rounded-none bg-red-950/60 border border-red-500/50 text-xs text-red-200">
               {loginError}
             </div>
           )}
@@ -594,12 +592,13 @@ function AdminDashboardPage() {
               <div className="relative">
                 <Mail className="w-4 h-4 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <Input
-                  type="email"
+                  type="text"
                   required
+                  autoFocus
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@nrim.org"
-                  className="pl-9 h-11 bg-white/[0.05] border-white/15 text-white"
+                  placeholder="admin@nrim.org"
+                  className="pl-9 h-11 bg-white/[0.05] border-white/20 text-white rounded-none focus:border-[#A11C28]"
                 />
               </div>
             </div>
@@ -616,14 +615,14 @@ function AdminDashboardPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="pl-9 h-11 bg-white/[0.05] border-white/15 text-white"
+                  className="pl-9 h-11 bg-white/[0.05] border-white/20 text-white rounded-none focus:border-[#A11C28]"
                 />
               </div>
             </div>
 
             <Button
               type="submit"
-              className="w-full h-11 bg-[#A11C28] hover:bg-[#7F151F] text-white font-bold rounded-lg uppercase tracking-wider text-xs shadow-lg"
+              className="w-full h-11 bg-[#A11C28] hover:bg-[#7F151F] text-white font-bold rounded-none uppercase tracking-wider text-xs shadow-lg"
             >
               Sign In to Studio CMS
             </Button>

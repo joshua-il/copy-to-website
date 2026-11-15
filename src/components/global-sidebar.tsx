@@ -16,6 +16,7 @@ import { RegionalSelector } from "@/components/site-header";
 import { useGlobalLanguage } from "@/lib/language";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { AdminBar } from "@/components/admin/admin-bar";
+import { AdminLoginModal } from "@/components/admin/admin-login-modal";
 
 export function GlobalSidebar() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -192,21 +193,35 @@ export function GlobalSidebar() {
             </div>
           )}
 
-          {/* Admin CMS Access Button (Only visible when authenticated as an admin) */}
-          {isAdmin && (
+          {/* Admin CMS Access Button - Always Accessible */}
+          {isAdmin ? (
             <Link
               to="/admin"
               search={{ tab: "episodes" }}
-              className="flex items-center gap-2 p-2 rounded-lg bg-[#A11C28]/20 hover:bg-[#A11C28]/35 border border-[#A11C28]/40 text-[#A11C28] hover:text-white transition-colors"
+              className="flex items-center gap-2 p-2 rounded-none bg-[#A11C28]/20 hover:bg-[#A11C28]/35 border border-[#A11C28]/40 text-[#A11C28] hover:text-white transition-colors"
               title="Studio CMS & YouTube Catalog"
             >
-              <Shield className="w-4 h-4 shrink-0 fill-current" />
+              <Shield className="w-4 h-4 shrink-0 fill-current text-[#A11C28]" />
               {sidebarExpanded && (
                 <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
                   Studio CMS
                 </span>
               )}
             </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setLoginModalOpen(true)}
+              className="flex items-center gap-2 p-2 rounded-none hover:bg-white/[0.08] border border-transparent hover:border-white/10 text-white/50 hover:text-white transition-colors w-full text-left"
+              title="Admin Sign In"
+            >
+              <Lock className="w-4 h-4 shrink-0 text-amber-400" />
+              {sidebarExpanded && (
+                <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+                  Admin Login
+                </span>
+              )}
+            </button>
           )}
 
           {/* NRIM Brand Link */}
@@ -272,6 +287,12 @@ export function GlobalSidebar() {
       </nav>
       {/* ── GLOBAL ADMIN STATUS BAR ────────────────────────── */}
       <AdminBar />
+
+      {/* ── ADMIN LOGIN MODAL ────────────────────────── */}
+      <AdminLoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
     </>
   );
 }
