@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
+import postgres from "postgres";
 
 interface SaveCmsInput {
   cmsData: unknown;
@@ -11,10 +12,54 @@ interface UploadMediaInput {
   mimeType: string;
 }
 
+let sqlInstance: any = null;
+function getPostgresClient() {
+  const dbUrl =
+    process.env["POSTGRES_URL"] ||
+    process.env["DATABASE_URL"] ||
+    process.env["POSTGRES_PRISMA_URL"] ||
+    process.env["POSTGRES_URL_NON_POOLING"];
+
+  if (!dbUrl) return null;
+  if (!sqlInstance) {
+    try {
+      sqlInstance = postgres(dbUrl, {
+        ssl: "require",
+        max: 2,
+        idle_timeout: 10,
+        connect_timeout: 5,
+      });
+    } catch (err) {
+      console.warn("Postgres init error:", err);
+      return null;
+    }
+  }
+  return sqlInstance;
+}
+
+async function ensurePostgresTable(sql: any) {
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS public.site_cms (
+        id TEXT PRIMARY KEY,
+        data JSONB NOT NULL,
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+    `;
+  } catch (e) {
+    console.warn("ensurePostgresTable warning:", e);
+  }
+}
+
 function getSupabaseClient() {
-  const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"];
+  const url =
+    process.env["SUPABASE_URL"] ||
+    process.env["NEXT_PUBLIC_SUPABASE_URL"] ||
+    process.env["VITE_SUPABASE_URL"];
   const key =
     process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
+    process.env["SUPABASE_ANON_KEY"] ||
+    process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ||
     process.env["SUPABASE_PUBLISHABLE_KEY"] ||
     process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
 
@@ -32,6 +77,11 @@ function getSupabaseClient() {
         if (key.startsWith("sb_")) {
           headers.delete("Authorization");
           headers.set("apikey", key);
+        } else {
+          headers.set("apikey", key);
+          if (!headers.has("Authorization")) {
+            headers.set("Authorization", `Bearer ${key}`);
+          }
         }
         return fetch(input, { ...init, headers });
       },
@@ -42,17 +92,38 @@ function getSupabaseClient() {
 
 /**
  * Cloud-safe server function to persist CMS content.
- * 1. Checks Supabase `site_cms` table (direct Postgres database connection)
- * 2. Checks Supabase Cloud Storage `cms-media` bucket (if service key present)
- * 3. Returns cloud status so the admin interface knows if changes are live globally.
+ * 1. Checks Direct Postgres (Vercel / Supabase connection pooling)
+ * 2. Checks Supabase `site_cms` table (direct PostgREST)
+ * 3. Checks Supabase Cloud Storage `cms-media` bucket (if service key present)
+ * 4. Returns cloud status so the admin interface knows if changes are live globally.
  */
 export const saveCmsContent = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => data as SaveCmsInput)
   .handler(async ({ data }) => {
     try {
-      const client = getSupabaseClient();
+      // 1. Direct Postgres Connection (Instant schema creation & upsert)
+      const sql = getPostgresClient();
+      if (sql) {
+        try {
+          await ensurePostgresTable(sql);
+          await sql`
+            INSERT INTO public.site_cms (id, data, updated_at)
+            VALUES ('master', ${JSON.stringify(data.cmsData)}::jsonb, NOW())
+            ON CONFLICT (id) DO UPDATE
+            SET data = EXCLUDED.data, updated_at = NOW()
+          `;
+          return {
+            ok: true as const,
+            cloudSynced: true as const,
+            message: "Synchronized live via direct Postgres database. Live on all devices globally!",
+          };
+        } catch (pgErr) {
+          console.warn("Direct Postgres save notice:", pgErr);
+        }
+      }
 
-      // 1. Direct Postgres Table Sync (Instant multi-device persistence)
+      // 2. Supabase REST Table Sync (Instant multi-device persistence)
+      const client = getSupabaseClient();
       if (client) {
         try {
           const { error: dbError } = await client
@@ -67,14 +138,14 @@ export const saveCmsContent = createServerFn({ method: "POST" })
             };
           }
         } catch (dbErr) {
-          // Table might not exist yet
           console.warn("Supabase site_cms table upsert notice:", dbErr);
         }
       }
 
-      // 2. Storage Bucket Sync (Fallback if storage configured)
-      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-      const supabaseUrl = process.env.SUPABASE_URL;
+      // 3. Storage Bucket Sync (Fallback if storage configured)
+      const serviceKey =
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+      const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 
       if (serviceKey && supabaseUrl) {
         try {
@@ -107,7 +178,7 @@ export const saveCmsContent = createServerFn({ method: "POST" })
       return {
         ok: true as const,
         cloudSynced: false as const,
-        message: "Saved locally. Create `site_cms` table in Supabase for 100% automated global sync.",
+        message: "Saved locally. Run the SQL script in Supabase to enable automated global sync.",
       };
     } catch (err) {
       console.warn("CMS cloud sync notice:", err);
@@ -117,15 +188,29 @@ export const saveCmsContent = createServerFn({ method: "POST" })
 
 /**
  * Cloud-safe server function to fetch CMS content.
- * 1. Checks Supabase Postgres table `site_cms`
- * 2. Checks Supabase cloud storage bucket `cms-media`
- * 3. Falls back to bundled static public/cms-content.json
+ * 1. Checks Direct Postgres connection
+ * 2. Checks Supabase Postgres table `site_cms`
+ * 3. Checks Supabase cloud storage bucket `cms-media`
+ * 4. Falls back to bundled static public/cms-content.json
  */
 export const fetchCmsContent = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const client = getSupabaseClient();
+    // 1. Direct Postgres Connection
+    const sql = getPostgresClient();
+    if (sql) {
+      try {
+        await ensurePostgresTable(sql);
+        const rows = await sql`SELECT data FROM public.site_cms WHERE id = 'master' LIMIT 1`;
+        if (rows && rows.length > 0 && rows[0].data) {
+          return { ok: true as const, data: rows[0].data, source: "database" as const };
+        }
+      } catch (pgErr) {
+        console.warn("Direct Postgres fetch notice:", pgErr);
+      }
+    }
 
-    // 1. Fetch from Supabase Postgres `site_cms` table
+    // 2. Fetch from Supabase Postgres `site_cms` table
+    const client = getSupabaseClient();
     if (client) {
       try {
         const { data: row, error: dbError } = await client
@@ -142,9 +227,10 @@ export const fetchCmsContent = createServerFn({ method: "GET" }).handler(async (
       }
     }
 
-    // 2. Fetch from Supabase cloud storage bucket
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const supabaseUrl = process.env.SUPABASE_URL;
+    // 3. Fetch from Supabase cloud storage bucket
+    const serviceKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 
     if (serviceKey && supabaseUrl) {
       try {
@@ -161,7 +247,7 @@ export const fetchCmsContent = createServerFn({ method: "GET" }).handler(async (
       }
     }
 
-    // 3. Fallback to bundled static public/cms-content.json
+    // 4. Fallback to bundled static public/cms-content.json
     try {
       const bundled = await import("../../public/cms-content.json");
       if (bundled && bundled.default) {
@@ -194,6 +280,12 @@ export const uploadCmsMedia = createServerFn({ method: "POST" })
           const uniqueName = `${Date.now()}-${cleanBase}`;
           const cleanBase64 = data.base64Data.replace(/^data:[^;]+;base64,/, "");
           const buffer = Buffer.from(cleanBase64, "base64");
+
+          try {
+            await client.storage.createBucket("cms-media", { public: true });
+          } catch {
+            // Bucket may already exist
+          }
 
           const { error: uploadError } = await client.storage
             .from("cms-media")
