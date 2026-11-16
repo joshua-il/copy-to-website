@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { createClient } from "@supabase/supabase-js";
 
 interface SaveCmsInput {
   cmsData: unknown;
@@ -10,15 +11,68 @@ interface UploadMediaInput {
   mimeType: string;
 }
 
+function getSupabaseClient() {
+  const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"];
+  const key =
+    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+
+  if (!url || !key) return null;
+
+  return createClient(url, key, {
+    global: {
+      fetch: (input, init) => {
+        const headers = new Headers(
+          typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
+        );
+        if (init?.headers) {
+          new Headers(init.headers).forEach((value, name) => headers.set(name, value));
+        }
+        if (key.startsWith("sb_")) {
+          headers.delete("Authorization");
+          headers.set("apikey", key);
+        }
+        return fetch(input, { ...init, headers });
+      },
+    },
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
+}
+
 /**
  * Cloud-safe server function to persist CMS content.
- * When SUPABASE_SERVICE_ROLE_KEY is present in Secrets / Environment,
- * it saves directly to Supabase Cloud Storage (cms-media bucket) for global multi-device sync.
+ * 1. Checks Supabase `site_cms` table (direct Postgres database connection)
+ * 2. Checks Supabase Cloud Storage `cms-media` bucket (if service key present)
+ * 3. Returns cloud status so the admin interface knows if changes are live globally.
  */
 export const saveCmsContent = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => data as SaveCmsInput)
   .handler(async ({ data }) => {
     try {
+      const client = getSupabaseClient();
+
+      // 1. Direct Postgres Table Sync (Instant multi-device persistence)
+      if (client) {
+        try {
+          const { error: dbError } = await client
+            .from("site_cms" as any)
+            .upsert({ id: "master", data: data.cmsData, updated_at: new Date().toISOString() });
+
+          if (!dbError) {
+            return {
+              ok: true as const,
+              cloudSynced: true as const,
+              message: "Synchronized live to Supabase Postgres database. Live on all devices!",
+            };
+          }
+        } catch (dbErr) {
+          // Table might not exist yet
+          console.warn("Supabase site_cms table upsert notice:", dbErr);
+        }
+      }
+
+      // 2. Storage Bucket Sync (Fallback if storage configured)
       const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
       const supabaseUrl = process.env.SUPABASE_URL;
 
@@ -26,7 +80,6 @@ export const saveCmsContent = createServerFn({ method: "POST" })
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-          // Ensure cms-media bucket exists
           const { data: buckets } = await supabaseAdmin.storage.listBuckets();
           if (!buckets?.some((b) => b.name === "cms-media")) {
             await supabaseAdmin.storage.createBucket("cms-media", { public: true }).catch(() => {});
@@ -43,10 +96,8 @@ export const saveCmsContent = createServerFn({ method: "POST" })
             return {
               ok: true as const,
               cloudSynced: true as const,
-              message: "CMS synchronized to Cloud Storage globally.",
+              message: "CMS synchronized to Supabase Cloud Storage globally.",
             };
-          } else {
-            console.warn("Supabase storage upload error:", uploadError.message);
           }
         } catch (adminErr) {
           console.warn("Supabase admin storage sync error:", adminErr);
@@ -56,8 +107,7 @@ export const saveCmsContent = createServerFn({ method: "POST" })
       return {
         ok: true as const,
         cloudSynced: false as const,
-        message:
-          "Saved locally. To enable automatic multi-device cloud sync, add SUPABASE_SERVICE_ROLE_KEY to Lovable Secrets.",
+        message: "Saved locally. Create `site_cms` table in Supabase for 100% automated global sync.",
       };
     } catch (err) {
       console.warn("CMS cloud sync notice:", err);
@@ -67,15 +117,35 @@ export const saveCmsContent = createServerFn({ method: "POST" })
 
 /**
  * Cloud-safe server function to fetch CMS content.
- * 1. Checks Supabase cloud storage (if connected)
- * 2. Falls back to bundled public/cms-content.json
+ * 1. Checks Supabase Postgres table `site_cms`
+ * 2. Checks Supabase cloud storage bucket `cms-media`
+ * 3. Falls back to bundled static public/cms-content.json
  */
 export const fetchCmsContent = createServerFn({ method: "GET" }).handler(async () => {
   try {
+    const client = getSupabaseClient();
+
+    // 1. Fetch from Supabase Postgres `site_cms` table
+    if (client) {
+      try {
+        const { data: row, error: dbError } = await client
+          .from("site_cms" as any)
+          .select("data")
+          .eq("id", "master")
+          .maybeSingle();
+
+        if (row && (row as any).data && !dbError) {
+          return { ok: true as const, data: (row as any).data, source: "database" as const };
+        }
+      } catch (dbErr) {
+        // Table not created yet
+      }
+    }
+
+    // 2. Fetch from Supabase cloud storage bucket
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const supabaseUrl = process.env.SUPABASE_URL;
 
-    // 1. Try Supabase cloud bucket
     if (serviceKey && supabaseUrl) {
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -91,7 +161,7 @@ export const fetchCmsContent = createServerFn({ method: "GET" }).handler(async (
       }
     }
 
-    // 2. Fallback to bundled static public/cms-content.json
+    // 3. Fallback to bundled static public/cms-content.json
     try {
       const bundled = await import("../../public/cms-content.json");
       if (bundled && bundled.default) {
@@ -116,25 +186,16 @@ export const uploadCmsMedia = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => data as UploadMediaInput)
   .handler(async ({ data }) => {
     try {
-      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-      const supabaseUrl = process.env.SUPABASE_URL;
+      const client = getSupabaseClient();
 
-      if (serviceKey && supabaseUrl) {
+      if (client) {
         try {
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-          // Ensure cms-media bucket exists
-          const { data: buckets } = await supabaseAdmin.storage.listBuckets();
-          if (!buckets?.some((b) => b.name === "cms-media")) {
-            await supabaseAdmin.storage.createBucket("cms-media", { public: true }).catch(() => {});
-          }
-
           const cleanBase = data.filename.replace(/[^a-zA-Z0-9.-]/g, "_").toLowerCase();
           const uniqueName = `${Date.now()}-${cleanBase}`;
           const cleanBase64 = data.base64Data.replace(/^data:[^;]+;base64,/, "");
           const buffer = Buffer.from(cleanBase64, "base64");
 
-          const { error: uploadError } = await supabaseAdmin.storage
+          const { error: uploadError } = await client.storage
             .from("cms-media")
             .upload(uniqueName, buffer, {
               contentType: data.mimeType || "image/jpeg",
@@ -142,7 +203,7 @@ export const uploadCmsMedia = createServerFn({ method: "POST" })
             });
 
           if (!uploadError) {
-            const { data: pubData } = supabaseAdmin.storage
+            const { data: pubData } = client.storage
               .from("cms-media")
               .getPublicUrl(uniqueName);
             if (pubData?.publicUrl) {
